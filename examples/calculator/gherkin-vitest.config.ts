@@ -27,9 +27,6 @@ calculator
   }))
 
 export default defineConfig({
-  test: {
-    importPath: './test/support/world.ts',
-  },
   packs: [calculator],
 })
 

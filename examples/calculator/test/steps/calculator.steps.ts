@@ -1,16 +1,16 @@
 import { expect } from 'vitest'
 import { Calculator } from '../../src/calculator'
-import type { World } from '../support/world'
 
-export function calculatorSteps(world: World) {
+export function calculatorSteps() {
+  let calculatorInstance: Calculator | undefined
   const calculator = () => {
-    if (!world.calculator) throw new Error('Calculator has not been started.')
-    return world.calculator
+    if (!calculatorInstance) throw new Error('Calculator has not been started.')
+    return calculatorInstance
   }
 
   return {
     start(): void {
-      world.calculator = new Calculator()
+      calculatorInstance = new Calculator()
     },
     enter(input: string): void {
       for (const character of input) calculator().press(character)

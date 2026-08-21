@@ -55,7 +55,6 @@ calculator
   }))
 
 export default defineConfig({
-  test: { importPath: './test/support/world.ts' },
   packs: [calculator],
 })
 ```
@@ -63,31 +62,24 @@ export default defineConfig({
 Each emitter returns structured data, not arbitrary source code. Arguments must be JSON-safe and are
 escaped by the generator. Calls are awaited by default; set `await: false` only when useful.
 
-The test binding exports a Vitest fixture:
-
-```ts
-import { test as base } from 'vitest'
-
-export const test = base.extend<{ world: Record<string, unknown> }>({
-  world: async ({}, use) => use({}),
-})
-```
-
-The pack factory receives that fixture and exposes normal test methods:
+Each scenario creates a fresh pack instance. Its closure owns test state; generated tests do not
+impose a `world`, fixture shape or application architecture:
 
 ```ts
 import { expect } from 'vitest'
 
-export function calculatorSteps(world: { display?: string }) {
+export function calculatorSteps() {
+  let display = ''
+
   return {
     start() {
-      world.display = ''
+      display = ''
     },
     enter(value: string) {
-      world.display = value
+      display = value
     },
     displayShows(expected: string) {
-      expect(world.display).toBe(expected)
+      expect(display).toBe(expected)
     },
   }
 }
@@ -154,7 +146,7 @@ Defaults:
 - inputs: `features/**/*.feature` and `features/**/*.feature.md`
 - output: `test/generated/**/*.generated.test.ts`
 - dialect: English
-- fixture/export: `world` / `test`
+- test binding: Vitest's `test` export
 - unused emitters: error
 
 Feature subdirectories are mirrored below the output directory, preventing basename collisions.
@@ -173,11 +165,7 @@ defineConfig({
   features: ['features/**/*.feature', 'features/**/*.feature.md'],
   outDir: 'test/generated',
   language: 'en',
-  test: {
-    importPath: './test/support/world.ts',
-    exportName: 'test',
-    fixtureName: 'world',
-  },
+  test: { importPath: 'vitest', exportName: 'test' },
   packs: [],
   unusedEmitters: 'error', // 'warn' | 'ignore'
 })
@@ -197,6 +185,21 @@ pnpm install
 pnpm verify
 node dist/cli.mjs --config examples/calculator/gherkin-vitest.config.ts
 ```
+
+To start in RED from one standalone specification, put exactly one `.feature.md` in an example
+directory and pass either the file or its directory:
+
+```bash
+yarn run:example examples/my-example/example.feature.md
+```
+
+The command deterministically scaffolds `gherkin-vitest.config.ts`, `test/steps/*.steps.ts` and
+`test/generated/*.generated.test.ts`. It never creates application `src` code or a support/world
+fixture. Method names come from normalized step text; quoted values and Examples placeholders become
+arguments. Step adapters initially throw `TODO`, so executing the generated test is deliberately RED.
+See [`examples/tdd-task-list`](./examples/tdd-task-list); the calculator remains the implemented GREEN
+reference. The repository suite excludes the deliberate-RED fixture and verifies its scaffold in
+`tests/compile-example.test.ts`.
 
 Quality gates: strict TypeScript, Biome, Vitest coverage, `publint`, Are The Types Wrong, Husky and
 Commitlint.

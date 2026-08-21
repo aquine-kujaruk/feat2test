@@ -55,8 +55,10 @@ describe('generate', () => {
     expect(report).toMatchObject({ featureCount: 1, scenarioCount: 3, stepCount: 10 })
     const output = path.join(root, 'test/generated/nested/state.generated.test.ts')
     const source = await readFile(output, 'utf8')
-    expect(source).toContain('import { test } from "../../support/world"')
+    expect(source).toContain("import { describe, test } from 'vitest'")
     expect(source).toContain('import { valueSteps } from "../../steps/value.steps"')
+    expect(source).toContain('const value = valueSteps()')
+    expect(source).not.toContain('world')
     expect(source).toContain('describe("Rule: Values"')
     expect(source).toContain('// And the value is persisted')
     expect(source).toContain('await value.persist()')
@@ -400,7 +402,6 @@ describe('generate', () => {
     return resolveConfig(
       {
         rootDir: root,
-        test: { importPath: './test/support/world.ts' },
         packs: Array.isArray(packs) ? packs : [packs],
         ...overrides,
       },
@@ -422,7 +423,6 @@ describe('configuration', () => {
     await writeFile(
       configPath,
       `export default {
-        test: { importPath: './test/world.ts' },
         packs: [],
         unusedEmitters: 'ignore'
       }\n`,
@@ -431,6 +431,7 @@ describe('configuration', () => {
       const loaded = await loadConfig({ cwd: root })
       expect(loaded.configPath).toBe(configPath)
       expect(loaded.config.rootDir).toBe(root)
+      expect(loaded.config.test).toEqual({ importPath: 'vitest', exportName: 'test' })
       expect(loaded.config.unusedEmitters).toBe('ignore')
     } finally {
       await rm(root, { recursive: true, force: true })
@@ -442,7 +443,6 @@ describe('configuration', () => {
       resolveConfig({
         rootDir: '/tmp/project',
         outDir: '..',
-        test: { importPath: './world.ts' },
         packs: [],
       }),
     ).toThrowError(expect.objectContaining({ code: 'PATH_OUTSIDE_ROOT' }))

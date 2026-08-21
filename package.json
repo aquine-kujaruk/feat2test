@@ -66,6 +66,7 @@
     "example:generate": "jiti src/cli.ts --config examples/calculator/gherkin-vitest.config.ts",
     "prepare": "husky",
     "release": "semantic-release",
+    "run:example": "jiti scripts/run-example.ts",
     "test": "pnpm example:check && vitest run",
     "test:coverage": "pnpm example:check && vitest run --coverage",
     "test:watch": "pnpm example:check && vitest",

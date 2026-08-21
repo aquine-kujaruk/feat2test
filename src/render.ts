@@ -50,17 +50,23 @@ export function renderFeature(
     const count = (seenTitles.get(baseTitle) ?? 0) + 1
     seenTitles.set(baseTitle, count)
     const title = count === 1 ? baseTitle : `${baseTitle} #${count}`
-    return renderScenario(pickle, feature, registry, title, config.test.fixtureName, state)
+    return renderScenario(pickle, feature, registry, title, state)
   })
 
   const packs = uniquePacks(rendered.flatMap((scenario) => scenario.packs))
-  const testImport = renderNamedImport(
-    config.test.importPath,
-    config.test.exportName,
-    'test',
-    outputPath,
-    config.rootDir,
-  )
+  const frameworkImports =
+    config.test.importPath === 'vitest' && config.test.exportName === 'test'
+      ? ["import { describe, test } from 'vitest'"]
+      : [
+          "import { describe } from 'vitest'",
+          renderNamedImport(
+            config.test.importPath,
+            config.test.exportName,
+            'test',
+            outputPath,
+            config.rootDir,
+          ),
+        ]
   const packImports = uniqueFactoryPacks(packs).map((pack) =>
     renderNamedImport(
       pack.options.importPath,
@@ -89,8 +95,7 @@ export function renderFeature(
   return [
     `// Generated from ${feature.uri} by gherkin-vitest-codegen.`,
     '// Do not edit by hand.',
-    "import { describe } from 'vitest'",
-    testImport,
+    ...frameworkImports,
     ...packImports,
     '',
     `describe(${literal(`Feature: ${feature.name}`)}, () => {`,
@@ -105,7 +110,6 @@ function renderScenario(
   feature: LoadedFeature,
   registry: readonly RegisteredStep[],
   title: string,
-  fixtureName: string,
   state: RenderState,
 ): RenderedScenario {
   const scenario = findScenario(pickle, feature.index)
@@ -113,13 +117,10 @@ function renderScenario(
   const resolved = pickle.steps.map((step) => resolveStep(step, feature, registry, state))
   const packs = uniquePacks(resolved.map((step) => step.pack))
   const locationLine = row?.line ?? scenario.line
-  const lines = [
-    `// ${feature.uri}:${locationLine}`,
-    `test(${literal(title)}, async ({ ${fixtureName} }) => {`,
-  ]
+  const lines = [`// ${feature.uri}:${locationLine}`, `test(${literal(title)}, async () => {`]
 
   for (const pack of packs) {
-    lines.push(`  const ${pack.options.instance} = ${pack.options.factory}(${fixtureName})`)
+    lines.push(`  const ${pack.options.instance} = ${pack.options.factory}()`)
   }
   if (packs.length > 0) lines.push('')
 

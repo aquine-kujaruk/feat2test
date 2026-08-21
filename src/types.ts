@@ -54,8 +54,6 @@ export interface VitestBinding {
   readonly importPath: string
   /** Named test export. Defaults to `test`. */
   readonly exportName?: string
-  /** Fixture passed to every pack factory. Defaults to `world`. */
-  readonly fixtureName?: string
 }
 
 export type UnusedEmitterPolicy = 'error' | 'ignore' | 'warn'
@@ -71,7 +69,8 @@ export interface CodegenConfig {
   readonly outDir?: string
   /** Default Gherkin dialect. Defaults to `en`. */
   readonly language?: string
-  readonly test: VitestBinding
+  /** Test binding. Defaults to Vitest's `test` export. */
+  readonly test?: VitestBinding
   readonly packs: readonly StepPack[]
   /** Unused emitters are errors by default. */
   readonly unusedEmitters?: UnusedEmitterPolicy

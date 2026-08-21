@@ -1,14 +1,13 @@
 // Generated from features/calculator.feature.md by gherkin-vitest-codegen.
 // Do not edit by hand.
-import { describe } from 'vitest'
-import { test } from "../support/world"
+import { describe, test } from 'vitest'
 import { calculatorSteps } from "../steps/calculator.steps"
 
 describe("Feature: Calculator display", () => {
   describe("Rule: Expression and result flow", () => {
     // features/calculator.feature.md:11
-    test("View expression during entry", async ({ world }) => {
-      const calc = calculatorSteps(world)
+    test("View expression during entry", async () => {
+      const calc = calculatorSteps()
 
       // Given a calculator with an empty display
       await calc.start()
@@ -19,8 +18,8 @@ describe("Feature: Calculator display", () => {
     })
 
     // features/calculator.feature.md:16
-    test("View result after evaluation", async ({ world }) => {
-      const calc = calculatorSteps(world)
+    test("View result after evaluation", async () => {
+      const calc = calculatorSteps()
 
       // Given a calculator with an empty display
       await calc.start()
@@ -35,8 +34,8 @@ describe("Feature: Calculator display", () => {
 
   describe("Rule: Spanish number presentation", () => {
     // features/calculator.feature.md:33
-    test("Display a grouped decimal value (value=1234.56, formatted=1.234,56)", async ({ world }) => {
-      const calc = calculatorSteps(world)
+    test("Display a grouped decimal value (value=1234.56, formatted=1.234,56)", async () => {
+      const calc = calculatorSteps()
 
       // Given a calculator with an empty display
       await calc.start()
@@ -47,8 +46,8 @@ describe("Feature: Calculator display", () => {
     })
 
     // features/calculator.feature.md:34
-    test("Display a grouped decimal value (value=0.5, formatted=0,5)", async ({ world }) => {
-      const calc = calculatorSteps(world)
+    test("Display a grouped decimal value (value=0.5, formatted=0,5)", async () => {
+      const calc = calculatorSteps()
 
       // Given a calculator with an empty display
       await calc.start()
@@ -59,8 +58,8 @@ describe("Feature: Calculator display", () => {
     })
 
     // features/calculator.feature.md:36
-    test("Enter a decimal separator", async ({ world }) => {
-      const calc = calculatorSteps(world)
+    test("Enter a decimal separator", async () => {
+      const calc = calculatorSteps()
 
       // Given a calculator with an empty display
       await calc.start()
@@ -73,8 +72,8 @@ describe("Feature: Calculator display", () => {
 
   describe("Rule: Error presentation", () => {
     // features/calculator.feature.md:43
-    test("Display invalid result", async ({ world }) => {
-      const calc = calculatorSteps(world)
+    test("Display invalid result", async () => {
+      const calc = calculatorSteps()
 
       // Given a calculator with an empty display
       await calc.start()

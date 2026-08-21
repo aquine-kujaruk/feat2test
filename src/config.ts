@@ -29,17 +29,15 @@ export function resolveConfig(config: CodegenConfig, cwd = process.cwd()): Resol
   const featureRoot = resolveInside(rootDir, config.featureRoot ?? 'features', 'featureRoot')
   const outDir = resolveInside(rootDir, config.outDir ?? 'test/generated', 'outDir')
   assertCodegen(outDir !== rootDir, 'UNSAFE_OUT_DIR', 'outDir cannot be the project root.')
-  assertCodegen(config.test !== undefined, 'INVALID_CONFIG', 'A test binding is required.')
+  const test = config.test ?? { importPath: 'vitest' }
   assertCodegen(
-    config.test.importPath.trim().length > 0,
+    test.importPath.trim().length > 0,
     'INVALID_CONFIG',
     'test.importPath cannot be empty.',
   )
 
-  const exportName = config.test.exportName ?? 'test'
-  const fixtureName = config.test.fixtureName ?? 'world'
+  const exportName = test.exportName ?? 'test'
   assertIdentifier(exportName, 'test.exportName')
-  assertIdentifier(fixtureName, 'test.fixtureName')
 
   const packs = [...config.packs]
   validatePacks(packs)
@@ -59,9 +57,8 @@ export function resolveConfig(config: CodegenConfig, cwd = process.cwd()): Resol
     outDir,
     language: config.language ?? 'en',
     test: Object.freeze({
-      importPath: config.test.importPath,
+      importPath: test.importPath,
       exportName,
-      fixtureName,
     }),
     packs: Object.freeze(packs),
     unusedEmitters: config.unusedEmitters ?? 'error',
@@ -118,7 +115,7 @@ function findConfig(cwd: string, configuredPath?: string): string {
 function isCodegenConfig(value: unknown): value is CodegenConfig {
   if (!value || typeof value !== 'object') return false
   const candidate = value as Partial<CodegenConfig>
-  return Array.isArray(candidate.packs) && !!candidate.test && typeof candidate.test === 'object'
+  return Array.isArray(candidate.packs)
 }
 
 function resolveInside(root: string, value: string, label: string): string {
