@@ -16,12 +16,5 @@
     "skipLibCheck": true,
     "types": ["node", "vitest/globals"]
   },
-  "include": [
-    "src/**/*.ts",
-    "scripts/**/*.ts",
-    "tests/**/*.ts",
-    "examples/**/*.ts",
-    "*.config.ts",
-    "*.config.mts"
-  ]
+  "include": ["src/**/*.ts", "tests/**/*.ts", "examples/**/*.ts", "*.config.ts"]
 }

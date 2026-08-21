@@ -1,124 +1,78 @@
-export type JsonPrimitive = boolean | null | number | string
+export type StepRole = 'Action' | 'Context' | 'Outcome'
 
-export type JsonValue = JsonPrimitive | readonly JsonValue[] | { readonly [key: string]: JsonValue }
+type StepInputType = 'dataTable' | 'docString' | 'string'
 
-export type PickleArgument =
+export interface StepInput {
+  readonly anonymous: boolean
+  readonly name: string
+  readonly type: StepInputType
+}
+
+export interface StepVariant {
+  readonly inputs: readonly StepInput[]
+}
+
+export interface StepMethod {
+  readonly firstSeen: number
+  readonly identity: string
+  readonly method: string
+  readonly role: StepRole
+  readonly sourceLine: number
+  readonly sourceText: string
+  readonly variants: readonly StepVariant[]
+}
+
+export type StepValue =
+  | string
+  | {
+      readonly content: string
+      readonly kind: 'docString'
+      readonly mediaType?: string
+    }
   | {
       readonly kind: 'dataTable'
       readonly rows: readonly (readonly string[])[]
     }
-  | {
-      readonly kind: 'docString'
-      readonly content: string
-      readonly mediaType?: string
-    }
 
-export interface StepSource {
-  readonly uri: string
-  readonly line: number
+export interface StepCallInput extends StepInput {
+  readonly value: StepValue
+}
+
+export interface StepCall {
+  readonly inputs: readonly StepCallInput[]
   readonly keyword: string
-}
-
-export interface StepEmitterContext {
-  readonly text: string
-  readonly captures: readonly string[]
-  readonly argument?: PickleArgument
-  readonly source: StepSource
-  readonly type: 'Action' | 'Context' | 'Outcome' | 'Unknown'
-}
-
-export interface StepInvocation {
-  /** Method exposed by the pack factory. */
   readonly method: string
-  /** JSON-safe arguments rendered as literals in the generated test. */
-  readonly args?: readonly JsonValue[]
-  /** Generated calls are awaited by default. */
-  readonly await?: boolean
+  readonly text: string
 }
 
-export type StepEmitter = (context: StepEmitterContext) => StepInvocation
-
-export interface PackOptions {
-  /** Stable identifier used in diagnostics. */
-  readonly id: string
-  /** Named factory export used by the generated test. */
-  readonly factory: string
-  /** Root-relative local path or bare package specifier. */
-  readonly importPath: string
-  /** Local variable in the generated test. Defaults to `id`. */
-  readonly instance?: string
+export interface FeatureScenario {
+  readonly calls: readonly StepCall[]
+  readonly line: number
+  readonly name: string
+  readonly ruleId?: string
+  readonly ruleName?: string
+  readonly tags: readonly string[]
 }
 
-export interface VitestBinding {
-  /** Root-relative local path or bare package specifier. */
-  readonly importPath: string
-  /** Named test export. Defaults to `test`. */
-  readonly exportName?: string
+export interface FeaturePlan {
+  readonly methods: readonly StepMethod[]
+  readonly name: string
+  readonly scenarios: readonly FeatureScenario[]
 }
 
-export type UnusedEmitterPolicy = 'error' | 'ignore' | 'warn'
-
-export interface CodegenConfig {
-  /** Base for every relative path. Defaults to `process.cwd()`. */
-  readonly rootDir?: string
-  /** Root mirrored below `outDir`. Defaults to `features`. */
-  readonly featureRoot?: string
-  /** Glob patterns relative to `rootDir`. */
-  readonly features?: readonly string[]
-  /** Generated test directory. Defaults to `test/generated`. */
-  readonly outDir?: string
-  /** Default Gherkin dialect. Defaults to `en`. */
-  readonly language?: string
-  /** Test binding. Defaults to Vitest's `test` export. */
-  readonly test?: VitestBinding
-  readonly packs: readonly StepPack[]
-  /** Unused emitters are errors by default. */
-  readonly unusedEmitters?: UnusedEmitterPolicy
-}
-
-export interface ResolvedCodegenConfig {
-  readonly rootDir: string
-  readonly featureRoot: string
-  readonly features: readonly string[]
-  readonly outDir: string
-  readonly language: string
-  readonly test: Required<VitestBinding>
-  readonly packs: readonly StepPack[]
-  readonly unusedEmitters: UnusedEmitterPolicy
-}
-
-export interface GeneratedFile {
-  readonly sourcePath: string
-  readonly outputPath: string
-  readonly contents: string
+export interface Warning {
+  readonly code: 'ANONYMOUS_STEP_INPUT' | 'OBSOLETE_STEP' | 'ORPHANED_FEATURE_OUTPUT'
+  readonly message: string
 }
 
 export interface GenerationReport {
-  readonly files: readonly GeneratedFile[]
-  readonly featureCount: number
+  readonly featureTestPath: string
   readonly scenarioCount: number
+  readonly stepAdapterPath: string
   readonly stepCount: number
-  readonly warnings: readonly string[]
-}
-
-export interface ValidationReport {
-  readonly featureCount: number
-  readonly scenarioCount: number
-  readonly stepCount: number
+  readonly warnings: readonly Warning[]
 }
 
 export interface GenerateOptions {
-  /** Compare generated output with disk without writing. */
-  readonly check?: boolean | undefined
-}
-
-export interface StepDefinition {
-  readonly pattern: RegExp
-  readonly emit: StepEmitter
-}
-
-export interface StepPack {
-  readonly options: Readonly<Required<PackOptions>>
-  readonly definitions: readonly StepDefinition[]
-  step(pattern: RegExp, emit: StepEmitter): StepPack
+  readonly check?: boolean
 }

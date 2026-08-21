@@ -1,140 +1,301 @@
-import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises'
+import { randomUUID } from 'node:crypto'
+import type { Dirent, Stats } from 'node:fs'
+import { mkdir, readdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { glob } from 'glob'
-import { assertCodegen, CodegenError } from './errors.js'
-import { renderFeature } from './render.js'
-import type {
-  GeneratedFile,
-  GenerateOptions,
-  GenerationReport,
-  ResolvedCodegenConfig,
-  StepDefinition,
-} from './types.js'
-import { validateProject } from './validate.js'
+import { CodegenError } from './errors.js'
+import { loadFeature } from './gherkin.js'
+import { planFeature } from './plan.js'
+import { reconcileStepAdapter } from './reconcile.js'
+import { renderFeatureTest } from './render.js'
+import type { GenerateOptions, GenerationReport, Warning } from './types.js'
+
+const SCHEMA_HEADER = '// gherkin-vitest-codegen schema=1'
+const SOURCE_PREFIX = '// source='
+
+interface TargetFile {
+  readonly before: string | undefined
+  readonly contents: string
+  readonly path: string
+}
 
 export async function generate(
-  config: ResolvedCodegenConfig,
+  inputPath: string,
+  outputDirectory: string,
   options: GenerateOptions = {},
 ): Promise<GenerationReport> {
-  // Validation is deliberately a complete first phase. No emitter runs and no
-  // generated file is touched until every source has produced valid Pickles.
-  const validated = await validateProject(config)
-
-  const state = { usedDefinitions: new Set<StepDefinition>() }
-  const files: GeneratedFile[] = []
-  const outputs = new Map<string, string>()
-
-  for (const feature of validated.features) {
-    const outputPath = outputFor(feature.absolutePath, config.featureRoot, config.outDir)
-    const previousSource = outputs.get(outputPath)
-    assertCodegen(
-      !previousSource,
-      'OUTPUT_COLLISION',
-      `${feature.absolutePath} and ${previousSource} both generate ${outputPath}.`,
+  const absoluteInput = path.resolve(inputPath)
+  const absoluteOutput = path.resolve(outputDirectory)
+  if (absoluteOutput.split(path.sep).some((component) => /[#?%\\]/u.test(component))) {
+    throw new CodegenError(
+      'INVALID_PATH',
+      'Output path contains characters that Vitest cannot load safely.',
     )
-    outputs.set(outputPath, feature.absolutePath)
-    const contents = renderFeature(feature, outputPath, config, state)
-    files.push({ sourcePath: feature.absolutePath, outputPath, contents })
+  }
+  await validateInput(absoluteInput, inputPath)
+  await validateOutputDirectory(absoluteOutput)
+
+  const prefix = outputPrefix(path.basename(absoluteInput))
+  if (/[#?%\\]/u.test(prefix)) {
+    throw new CodegenError(
+      'INVALID_PATH',
+      'Input filename contains characters that Vitest cannot load safely.',
+    )
+  }
+  const featureTestPath = path.join(absoluteOutput, `${prefix}.test.ts`)
+  const stepAdapterPath = path.join(absoluteOutput, `${prefix}.steps.ts`)
+  const relativeInput = path.relative(absoluteOutput, absoluteInput)
+  if (path.isAbsolute(relativeInput)) {
+    throw new CodegenError('INVALID_PATH', 'Input and output must share a filesystem root.')
+  }
+  const sourceReference = slash(relativeInput)
+  if (sourceReference.includes('\n') || sourceReference.includes('\r')) {
+    throw new CodegenError('INVALID_PATH', 'Input paths cannot contain line breaks.')
+  }
+  const metadata = `${SCHEMA_HEADER}\n${SOURCE_PREFIX}${sourceReference}`
+
+  const [featureTestBefore, stepAdapterBefore] = await Promise.all([
+    readOwnedTarget(featureTestPath, absoluteInput),
+    readOwnedTarget(stepAdapterPath, absoluteInput),
+  ])
+
+  const displayPath =
+    slash(path.relative(process.cwd(), absoluteInput)) || path.basename(absoluteInput)
+  const loaded = await loadFeature(absoluteInput, displayPath)
+  const planned = planFeature(loaded, displayPath)
+  const reconciled = reconcileStepAdapter(
+    stepAdapterBefore,
+    planned.plan.methods,
+    metadata,
+    slash(path.relative(process.cwd(), stepAdapterPath)),
+  )
+  const featureTest = renderFeatureTest(planned.plan, metadata, `./${prefix}.steps`)
+
+  const orphanWarnings = await findOrphanedOutputs(absoluteOutput)
+  const obsoleteWarnings: Warning[] = reconciled.obsoleteMethods.map((method) => ({
+    code: 'OBSOLETE_STEP',
+    message: `${slash(path.relative(process.cwd(), stepAdapterPath))}: ${method}`,
+  }))
+  const warnings = [...planned.warnings, ...obsoleteWarnings, ...orphanWarnings]
+
+  if (options.check) {
+    const failures: string[] = []
+    if (featureTestBefore !== featureTest) {
+      failures.push(
+        `${featureTestBefore === undefined ? 'missing' : 'changed'}: ${featureTestPath}`,
+      )
+    }
+    if (stepAdapterBefore !== reconciled.contents) {
+      failures.push(
+        `${stepAdapterBefore === undefined ? 'missing' : 'changed'}: ${stepAdapterPath}`,
+      )
+    }
+    if (reconciled.pendingMethods.length > 0) {
+      failures.push(`pending: ${reconciled.pendingMethods.join(', ')}`)
+    }
+    if (reconciled.obsoleteMethods.length > 0) {
+      failures.push(`obsolete: ${reconciled.obsoleteMethods.join(', ')}`)
+    }
+    for (const warning of orphanWarnings) failures.push(`orphaned: ${warning.message}`)
+    if (failures.length > 0) {
+      throw new CodegenError('CHECK_FAILED', `Feature output is not ready:\n${failures.join('\n')}`)
+    }
+  } else {
+    await writeTransaction([
+      { before: featureTestBefore, contents: featureTest, path: featureTestPath },
+      { before: stepAdapterBefore, contents: reconciled.contents, path: stepAdapterPath },
+    ])
   }
 
-  const warnings = validateUnusedEmitters(config, state.usedDefinitions)
-  if (options.check) await checkOutput(files, config.outDir)
-  else await writeOutput(files, config.outDir)
-
   return {
-    files,
-    featureCount: files.length,
-    scenarioCount: validated.report.scenarioCount,
-    stepCount: validated.report.stepCount,
+    featureTestPath,
+    scenarioCount: planned.plan.scenarios.length,
+    stepAdapterPath,
+    stepCount: planned.plan.methods.length,
     warnings,
   }
 }
 
-function validateUnusedEmitters(
-  config: ResolvedCodegenConfig,
-  used: ReadonlySet<StepDefinition>,
-): string[] {
-  const unused = config.packs.flatMap((pack) =>
-    pack.definitions
-      .filter((definition) => !used.has(definition))
-      .map((definition) => `${pack.options.id}: ${String(definition.pattern)}`),
-  )
-  if (unused.length === 0 || config.unusedEmitters === 'ignore') return []
-  const message = `Unused step emitters:\n${unused.map((entry) => `  ${entry}`).join('\n')}`
-  if (config.unusedEmitters === 'error') throw new CodegenError('UNUSED_EMITTERS', message)
-  return [message]
+export function outputPrefix(filename: string): string {
+  const extension = path.extname(filename)
+  const stem = extension.length > 0 ? filename.slice(0, -extension.length) : filename
+  return stem.endsWith('.feature') ? stem : `${stem}.feature`
 }
 
-async function checkOutput(files: readonly GeneratedFile[], outDir: string): Promise<void> {
-  const expected = new Map(files.map((file) => [file.outputPath, file.contents]))
-  const existing = await generatedFiles(outDir)
-  const issues: string[] = []
+async function validateInput(absolutePath: string, displayPath: string): Promise<void> {
+  let inputStats: Stats
+  try {
+    inputStats = await stat(absolutePath)
+  } catch {
+    throw new CodegenError('INPUT_NOT_FOUND', `Input file does not exist: ${displayPath}`)
+  }
+  if (!inputStats.isFile()) {
+    throw new CodegenError('INPUT_NOT_FILE', `Input must be one file: ${displayPath}`)
+  }
+}
 
-  for (const [outputPath, contents] of expected) {
-    let current: string
-    try {
-      current = await readFile(outputPath, 'utf8')
-    } catch (error) {
-      if (isMissingFile(error)) {
-        issues.push(`missing: ${outputPath}`)
-        continue
-      }
-      throw error
+async function validateOutputDirectory(absolutePath: string): Promise<void> {
+  try {
+    const outputStats = await stat(absolutePath)
+    if (!outputStats.isDirectory()) {
+      throw new CodegenError('OUTPUT_NOT_DIRECTORY', `Output must be a directory: ${absolutePath}`)
     }
-    if (current !== contents) issues.push(`changed: ${outputPath}`)
+  } catch (error) {
+    if (error instanceof CodegenError) throw error
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+      throw new CodegenError(
+        'OUTPUT_NOT_DIRECTORY',
+        `Cannot access output directory: ${absolutePath}`,
+      )
+    }
   }
-  for (const outputPath of existing) {
-    if (!expected.has(outputPath)) issues.push(`stale: ${outputPath}`)
+}
+
+async function readOwnedTarget(
+  targetPath: string,
+  absoluteInput: string,
+): Promise<string | undefined> {
+  let contents: string
+  try {
+    contents = await readFile(targetPath, 'utf8')
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined
+    throw new CodegenError('OUTPUT_OWNERSHIP_CONFLICT', `Cannot safely read target: ${targetPath}`)
   }
 
-  if (issues.length > 0) {
+  const ownership = readOwnership(contents)
+  if (!ownership || path.resolve(path.dirname(targetPath), ownership.source) !== absoluteInput) {
     throw new CodegenError(
-      'GENERATED_DRIFT',
-      `Generated tests are out of date:\n${issues.join('\n')}`,
+      'OUTPUT_OWNERSHIP_CONFLICT',
+      `Target is not owned by this input: ${targetPath}`,
     )
   }
+  return contents
 }
 
-function isMissingFile(error: unknown): error is NodeJS.ErrnoException {
-  return error instanceof Error && 'code' in error && error.code === 'ENOENT'
+function readOwnership(contents: string): { readonly source: string } | undefined {
+  const [schema, source] = contents.split(/\r?\n/, 2)
+  if (schema !== SCHEMA_HEADER || !source?.startsWith(SOURCE_PREFIX)) return undefined
+  const value = source.slice(SOURCE_PREFIX.length)
+  if (!value || value.includes('\n') || value.includes('\r') || path.isAbsolute(value))
+    return undefined
+  return { source: value }
 }
 
-async function writeOutput(files: readonly GeneratedFile[], outDir: string): Promise<void> {
-  const expected = new Set(files.map((file) => file.outputPath))
-  const existing = await generatedFiles(outDir)
-  await mkdir(outDir, { recursive: true })
-
-  for (const file of files) await atomicWrite(file.outputPath, file.contents)
-  for (const stale of existing) {
-    if (!expected.has(stale)) await unlink(stale)
-  }
-}
-
-async function atomicWrite(outputPath: string, contents: string): Promise<void> {
-  await mkdir(path.dirname(outputPath), { recursive: true })
-  const temporary = path.join(
-    path.dirname(outputPath),
-    `.${path.basename(outputPath)}.${process.pid}.${Date.now()}.tmp`,
-  )
-  await writeFile(temporary, contents, 'utf8')
+async function findOrphanedOutputs(outputDirectory: string): Promise<Warning[]> {
+  let entries: Dirent[]
   try {
-    await rename(temporary, outputPath)
+    entries = await readdir(outputDirectory, { withFileTypes: true })
   } catch (error) {
-    await unlink(temporary).catch(() => undefined)
-    throw error
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return []
+    throw new CodegenError('OUTPUT_SCAN_FAILED', `Cannot scan output directory: ${outputDirectory}`)
+  }
+
+  const orphaned = new Map<string, string[]>()
+  for (const entry of entries) {
+    if (!entry.isFile() || !/\.feature\.(?:steps|test)\.ts$/.test(entry.name)) continue
+    const outputPath = path.join(outputDirectory, entry.name)
+    let contents: string
+    try {
+      contents = await readFile(outputPath, 'utf8')
+    } catch {
+      throw new CodegenError('OUTPUT_SCAN_FAILED', `Cannot read generated output: ${outputPath}`)
+    }
+    const ownership = readOwnership(contents)
+    if (!ownership) continue
+    const source = path.resolve(outputDirectory, ownership.source)
+    if (await isFile(source)) continue
+    const files = orphaned.get(source) ?? []
+    files.push(entry.name)
+    orphaned.set(source, files)
+  }
+
+  return [...orphaned.entries()].map(([source, files]) => ({
+    code: 'ORPHANED_FEATURE_OUTPUT',
+    message: `${files.join(', ')} reference missing source ${slash(path.relative(process.cwd(), source))}`,
+  }))
+}
+
+async function isFile(filePath: string): Promise<boolean> {
+  try {
+    return (await stat(filePath)).isFile()
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false
+    throw new CodegenError('OUTPUT_SCAN_FAILED', `Cannot inspect generated source: ${filePath}`)
   }
 }
 
-async function generatedFiles(outDir: string): Promise<string[]> {
-  return glob('**/*.generated.test.ts', {
-    cwd: outDir,
-    absolute: true,
-    nodir: true,
-  })
+async function writeTransaction(files: readonly TargetFile[]): Promise<void> {
+  const changed = files.filter((file) => file.before !== file.contents)
+  if (changed.length === 0) return
+  const directory = path.dirname(changed[0]?.path ?? '.')
+  await mkdir(directory, { recursive: true })
+  const transaction = randomUUID()
+  const temporary = changed.map((file) => ({
+    ...file,
+    backup: path.join(directory, `.${path.basename(file.path)}.${transaction}.backup`),
+    temporary: path.join(directory, `.${path.basename(file.path)}.${transaction}.temporary`),
+  }))
+  const backedUp: typeof temporary = []
+  const installed: typeof temporary = []
+
+  try {
+    for (const file of temporary)
+      await writeFile(file.temporary, file.contents, { encoding: 'utf8', flag: 'wx' })
+    for (const file of temporary) {
+      await assertTargetUnchanged(file.path, file.before)
+      if (file.before !== undefined) {
+        await rename(file.path, file.backup)
+        backedUp.push(file)
+      }
+      await rename(file.temporary, file.path)
+      installed.push(file)
+    }
+  } catch {
+    for (const file of installed.toReversed()) {
+      try {
+        await rm(file.path, { force: true })
+      } catch {
+        // Continue restoring every target and preserve the original failure.
+      }
+    }
+    for (const file of backedUp.toReversed()) {
+      try {
+        await rename(file.backup, file.path)
+      } catch {
+        // Best-effort rollback; the original error remains domain-safe.
+      }
+    }
+    for (const file of temporary) {
+      try {
+        await rm(file.temporary, { force: true })
+      } catch {
+        // Continue cleaning every staged file and preserve the original failure.
+      }
+    }
+    throw new CodegenError('WRITE_FAILED', 'Could not safely replace Feature outputs.')
+  }
+  for (const file of backedUp) {
+    try {
+      await rm(file.backup, { force: true })
+    } catch {
+      // Installed outputs are already committed; an internal backup may be cleaned manually.
+    }
+  }
 }
 
-function outputFor(featurePath: string, featureRoot: string, outDir: string): string {
-  const relative = path.relative(featureRoot, featurePath)
-  const stem = relative.replace(/\.feature(?:\.md)?$/, '')
-  return path.join(outDir, `${stem}.generated.test.ts`)
+async function assertTargetUnchanged(
+  targetPath: string,
+  before: string | undefined,
+): Promise<void> {
+  let current: string | undefined
+  try {
+    current = await readFile(targetPath, 'utf8')
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
+  }
+  if (current !== before) throw new Error('Target changed during generation')
+}
+
+function slash(value: string): string {
+  return value.replaceAll(path.sep, '/')
 }

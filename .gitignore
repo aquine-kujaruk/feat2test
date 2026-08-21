@@ -6,3 +6,4 @@ graphify-out/
 *.tgz
 .DS_Store
 *.log
+examples/

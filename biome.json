@@ -12,7 +12,7 @@
       "!coverage",
       "!node_modules",
       "!.artifacts",
-      "!**/*.generated.test.ts"
+      "!**/*.feature.test.ts"
     ]
   },
   "formatter": {

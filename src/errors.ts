@@ -7,13 +7,3 @@ export class CodegenError extends Error {
     this.code = code
   }
 }
-
-export function assertCodegen(
-  condition: unknown,
-  code: string,
-  message: string,
-): asserts condition {
-  if (!condition) {
-    throw new CodegenError(code, message)
-  }
-}
