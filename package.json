@@ -1,0 +1,105 @@
+{
+  "name": "gherkin-vitest-codegen",
+  "version": "0.0.0-development",
+  "description": "Fail-closed Gherkin and Markdown-with-Gherkin code generation for readable Vitest tests.",
+  "keywords": [
+    "bdd",
+    "codegen",
+    "cucumber",
+    "gherkin",
+    "markdown",
+    "sdd",
+    "testing",
+    "vitest"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "aquine-kujaruk",
+    "url": "https://github.com/aquine-kujaruk"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquine-kujaruk/gherkin-vitest-codegen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aquine-kujaruk/gherkin-vitest-codegen/issues"
+  },
+  "homepage": "https://github.com/aquine-kujaruk/gherkin-vitest-codegen#readme",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "packageManager": "pnpm@11.22.0",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^22.22.2",
+      "onFail": "download"
+    }
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "gherkin-vitest-codegen": "./dist/cli.mjs"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsdown",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "example:check": "jiti src/cli.ts --config examples/calculator/gherkin-vitest.config.ts --check",
+    "example:generate": "jiti src/cli.ts --config examples/calculator/gherkin-vitest.config.ts",
+    "prepare": "husky",
+    "release": "semantic-release",
+    "test": "pnpm example:check && vitest run",
+    "test:coverage": "pnpm example:check && vitest run --coverage",
+    "test:watch": "pnpm example:check && vitest",
+    "typecheck": "tsc --noEmit",
+    "verify": "pnpm check && pnpm typecheck && pnpm test:coverage && pnpm build && pnpm exec publint && pnpm exec attw --pack . --profile esm-only"
+  },
+  "dependencies": {
+    "@cucumber/gherkin": "42.0.1",
+    "@cucumber/messages": "34.2.1",
+    "chokidar": "5.0.0",
+    "glob": "13.0.6",
+    "jiti": "2.7.0"
+  },
+  "peerDependencies": {
+    "vitest": ">=3.2.0 <5"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "@biomejs/biome": "2.5.9",
+    "@commitlint/cli": "21.2.2",
+    "@commitlint/config-conventional": "21.2.2",
+    "@semantic-release/changelog": "7.0.0",
+    "@semantic-release/commit-analyzer": "13.0.1",
+    "@semantic-release/git": "11.0.1",
+    "@semantic-release/github": "12.0.9",
+    "@semantic-release/npm": "13.1.5",
+    "@semantic-release/release-notes-generator": "14.1.1",
+    "@types/node": "22.20.1",
+    "@vitest/coverage-v8": "4.1.11",
+    "husky": "9.1.7",
+    "publint": "0.3.24",
+    "semantic-release": "25.0.9",
+    "tsdown": "0.22.14",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}
