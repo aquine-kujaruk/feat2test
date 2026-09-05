@@ -1,6 +1,6 @@
 {
   "name": "feat2test",
-  "version": "0.0.0-development",
+  "version": "1.0.0",
   "description": "Turn Gherkin Features into deterministic tests with configurable runner strategies and developer-owned Step Adapters.",
   "keywords": [
     "bdd",
