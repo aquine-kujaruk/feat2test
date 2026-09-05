@@ -1,9 +1,9 @@
 export class CodegenError extends Error {
-  readonly code: string
-
-  constructor(code: string, message: string, options?: ErrorOptions) {
-    super(message, options)
+  constructor(
+    readonly code: string,
+    message: string,
+  ) {
+    super(message)
     this.name = 'CodegenError'
-    this.code = code
   }
 }

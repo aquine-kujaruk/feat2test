@@ -1,7 +1,7 @@
 {
-  "name": "gherkin-vitest-codegen",
+  "name": "feat2test",
   "version": "0.0.0-development",
-  "description": "Generate deterministic Vitest Feature Tests and safely reconcile their Step Adapters from Gherkin.",
+  "description": "Turn Gherkin Features into deterministic tests with configurable runner strategies and developer-owned Step Adapters.",
   "keywords": [
     "bdd",
     "codegen",
@@ -10,7 +10,11 @@
     "markdown",
     "sdd",
     "testing",
-    "vitest"
+    "vitest",
+    "feat2test",
+    "cli",
+    "node-test",
+    "test-generation"
   ],
   "license": "MIT",
   "author": {
@@ -19,12 +23,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aquine-kujaruk/gherkin-vitest-codegen.git"
+    "url": "git+https://github.com/aquine-kujaruk/feat2test.git"
   },
   "bugs": {
-    "url": "https://github.com/aquine-kujaruk/gherkin-vitest-codegen/issues"
+    "url": "https://github.com/aquine-kujaruk/feat2test/issues"
   },
-  "homepage": "https://github.com/aquine-kujaruk/gherkin-vitest-codegen#readme",
+  "homepage": "https://github.com/aquine-kujaruk/feat2test#readme",
   "type": "module",
   "engines": {
     "node": ">=22.18.0"
@@ -41,13 +45,15 @@
     "dist",
     "CHANGELOG.md",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "schema.json"
   ],
   "exports": {
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./schema.json": "./schema.json"
   },
   "bin": {
-    "gherkin-vitest-codegen": "./dist/cli.mjs"
+    "feat2test": "./dist/cli.mjs"
   },
   "publishConfig": {
     "access": "public",
@@ -60,19 +66,18 @@
     "codegen": "pnpm build && node dist/cli.mjs",
     "prepare": "husky",
     "release": "semantic-release",
-    "test": "vitest run tests examples/calculator",
-    "test:coverage": "vitest run --coverage tests examples/calculator",
-    "test:feature": "vitest run",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "verify": "pnpm check && pnpm typecheck && pnpm test:coverage && pnpm build && pnpm exec publint && pnpm exec attw --pack . --profile esm-only"
+    "verify": "pnpm check && pnpm typecheck && pnpm test:coverage && pnpm build && pnpm exec publint && pnpm exec attw --pack . --profile esm-only && node scripts/smoke-package.mjs",
+    "example": "pnpm codegen generate examples/calculator/calculator.feature.md examples/calculator",
+    "example:order": "pnpm codegen generate examples/order-confirmation/order-confirmation.feature.md examples/order-confirmation",
+    "prepack": "npm run build",
+    "test:package": "npm run build && node scripts/smoke-package.mjs"
   },
   "dependencies": {
     "@cucumber/gherkin": "42.0.1",
-    "@cucumber/messages": "34.2.1",
-    "typescript": "5.9.3"
-  },
-  "peerDependencies": {
-    "vitest": ">=3.2.0 <5"
+    "@cucumber/messages": "34.2.1"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
@@ -91,6 +96,7 @@
     "publint": "0.3.24",
     "semantic-release": "25.0.9",
     "tsdown": "0.22.14",
-    "vitest": "4.1.11"
+    "vitest": "4.1.11",
+    "typescript": "5.9.3"
   }
 }

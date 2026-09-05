@@ -1,244 +1,312 @@
-# gherkin-vitest-codegen
+# feat2test
 
-Generador determinista de **Feature Tests** para Vitest a partir de Gherkin. Convierte una
-especificación ejecutable en dos archivos TypeScript explícitos: el test que reproduce sus Pickles y
-un Step Adapter donde se implementa el comportamiento. La primera generación queda en RED; las
-regeneraciones conservan el código del desarrollador.
+Traduce Gherkin a tests deterministas con una estrategia de runner configurable. Lee
+`.feature` o `.feature.md` y genera dos archivos TypeScript: el Feature Test y un Step Adapter
+que implementas tú. El adapter existente nunca se reescribe.
 
-## Propósito
+## Inicio rápido
 
-La herramienta aporta un punto de partida mecánico para TDD:
-
-```text
-Gherkin válido
-    -> Feature + escenarios + Pickles de Cucumber
-    -> Feature Test de Vitest
-    -> Step Adapter pendiente
-    -> implementación del comportamiento
-    -> GREEN
-```
-
-No interpreta la arquitectura de la aplicación ni genera código de producción. El Step Adapter es
-el límite explícito entre el lenguaje de la Feature y el sistema probado: allí se crean dependencias,
-se convierten strings y se expresan aserciones.
-
-## Requisitos e instalación
-
-- Node.js 22.18 o superior.
-- Vitest 3.2 o 4.
+Node.js **22.18+**. Sin instalación global:
 
 ```bash
-pnpm add -D gherkin-vitest-codegen vitest
-# npm install --save-dev gherkin-vitest-codegen vitest
-# yarn add --dev gherkin-vitest-codegen vitest
+npx feat2test init --strategy vitest
+npm install -D vitest
+npx feat2test generate
+npx vitest run
 ```
 
-## Uso
-
-El CLI recibe exactamente un archivo de entrada y un directorio de salida:
+`init` crea `feat2test.config.json`. Añade tus Features en `features/` antes de generar.
+Para fijar la versión en el proyecto y en CI:
 
 ```bash
-gherkin-vitest-codegen <input-file> <output-directory>
-gherkin-vitest-codegen <input-file> <output-directory> --check
+npm install -D feat2test vitest
+npx feat2test --help
 ```
 
-Ejemplo:
+El binario npm se llama `feat2test`; también funciona con `npm exec -- feat2test`, `pnpm exec
+feat2test` y `pnpm dlx feat2test`. [Referencia de npm exec](https://docs.npmjs.com/cli/npm-exec/).
+
+## Configuración
+
+```json
+{
+  "strategy": "vitest",
+  "input": "features",
+  "output": "test/features"
+}
+```
+
+- `strategy` es obligatorio. Vitest se selecciona explícitamente; no hay runner implícito.
+- `input` acepta un archivo o una carpeta. Las carpetas descubren `.feature` y `.feature.md`
+  recursivamente, conservan las subcarpetas y detectan colisiones antes de generar.
+- `output` indica la carpeta de destino. Puede coincidir con la entrada.
+- `input` y `output` pueden omitirse del archivo si se pasan por CLI.
+
+Busca el `feat2test.config.json` más cercano desde el directorio actual hacia sus padres. Usa
+`--config <archivo>` para seleccionar otro; una configuración inválida nunca se ignora. Las rutas
+configuradas son relativas al archivo; las rutas de CLI, al directorio actual. Las opciones de CLI
+tienen prioridad. Las claves desconocidas y los valores inválidos producen error.
+
+El paquete incluye `schema.json` para autocompletado. Tras instalarlo localmente, puedes añadir
+`"$schema": "./node_modules/feat2test/schema.json"` a la configuración.
+
+## Estrategias
+
+| Estrategia | Runner | Import del adapter |
+| --- | --- | --- |
+| `vitest` | Vitest 3.2 / 4, instalado en tu proyecto | `*.steps.js` |
+| `node:test` | Runner integrado de Node.js, sin dependencias adicionales | `*.steps.ts` |
+
+feat2test no instala ni ejecuta el runner. La estrategia decide cómo emitir el test; el parser,
+el plan de escenarios y el scaffold del adapter son independientes del runner.
 
 ```bash
-pnpm exec gherkin-vitest-codegen features/transfers.feature test/features
-pnpm exec vitest run
+npx feat2test init --strategy node:test
+npx feat2test generate
+node --test test/features/payment.feature.test.ts
 ```
 
-Para `features/transfers.feature` genera:
+Para `node:test`, implementa las aserciones con `node:assert/strict`. Node ejecuta el TypeScript
+borrando tipos: usa sintaxis compatible y extensiones `.ts` en imports locales. Si verificas tipos
+con `tsc --noEmit`, activa `allowImportingTsExtensions`.
+[TypeScript en Node](https://nodejs.org/api/typescript.html).
+
+Cambiar estrategia regenera los tests, pero no migra imports ni aserciones dentro de tus adapters.
+
+## CLI
+
+```bash
+feat2test init [--strategy <nombre>]
+feat2test generate [entrada] [salida] [opciones]
+feat2test check [entrada] [salida] [opciones]
+feat2test <entrada> <salida> [opciones]
+feat2test strategies
+```
+
+| Opción | Uso |
+| --- | --- |
+| `-c, --config <archivo>` | Configuración JSON explícita |
+| `-i, --input <ruta>` | Archivo o carpeta de Features |
+| `-o, --output <carpeta>` | Carpeta de destino |
+| `-s, --strategy <nombre>` | Sobrescribir la estrategia configurada |
+| `--check` | Equivalente a `check`, sin escribir |
+| `--json` | Un objeto JSON en stdout, tanto en éxito como en error |
+| `-q, --quiet` | Ocultar el resumen; conservar avisos y errores |
+| `--debug` | Incluir stack trace en stderr |
+| `-h, --help` | Ayuda con ejemplos |
+| `-v, --version` | Versión del paquete |
+
+Sin argumentos, genera usando la configuración disponible; si no existe, muestra ayuda.
+`init` no es interactivo y nunca sobrescribe una configuración existente.
+
+```bash
+npx feat2test features/payments.feature.md test/payments --strategy vitest
+npx feat2test generate --config config/tests.json
+npx feat2test check --json
+```
+
+Códigos de salida: **0** éxito; **1** error de generación, conflicto o tests desactualizados;
+**2** argumentos, configuración o estrategia inválidos. `--json` incluye `ok`, conteos y `reports`
+con rutas y avisos, o `error: { code, message }`. No se combina con `--quiet`.
+La generación de carpetas se detiene en el primer error; los archivos anteriores pueden haberse
+generado. `check` nunca escribe.
+
+Para `features/transfers.feature.md` genera:
 
 ```text
 test/features/
-├── transfers.feature.test.ts
-└── transfers.feature.steps.ts
+├── transfers.feature.test.ts    ← del generador, se reescribe siempre
+└── transfers.feature.steps.ts   ← tuyo, se crea una vez y no se toca más
 ```
 
-El nombre parte del archivo de entrada. Se elimina solo su última extensión y se añade `.feature` si
-el stem aún no termina así:
+El prefijo sale del archivo de entrada: se quita su última extensión y se añade `.feature` si el
+resto no termina así.
 
-| Entrada | Prefijo de salida |
+| Entrada | Prefijo |
 | --- | --- |
 | `customer.feature` | `customer.feature` |
 | `customer.feature.md` | `customer.feature` |
-| `customer.txt` | `customer.feature` |
-| `customer.spec.txt` | `customer.spec.feature` |
+| `customer.spec.md` | `customer.spec.feature` |
 
-Los caracteres `#`, `?`, `%` y cualquier `\` literal en la ruta de salida o el nombre base se
-rechazan con `INVALID_PATH`: Vitest no puede descubrir de forma fiable los módulos resultantes.
+## Flujo
 
-## Flujo recomendado
-
-1. Escribir una Feature con ejemplos observables.
-2. Ejecutar el generador. Los métodos nuevos del Step Adapter quedan pendientes y el Feature Test
-   falla deliberadamente.
-3. Implementar esos métodos usando el código real y ejecutar Vitest hasta llegar a GREEN.
-4. Tras cambiar la Feature, volver a generar. El reconciliador conserva los cuerpos existentes y
-   señala el trabajo que la modificación exige.
-5. En CI, ejecutar primero `--check` y después Vitest.
+1. Escribe la Feature.
+2. Genera. El Step Adapter nace con métodos que lanzan `PENDING:` y el test falla: es el RED
+   inicial.
+3. Implementa esos métodos contra el código real hasta llegar a GREEN.
+4. Cambia la Feature y vuelve a generar. El test se reescribe; tu adapter no.
 
 ```json
 {
   "scripts": {
-    "features:generate": "gherkin-vitest-codegen features/transfers.feature test/features",
-    "features:check": "gherkin-vitest-codegen features/transfers.feature test/features --check",
-    "test": "pnpm features:generate && vitest run",
-    "test:ci": "pnpm features:check && vitest run"
+    "features": "feat2test generate",
+    "test": "npm run features && vitest run",
+    "test:ci": "feat2test check && vitest run"
   }
 }
 ```
 
-`--check` no escribe. Termina con error si los archivos generados no corresponden a la Feature, hay
-Steps pendientes u obsoletos, o existen salidas huérfanas.
+`--check` no escribe nada. Falla si el Feature Test está desactualizado o si falta el Step Adapter.
 
-## Contrato de entrada
+## Formato de entrada
 
-El nombre y la extensión no determinan el formato. El contenido puede usar Gherkin plano o su
-presentación Markdown siempre que Cucumber produzca:
+La extensión elige el parser: `.md` usa Markdown Gherkin, cualquier otra usa Gherkin clásico.
+Gherkin clásico respeta un encabezado `# language:`; Markdown Gherkin se lee en inglés.
 
-- una Feature con nombre;
-- escenarios ejecutables;
-- Pickles válidos con Steps.
+En Markdown Gherkin cada fila de tabla necesita al menos dos espacios iniciales, y ninguna tabla
+Gherkin lleva fila separadora (`| --- |`): Cucumber la trata como datos. El generador no las toca,
+pero avisa de ambas con su línea.
 
-El dialecto por defecto es inglés. Otro dialecto debe declararse con el encabezado estándar, por
-ejemplo `# language: es`. `Background`, `Rule`, `Scenario Outline`, `Examples`, DocStrings y
-DataTables se conservan al compilar. Los tags heredados quedan como metadatos legibles; no activan
-por sí mismos `skip`, `only` u otro comportamiento de Vitest.
-
-Si el contenido no satisface el contrato, el CLI informa `INVALID_GHERKIN`. La validación y la
-generación completa ocurren antes de tocar el directorio de salida.
+Si el contenido no produce una Feature con nombre y al menos un escenario ejecutable, falla con
+`INVALID_GHERKIN` antes de escribir nada.
 
 ## Archivos generados
 
 ### Feature Test: `*.feature.test.ts`
 
-Es propiedad del generador y se reemplaza en cada generación. Importa `createSteps()`, crea una
-instancia nueva por escenario y traduce los Pickles a tests Vitest legibles. Debe poder revisarse,
-depurarse y versionarse como cualquier test TypeScript.
+Del generador. Se reescribe en cada ejecución y nunca debe editarse a mano. Un `Rule` se convierte
+en un `describe` anidado, cada escenario en un `test`, y cada fila de `Examples` en un test
+independiente. Los steps de `Background` se insertan en línea en cada escenario. Cada test crea su
+propio `createSteps()`, así que no comparten estado.
+
+```ts
+describe('Feature: Calculator display', () => {
+  describe('Rule: Spanish number presentation', () => {
+    // Line 34
+    test('Show 1234.56 with Spanish separators', async () => {
+      const steps = createSteps()
+
+      // Given a calculator with an empty display
+      await steps.aCalculatorWithAnEmptyDisplay()
+      // When the current value is `1234.56`
+      await steps.theCurrentValueIs('1234.56')
+      // Then the display shows `1.234,56`
+      await steps.theDisplayShows('1.234,56')
+    })
+  })
+})
+```
+
+Si el archivo existe y no lo escribió el generador, falla con `OUTPUT_CONFLICT` en vez de
+sobrescribirlo.
 
 ### Step Adapter: `*.feature.steps.ts`
 
-Su estructura se reconcilia automáticamente; sus cuerpos pertenecen al desarrollador. Cada Feature
-tiene un adapter independiente. El punto de entrada fijo es:
+Tuyo. Se crea solo si no existe y **nunca se reescribe**. Puede tener imports, estado, helpers y lo
+que haga falta; solo necesita exportar `createSteps()`.
 
 ```ts
 export function createSteps() {
-  let applicationState = createApplicationState()
+  let calculator: Calculator
 
   return {
-    anAccountWithBalance(balance: string): void {
-      applicationState = accountWithBalance(Number(balance))
+    // Context
+    aCalculatorWithAnEmptyDisplay(): void {
+      calculator = createCalculator()
     },
 
-    async theyTransfer(amount: string): Promise<void> {
-      await applicationState.transfer(Number(amount))
+    // Action
+    theCurrentValueIs(value: string): void {
+      calculator.enter(Number(value))
+    },
+
+    // Outcome
+    theDisplayShows(display: string): void {
+      expect(calculator.display).toBe(display)
     },
   }
 }
 ```
 
-Puede contener imports, helpers, estado y preparación arbitrarios. El objeto retornado debe usar
-métodos abreviados y cada método declarar explícitamente `void` o `Promise<void>`. Las propiedades
-arrow y otros retornos se rechazan como formas no soportadas antes de escribir archivos.
+Cuando la Feature cambia, TypeScript y el test fallando reportan la diferencia: un método nuevo no
+existe, uno renombrado deja huérfano al anterior. El generador no arregla eso por ti, y esa es la
+decisión de diseño.
 
-Los valores provenientes de Gherkin llegan como `string`; la conversión al dominio pertenece al
-adapter. La forma de argumentos es estable:
+## Del step al método
 
-| Entradas del Step | Método generado |
-| --- | --- |
-| Ninguna | `theAccountExists(): void` |
-| Una | `theyTransfer(amount: string): void` |
-| Dos o más | `theyTransfer(theyTransferType: TheyTransferType): void` |
+El nombre del método son las palabras literales del step, sin sus placeholders, en camelCase. No hay
+reescritura lingüística.
 
-Para varias entradas se genera un objeto cuyo type sigue `<PascalStepName>Type` y cuyo parámetro
-sigue `<camelStepName>Type`. Variantes compatibles de un mismo Step producen una unión, por ejemplo:
-
-```ts
-type TheyTransferType =
-  | { amount: string }
-  | { amount: string; currency: string }
+```text
+When value <value> is formatted for language <language>
+  → valueIsFormattedForLanguage(value: string, language: string)
 ```
 
-La tabla describe Steps sin variantes. Si un mismo Step Name combina una variante sin entradas con
-otra que sí las tiene, todas usan el objeto unión: la variante vacía recibe `{}` y se representa
-como `Record<string, never>`.
+Los parámetros salen **solo** de placeholders `<...>`, en orden de aparición. Un literal entre
+comillas es texto del step, no una entrada. Un DataTable añade `table: string[][]`; un DocString
+añade `text: string`. Todo llega como `string`: la conversión al dominio es del adapter.
 
-DocStrings y DataTables se mantienen como entradas estructuradas y se incluyen en el objeto cuando
-conviven con otras entradas.
+Los métodos se agrupan por su función en el escenario: Context (`Given`), Action (`When`), Outcome
+(`Then`). `And` y `But` heredan la del step anterior.
 
-## Identidad y reconciliación de Steps
-
-La identidad estable es el **Step Name**: las palabras literales normalizadas, sin sus valores
-dinámicos. No es la firma TypeScript completa.
-
-| Cambio en la Feature | Resultado al regenerar |
+| Error | Causa |
 | --- | --- |
-| Mismo Step Name y mismas entradas | Conserva método y cuerpo. |
-| Mismo Step Name, entradas distintas | Actualiza parámetros, conserva cuerpo e inserta un guard pendiente al inicio. |
-| Step Name nuevo | Añade un método pendiente. |
-| Step Name desaparecido | Conserva el método como obsoleto y emite warning. |
-| Step renombrado | Añade el nuevo como pendiente y conserva el anterior como obsoleto. |
+| `UNKNOWN_PLACEHOLDER` | Un `<placeholder>` sin columna en `Examples`. |
+| `CONFLICTING_STEP_ROLE` | Las mismas palabras usadas como `Given` y como `Then`. |
+| `CONFLICTING_STEP_INPUTS` | Las mismas palabras con placeholders distintos. |
 
-Un Step pendiente lanza un error intencional: una Feature modificada debe volver a RED hasta adaptar
-su implementación. Un Step obsoleto no se elimina automáticamente porque su cuerpo puede contener
-código útil; un humano o agente debe revisarlo y borrarlo expresamente.
+## Alcance y diseño
 
-El reconciliador usa el AST de TypeScript para localizar `createSteps()` y aplica cambios
-posicionales. No reimprime ni reformatea cuerpos existentes. Los métodos se ordenan por su función en
-el escenario:
+Genera y mantiene el arnés de tests. No ejecuta el runner, no implementa comportamiento, no reconcilia
+tu código y no decide cómo organizar dependencias.
 
-1. Context (`Given`, y sus `And`/`But`).
-2. Action (`When`, y sus `And`/`But`).
-3. Outcome (`Then`, y sus `And`/`But`).
-4. Obsolete.
+Traduce; no infiere. Todo lo que no hace —inferir tipos, construir objetos anidados desde rutas con
+punto, quitar backticks de los valores, acortar nombres de método, reconciliar el adapter, dialectos
+en Markdown Gherkin— es una omisión deliberada, no un bug. Antes de escribir código para reconciliar
+un desajuste, comprueba si TypeScript o el test fallando ya lo reportan.
 
-Dentro de cada grupo se respeta la primera aparición en la Feature. Un mismo Step Name con funciones
-semánticas incompatibles produce `CONFLICTING_STEP_ROLE`.
+La guía para escribir buenas especificaciones está en
+[`.agents/skills/business-gherkin`](./.agents/skills/business-gherkin). Es independiente de esta
+herramienta; el contrato de entrada del generador vive aparte, en
+[`references/feat2test.md`](./.agents/skills/business-gherkin/references/feat2test.md).
 
-Los literales dinámicos sin placeholder semántico siguen siendo válidos. Reciben nombres genéricos
-como `value` y `value2`, junto al warning educativo `ANONYMOUS_STEP_INPUT`. Para contratos más claros,
-conviene usar placeholders con nombre en `Scenario Outline`.
-
-## Seguridad de generación
-
-Ambos archivos incluyen metadatos de esquema y origen. Se usan para aplicar estas garantías:
-
-- El par se calcula por completo y se prepara en archivos temporales antes de publicar.
-- Un error ordinario durante el reemplazo activa rollback de ambos archivos. Un corte abrupto del
-  proceso o del sistema no puede ofrecer atomicidad multiarchivo portable.
-- Un destino perteneciente a otro origen falla con `OUTPUT_OWNERSHIP_CONFLICT`; nunca se sobrescribe.
-- Una salida cuyo origen ya no existe se marca como `ORPHANED_FEATURE_OUTPUT`; nunca se borra sola.
-- Un archivo con forma TypeScript no soportada hace fallar toda la operación sin cambios parciales.
-- El modo normal muestra warnings de entradas anónimas, Steps obsoletos y salidas huérfanas.
-- `--check` convierte drift, Pending Steps, Obsolete Steps y salidas huérfanas en error.
-
-## Alcance
-
-La herramienta genera y mantiene el arnés de Feature Tests. No ejecuta Vitest, no implementa el
-comportamiento y no decide cómo organizar dependencias. La reutilización entre adapters se expresa
-con imports y helpers TypeScript normales.
-
-El ejemplo completo está en [`examples/calculator`](./examples/calculator).
+Dos ejemplos completos y en verde: [`examples/calculator`](./examples/calculator) para el flujo
+básico, y [`examples/order-confirmation`](./examples/order-confirmation) para una colección anidada
+—`Order` → `lines[]` → `product`— reconstruida desde un DataTable dentro del adapter.
 
 ## Desarrollo
 
 ```bash
 pnpm install
-pnpm codegen examples/add-to-cart/add-to-cart.feature examples/add-to-cart
-pnpm test:feature examples/add-to-cart/add-to-cart.feature.test.ts
+pnpm example
 pnpm verify
 ```
 
-Dentro de este repositorio se usa `pnpm codegen ...`: construye el binario local y le reenvía los
-argumentos. `pnpm test:feature <archivo>` ejecuta el Feature Test concreto; tras generarlo fallará
-por sus Steps pendientes, que es el RED inicial esperado. `pnpm exec gherkin-vitest-codegen` solo
-funciona cuando el paquete está instalado y su binario existe en `node_modules/.bin`.
+Para probar otro archivo dentro del repositorio:
 
-El repositorio aplica TypeScript estricto, Biome, cobertura Vitest, `publint` y Are The Types Wrong.
-Las releases usan Conventional Commits y semantic-release.
+```bash
+pnpm codegen <input-file> <output-directory> --strategy vitest
+```
+
+## Migración desde el nombre anterior
+
+Instala `feat2test`, cambia el comando de tus scripts y ejecuta `feat2test init --strategy vitest`.
+La cabecera de los tests del generador anterior se reconoce para poder regenerarlos. Los adapters
+existentes conservan íntegramente su código. `check` falla hasta actualizar los tests.
+
+## Publicación en npm
+
+```bash
+pnpm verify
+npm pack
+```
+
+`verify` comprueba formato, tipos, tests, cobertura, build, metadatos y el tarball real: lo instala
+en un proyecto temporal sin dependencias de desarrollo, invoca `npx feat2test`, genera, comprueba y
+ejecuta un test con `node:test`. Necesita acceso al registro npm para esa instalación aislada.
+`prepack` construye `dist` también al ejecutar `npm pack` o `npm publish` directamente.
+
+La distribución incluye únicamente `dist`, el schema, README, licencia, changelog y metadatos.
+Vitest y TypeScript son herramientas de desarrollo de este repositorio, no dependencias del CLI.
+
+El workflow `Release` usa semantic-release en `main` para asignar versión y publicar. Antes de
+activarlo, el repositorio GitHub debe llamarse `feat2test` y el paquete npm debe tener configurado
+el Trusted Publisher de ese repositorio y del workflow `release.yml`, con publicación directa
+habilitada. Configuración: [Trusted publishing en npm](https://docs.npmjs.com/trusted-publishers/).
+Si el paquete aún no existe, realiza primero la publicación inicial autenticada para poder
+configurar sus permisos. La versión
+`0.0.0-development` es de desarrollo; semantic-release la sustituye al publicar una release.
+El cambio local de nombre no renombra por sí solo el repositorio remoto ni publica en npm.
 
 ## Licencia
 

@@ -2,7 +2,12 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
-    include: ['tests/**/*.test.ts', 'examples/**/*.feature.test.ts'],
+    // Only maintained examples belong to CI; local scaffolds may still be pending.
+    include: [
+      'tests/**/*.test.ts',
+      'examples/calculator/*.feature.test.ts',
+      'examples/order-confirmation/*.feature.test.ts',
+    ],
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],

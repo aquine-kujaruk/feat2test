@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "feat2test configuration",
+  "description": "Generate tests from Gherkin using an explicitly selected runner strategy.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["strategy"],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1, "pattern": "\\S" },
+    "strategy": {
+      "type": "string",
+      "enum": ["vitest", "node:test"],
+      "description": "Test runner targeted by generated tests. Required; no implicit default."
+    },
+    "input": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Feature file or directory, relative to this config file. Directories are scanned recursively."
+    },
+    "output": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Output directory, relative to this config file. Subdirectories of input are preserved."
+    }
+  }
+}

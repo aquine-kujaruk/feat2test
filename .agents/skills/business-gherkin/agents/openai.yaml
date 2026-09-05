@@ -1,0 +1,3 @@
+interface:
+  display_name: "Business Gherkin"
+  short_description: "Write and reformulate business Gherkin specifications"

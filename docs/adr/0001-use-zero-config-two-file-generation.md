@@ -1,3 +1,0 @@
-# Use zero-config two-file generation
-
-The package exposes one CLI accepting one Gherkin input file and one output directory. It produces a generator-owned `<name>.feature.test.ts` and reconciles a developer-owned `<name>.feature.steps.ts`; `--check` performs the same analysis without writing. This minimal workflow gives each file explicit ownership, computes and stages both outputs before sequential replacement with rollback on ordinary failures, and embeds portable source and schema metadata in the pair. Portable filesystems cannot guarantee a two-file atomic commit across an abrupt process or system stop. Orphaned outputs can therefore be reported, while a target owned by another source always fails instead of being overwritten.
