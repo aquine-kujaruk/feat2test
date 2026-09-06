@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/aquine-kujaruk/feat2test/compare/v1.1.4...v1.2.0) (2026-09-06)
+
+
+### Features
+
+* **skill:** strengthen business Gherkin authoring ([26a9e69](https://github.com/aquine-kujaruk/feat2test/commit/26a9e698b786f6fcf526403019e23eccfe84d66f))
+
 ## [1.1.4](https://github.com/aquine-kujaruk/feat2test/compare/v1.1.3...v1.1.4) (2026-09-06)
 
 
