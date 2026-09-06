@@ -1,10 +1,10 @@
 # feat2test
 
-Convierte Features Gherkin en tests TypeScript deterministas y Step Adapters editables.
+Turn Gherkin Features into deterministic TypeScript tests and editable Step Adapters.
 
-## Uso
+## Usage
 
-Requiere Node.js 22.18+.
+Requires Node.js 22.18+.
 
 ```bash
 npm install -D feat2test vitest
@@ -12,61 +12,61 @@ npx feat2test generate features test/features --runner vitest
 npx vitest run
 ```
 
-La entrada puede ser un archivo `.feature`, `.feature.md` o una carpeta. Las carpetas se recorren
-de forma recursiva y conservan su estructura en el destino.
+The input can be a `.feature` file, a `.feature.md` file, or a directory. Directories are traversed
+recursively, and their structure is preserved in the output directory.
 
 ```text
 feat2test generate <feature> <output> --runner <vitest|node:test> [--check]
 ```
 
-Opciones:
+Options:
 
-- `-r, --runner`: runner obligatorio.
-- `--check`: valida sin escribir; falla si el test está desactualizado o falta el Step Adapter.
-- `--debug`: incluye el stack trace.
-- `--help`, `--version`: ayuda y versión.
+- `-r, --runner`: required test runner.
+- `--check`: validates without writing; fails if the test is outdated or the Step Adapter is missing.
+- `--debug`: includes the stack trace.
+- `--help`, `--version`: displays help or version information.
 
-Códigos de salida: `0` éxito, `1` error de Feature/generación/check, `2` uso o runner inválido.
+Exit codes: `0` success, `1` Feature/generation/check error, `2` invalid usage or runner.
 
 ## Runners
 
-| Runner | Requisito | Import del adapter |
+| Runner | Requirement | Adapter import |
 | --- | --- | --- |
-| `vitest` | Vitest instalado en el proyecto | `*.steps.js` |
-| `node:test` | Node.js, sin dependencia adicional | `*.steps.ts` |
+| `vitest` | Vitest installed in the project | `*.steps.js` |
+| `node:test` | Node.js, with no additional dependency | `*.steps.ts` |
 
-feat2test genera tests; no ejecuta el runner.
+feat2test generates tests; it does not run the test runner.
 
 ```bash
 npx feat2test generate features test/features --runner node:test
 node --test test/features/example.feature.test.ts
 ```
 
-## Salida
+## Output
 
-Para `features/payment.feature.md`:
+For `features/payment.feature.md`:
 
 ```text
 test/features/
-├── payment.feature.test.ts    # generado; se actualiza
-└── payment.feature.steps.ts   # tuyo; nunca se sobrescribe
+├── payment.feature.test.ts    # generated; updated automatically
+└── payment.feature.steps.ts   # yours; never overwritten
 ```
 
-El Step Adapter exporta `createSteps()`:
+The Step Adapter exports `createSteps()`:
 
 ```ts
 export function createSteps() {
   return {
     paymentIsReady(): void {
-      // Implementación del proyecto
+      // Project implementation
     },
   }
 }
 ```
 
-Cada step se convierte literalmente a `camelCase`. Los placeholders son parámetros `string`;
-DataTable usa `string[][]` y DocString usa `string`. `Given`, `When` y `Then` agrupan métodos como
-Context, Action y Outcome.
+Each step is converted literally to `camelCase`. Placeholders become `string` parameters;
+DataTable uses `string[][]`, and DocString uses `string`. `Given`, `When`, and `Then` group methods as
+Context, Action, and Outcome.
 
 ## CI
 
@@ -80,18 +80,18 @@ Context, Action y Outcome.
 }
 ```
 
-## Desarrollo
+## Development
 
 ```bash
 pnpm install
 pnpm verify
 ```
 
-Ejemplos completos: [`examples/calculator`](./examples/calculator) y
+Complete examples: [`examples/calculator`](./examples/calculator) and
 [`examples/order-confirmation`](./examples/order-confirmation).
 
-Guía de Gherkin de negocio: [`.agents/skills/business-gherkin`](./.agents/skills/business-gherkin).
+Business Gherkin guide: [`.agents/skills/business-gherkin`](./.agents/skills/business-gherkin).
 
-## Licencia
+## License
 
 [MIT](./LICENSE)
