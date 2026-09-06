@@ -7,7 +7,6 @@ Turn Gherkin Features into deterministic TypeScript tests and editable Step Adap
 Requires Node.js 22.18+.
 
 ```bash
-npm install -D feat2test vitest
 npx feat2test generate features test/features --runner vitest
 npx vitest run
 ```
