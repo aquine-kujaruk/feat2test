@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/aquine-kujaruk/feat2test/compare/v1.1.2...v1.1.3) (2026-09-06)
+
+
+### Bug Fixes
+
+* publish English README ([acadd99](https://github.com/aquine-kujaruk/feat2test/commit/acadd9963cfa4ce8f75d77ab22961935a586f52c))
+
 ## [1.1.2](https://github.com/aquine-kujaruk/feat2test/compare/v1.1.1...v1.1.2) (2026-09-06)
 
 
