@@ -111,7 +111,7 @@ pnpm verify
 Complete examples: [`examples/calculator`](./examples/calculator) and
 [`examples/order-confirmation`](./examples/order-confirmation).
 
-Business Gherkin guide: [`.agents/skills/business-gherkin`](./.agents/skills/business-gherkin).
+Gherkin Craft guide: [`.agents/skills/gherkin-craft`](./.agents/skills/gherkin-craft).
 
 ## License
 

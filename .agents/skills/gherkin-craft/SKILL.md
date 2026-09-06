@@ -1,9 +1,9 @@
 ---
-name: business-gherkin
+name: gherkin-craft
 description: "Write, review, or reformulate business Gherkin — .feature and Markdown .feature.md — to validate domain behavior through business use cases and observable outcomes. Use whenever authoring or migrating Gherkin, including standalone specifications with no test runner or code generation."
 ---
 
-# Business Gherkin
+# Gherkin Craft
 
 Write specifications a business reader owns, validating domain behavior through
 its use cases.
