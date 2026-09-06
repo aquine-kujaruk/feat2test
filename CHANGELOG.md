@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/aquine-kujaruk/feat2test/compare/v1.1.1...v1.1.2) (2026-09-06)
+
+
+### Bug Fixes
+
+* expose trusted publishing npm on PATH ([15fa50e](https://github.com/aquine-kujaruk/feat2test/commit/15fa50ed15179366bb57c3db816485f524d4cf9b))
+
 ## [1.1.1](https://github.com/aquine-kujaruk/feat2test/compare/v1.1.0...v1.1.1) (2026-09-06)
 
 
