@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/aquine-kujaruk/feat2test/compare/v1.1.0...v1.1.1) (2026-09-06)
+
+
+### Bug Fixes
+
+* use OIDC-compatible npm for releases ([274527a](https://github.com/aquine-kujaruk/feat2test/commit/274527a5c36eeeeb0e72833a1b5096e7fd3224b1))
+
 # [1.1.0](https://github.com/aquine-kujaruk/feat2test/compare/v1.0.0...v1.1.0) (2026-09-06)
 
 
