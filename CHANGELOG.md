@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/aquine-kujaruk/feat2test/compare/v1.0.0...v1.1.0) (2026-09-06)
+
+
+### Features
+
+* simplify CLI around explicit runners ([2cec5ca](https://github.com/aquine-kujaruk/feat2test/commit/2cec5ca66f5c6b50711683d43460c8f96313081d))
+
 # 1.0.0 (2026-09-05)
 
 
