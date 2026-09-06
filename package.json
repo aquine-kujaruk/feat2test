@@ -1,7 +1,7 @@
 {
   "name": "feat2test",
   "version": "1.0.0",
-  "description": "Turn Gherkin Features into deterministic tests with configurable runner strategies and developer-owned Step Adapters.",
+  "description": "Turn Gherkin Features into deterministic tests for Vitest or node:test.",
   "keywords": [
     "bdd",
     "codegen",
@@ -45,12 +45,10 @@
     "dist",
     "CHANGELOG.md",
     "LICENSE",
-    "README.md",
-    "schema.json"
+    "README.md"
   ],
   "exports": {
-    "./package.json": "./package.json",
-    "./schema.json": "./schema.json"
+    "./package.json": "./package.json"
   },
   "bin": {
     "feat2test": "./dist/cli.mjs"
@@ -70,8 +68,8 @@
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "verify": "pnpm check && pnpm typecheck && pnpm test:coverage && pnpm build && pnpm exec publint && pnpm exec attw --pack . --profile esm-only && node scripts/smoke-package.mjs",
-    "example": "pnpm codegen generate examples/calculator/calculator.feature.md examples/calculator",
-    "example:order": "pnpm codegen generate examples/order-confirmation/order-confirmation.feature.md examples/order-confirmation",
+    "example": "pnpm codegen generate examples/calculator/calculator.feature.md examples/calculator --runner vitest",
+    "example:order": "pnpm codegen generate examples/order-confirmation/order-confirmation.feature.md examples/order-confirmation --runner vitest",
     "prepack": "npm run build",
     "test:package": "npm run build && node scripts/smoke-package.mjs"
   },

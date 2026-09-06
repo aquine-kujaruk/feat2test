@@ -1,6 +1,0 @@
-{
-  "$schema": "./schema.json",
-  "strategy": "vitest",
-  "input": "examples",
-  "output": "examples"
-}

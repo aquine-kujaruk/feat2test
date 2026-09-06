@@ -4,12 +4,12 @@ import { CodegenError } from './errors.js'
 import { parseFeature } from './parse.js'
 import { planFeature } from './plan.js'
 import { GENERATED_HEADER } from './render.js'
+import { type RunnerName, resolveRunner } from './runners.js'
 import { renderStepAdapter } from './steps.js'
-import { resolveStrategy, type StrategyName } from './strategies.js'
 import type { GenerationReport } from './types.js'
 
 export interface GenerateOptions {
-  readonly strategy: StrategyName
+  readonly runner: RunnerName
   readonly check?: boolean
 }
 
@@ -22,7 +22,7 @@ export async function generate(
   outputDirectory: string,
   options: GenerateOptions,
 ): Promise<GenerationReport> {
-  const strategy = resolveStrategy(options.strategy)
+  const runner = resolveRunner(options.runner)
   const input = path.resolve(inputPath)
   const output = path.resolve(outputDirectory)
   const label = display(input)
@@ -33,7 +33,7 @@ export async function generate(
 
   const parsed = await parseFeature(input, label)
   const plan = planFeature(parsed, label)
-  const test = strategy.render(plan, `./${prefix}.steps`)
+  const test = runner.render(plan, `./${prefix}.steps`)
   const stepAdapterExists = await isFile(stepAdapterPath)
 
   if (options.check) {

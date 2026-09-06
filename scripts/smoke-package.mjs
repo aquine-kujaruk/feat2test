@@ -28,7 +28,7 @@ try {
   )
   assert.equal(packed.name, 'feat2test')
   const files = packed.files.map((entry) => entry.path)
-  for (const required of ['dist/cli.mjs', 'schema.json', 'README.md', 'LICENSE']) {
+  for (const required of ['dist/cli.mjs', 'README.md', 'LICENSE']) {
     assert.ok(files.includes(required), `Missing ${required} in tarball`)
   }
   assert.ok(files.every((name) => !/^(src|tests|examples|node_modules|\.agents)\//.test(name)))
@@ -40,33 +40,34 @@ try {
   assert.ok(!dependencies.includes('typescript'), 'CLI must not install TypeScript')
   assert.equal(run('npx', ['--no-install', 'feat2test', '--version']).trim(), metadata.version)
   assert.match(run('npx', ['--no-install', 'feat2test', '--help']), /feat2test generate/)
-  const init = JSON.parse(
-    run('npx', [
-      '--no-install',
-      'feat2test',
-      'init',
-      '-s',
-      'node:test',
-      '-i',
-      'payment.feature',
-      '-o',
-      'out',
-      '--json',
-    ]),
-  )
-  assert.equal(init.strategy, 'node:test')
   await writeFile(
     path.join(workspace, 'payment.feature'),
     'Feature: Payment\n  Scenario: Accepted\n    Given payment is ready\n',
   )
-  const generated = JSON.parse(run('npx', ['--no-install', 'feat2test', 'generate', '--json']))
-  assert.equal(generated.featureCount, 1)
+  run('npx', [
+    '--no-install',
+    'feat2test',
+    'generate',
+    'payment.feature',
+    'out',
+    '--runner',
+    'node:test',
+  ])
   const adapter = path.join(workspace, 'out/payment.feature.steps.ts')
   await writeFile(
     adapter,
     'export function createSteps() { return { paymentIsReady(): void {} } }\n',
   )
-  run('npx', ['--no-install', 'feat2test', 'check'])
+  run('npx', [
+    '--no-install',
+    'feat2test',
+    'generate',
+    'payment.feature',
+    'out',
+    '--runner',
+    'node:test',
+    '--check',
+  ])
   run(process.execPath, ['--test', 'out/payment.feature.test.ts'])
   // Exercise npx's package download/cache path too, without relying on a global executable.
   assert.equal(
@@ -74,7 +75,7 @@ try {
     metadata.version,
   )
   process.stdout.write(
-    'Package smoke passed: tarball, production install, npx, generate/check, native Node tests.\n',
+    'Package smoke passed: tarball, production install, npx, generate --check, native Node tests.\n',
   )
 } finally {
   await rm(workspace, { recursive: true, force: true })

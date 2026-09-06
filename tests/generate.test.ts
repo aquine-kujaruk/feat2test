@@ -22,7 +22,7 @@ async function run(
 ): Promise<{ steps: string; test: string; warnings: readonly string[] }> {
   const input = path.join(workspace, filename)
   await writeFile(input, source, 'utf8')
-  const report = await generate(input, workspace, { check, strategy: 'vitest' })
+  const report = await generate(input, workspace, { check, runner: 'vitest' })
   return {
     steps: await read(report.stepAdapterPath),
     test: await read(report.testPath),
@@ -38,7 +38,7 @@ async function failure(source: string, filename = 'shop.feature.md'): Promise<Co
   const input = path.join(workspace, filename)
   await writeFile(input, source, 'utf8')
   try {
-    await generate(input, workspace, { strategy: 'vitest' })
+    await generate(input, workspace, { runner: 'vitest' })
   } catch (error) {
     return error as CodegenError
   }
@@ -213,10 +213,10 @@ describe('Feature: Shop', () => {
   test('is rewritten whenever the Feature changes', async () => {
     const input = path.join(workspace, 'shop.feature.md')
     await writeFile(input, MINIMAL, 'utf8')
-    const first = await generate(input, workspace, { strategy: 'vitest' })
+    const first = await generate(input, workspace, { runner: 'vitest' })
 
     await writeFile(input, MINIMAL.replace('Browse', 'Search'), 'utf8')
-    await generate(input, workspace, { strategy: 'vitest' })
+    await generate(input, workspace, { runner: 'vitest' })
 
     expect(await read(first.testPath)).toContain(`test('Search'`)
   })
@@ -226,7 +226,7 @@ describe('Feature: Shop', () => {
     await writeFile(input, MINIMAL, 'utf8')
     await writeFile(path.join(workspace, 'shop.feature.test.ts'), 'handwritten', 'utf8')
 
-    await expect(generate(input, workspace, { strategy: 'vitest' })).rejects.toMatchObject({
+    await expect(generate(input, workspace, { runner: 'vitest' })).rejects.toMatchObject({
       code: 'OUTPUT_CONFLICT',
     })
   })
@@ -311,11 +311,11 @@ export function createSteps() {
   test('is never overwritten once it exists', async () => {
     const input = path.join(workspace, 'shop.feature.md')
     await writeFile(input, MINIMAL, 'utf8')
-    const first = await generate(input, workspace, { strategy: 'vitest' })
+    const first = await generate(input, workspace, { runner: 'vitest' })
     await writeFile(first.stepAdapterPath, '// mine\nexport function createSteps() {}\n', 'utf8')
 
     await writeFile(input, MINIMAL.replace('the shop is open', 'the shop is closed'), 'utf8')
-    const second = await generate(input, workspace, { strategy: 'vitest' })
+    const second = await generate(input, workspace, { runner: 'vitest' })
 
     expect(await read(second.stepAdapterPath)).toBe('// mine\nexport function createSteps() {}\n')
     expect(second.stepAdapterWritten).toBe(false)
@@ -388,7 +388,7 @@ describe('step identity', () => {
 describe('input validation', () => {
   test('reports a missing input file', async () => {
     await expect(
-      generate(path.join(workspace, 'absent.md'), workspace, { strategy: 'vitest' }),
+      generate(path.join(workspace, 'absent.md'), workspace, { runner: 'vitest' }),
     ).rejects.toMatchObject({
       code: 'INPUT_UNREADABLE',
     })
@@ -492,10 +492,10 @@ describe('--check', () => {
   test('passes when both outputs are current', async () => {
     const input = path.join(workspace, 'shop.feature.md')
     await writeFile(input, MINIMAL, 'utf8')
-    await generate(input, workspace, { strategy: 'vitest' })
+    await generate(input, workspace, { runner: 'vitest' })
 
     await expect(
-      generate(input, workspace, { check: true, strategy: 'vitest' }),
+      generate(input, workspace, { check: true, runner: 'vitest' }),
     ).resolves.toMatchObject({
       scenarioCount: 1,
     })
@@ -504,11 +504,11 @@ describe('--check', () => {
   test('fails when the Feature Test is stale', async () => {
     const input = path.join(workspace, 'shop.feature.md')
     await writeFile(input, MINIMAL, 'utf8')
-    await generate(input, workspace, { strategy: 'vitest' })
+    await generate(input, workspace, { runner: 'vitest' })
     await writeFile(input, MINIMAL.replace('Browse', 'Search'), 'utf8')
 
     await expect(
-      generate(input, workspace, { check: true, strategy: 'vitest' }),
+      generate(input, workspace, { check: true, runner: 'vitest' }),
     ).rejects.toMatchObject({
       code: 'CHECK_FAILED',
     })
@@ -519,7 +519,7 @@ describe('--check', () => {
     await writeFile(input, MINIMAL, 'utf8')
 
     await expect(
-      generate(input, workspace, { check: true, strategy: 'vitest' }),
+      generate(input, workspace, { check: true, runner: 'vitest' }),
     ).rejects.toMatchObject({
       code: 'CHECK_FAILED',
     })
@@ -529,42 +529,42 @@ describe('--check', () => {
     const input = path.join(workspace, 'shop.feature.md')
     await writeFile(input, MINIMAL, 'utf8')
 
-    await generate(input, workspace, { check: true, strategy: 'vitest' }).catch(() => undefined)
+    await generate(input, workspace, { check: true, runner: 'vitest' }).catch(() => undefined)
 
     expect(await read(path.join(workspace, 'shop.feature.test.ts'))).toBe('')
   })
 })
 
-describe('runner strategies and migration', () => {
-  test('switches strategy while preserving user code and detects strategy drift', async () => {
+describe('runners and migration', () => {
+  test('switches runner while preserving user code and detects runner drift', async () => {
     const input = path.join(workspace, 'shop.feature.md')
     await writeFile(input, MINIMAL)
-    const first = await generate(input, workspace, { strategy: 'vitest' })
+    const first = await generate(input, workspace, { runner: 'vitest' })
     await writeFile(first.stepAdapterPath, '// User-owned implementation\n')
     await expect(
-      generate(input, workspace, { strategy: 'node:test', check: true }),
+      generate(input, workspace, { runner: 'node:test', check: true }),
     ).rejects.toMatchObject({ code: 'CHECK_FAILED' })
-    await generate(input, workspace, { strategy: 'node:test' })
+    await generate(input, workspace, { runner: 'node:test' })
     const output = await read(first.testPath)
     expect(output).toContain("from 'node:test'")
     expect(output).toContain("from './shop.feature.steps.ts'")
     expect(output).not.toContain('vitest')
     expect(await read(first.stepAdapterPath)).toBe('// User-owned implementation\n')
     await expect(
-      generate(input, workspace, { strategy: 'node:test', check: true }),
+      generate(input, workspace, { runner: 'node:test', check: true }),
     ).resolves.toMatchObject({ scenarioCount: 1 })
   })
 
   test('migrates the legacy ownership header without touching the adapter', async () => {
     const input = path.join(workspace, 'shop.feature.md')
     await writeFile(input, MINIMAL)
-    const first = await generate(input, workspace, { strategy: 'vitest' })
+    const first = await generate(input, workspace, { runner: 'vitest' })
     await writeFile(
       first.testPath,
       '// Generated by gherkin-vitest-codegen. Do not edit.\n// Old output\n',
     )
     const adapter = await read(first.stepAdapterPath)
-    await generate(input, workspace, { strategy: 'vitest' })
+    await generate(input, workspace, { runner: 'vitest' })
     expect(await read(first.testPath)).toMatch(/^\/\/ Generated by feat2test\./)
     expect(await read(first.stepAdapterPath)).toBe(adapter)
   })
