@@ -1,3 +1,14 @@
+# [2.0.0](https://github.com/aquine-kujaruk/feat2test/compare/v1.2.0...v2.0.0) (2026-09-06)
+
+
+* feat!: synchronize step adapters with feature signatures ([5df70bb](https://github.com/aquine-kujaruk/feat2test/commit/5df70bb383a7d5a0b6b25c542db6c0c7d2f651f0))
+
+
+### BREAKING CHANGES
+
+* Generation now removes obsolete step methods and rejects adapters
+that cannot be synchronized statically.
+
 # [1.2.0](https://github.com/aquine-kujaruk/feat2test/compare/v1.1.4...v1.2.0) (2026-09-06)
 
 
