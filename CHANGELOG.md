@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/aquine-kujaruk/feat2test/compare/v1.1.3...v1.1.4) (2026-09-06)
+
+
+### Bug Fixes
+
+* update npm README usage ([f0cd01d](https://github.com/aquine-kujaruk/feat2test/commit/f0cd01d73221f90fdd9a648d2edc308aae86384d))
+
 ## [1.1.3](https://github.com/aquine-kujaruk/feat2test/compare/v1.1.2...v1.1.3) (2026-09-06)
 
 
