@@ -74,11 +74,13 @@
     "test:package": "npm run build && node scripts/smoke-package.mjs"
   },
   "dependencies": {
+    "@babel/parser": "7.29.8",
     "@cucumber/gherkin": "42.0.1",
     "@cucumber/messages": "34.2.1"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
+    "@babel/types": "7.29.8",
     "@biomejs/biome": "2.5.9",
     "@commitlint/cli": "21.2.2",
     "@commitlint/config-conventional": "21.2.2",
@@ -94,7 +96,7 @@
     "publint": "0.3.24",
     "semantic-release": "25.0.9",
     "tsdown": "0.22.14",
-    "vitest": "4.1.11",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
   }
 }

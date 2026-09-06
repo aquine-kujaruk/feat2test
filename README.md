@@ -21,7 +21,7 @@ feat2test generate <feature> <output> --runner <vitest|node:test> [--check]
 Options:
 
 - `-r, --runner`: required test runner.
-- `--check`: validates without writing; fails if the test is outdated or the Step Adapter is missing.
+- `--check`: validates without writing; fails if the test or Step Adapter is missing or out of date.
 - `--debug`: includes the stack trace.
 - `--help`, `--version`: displays help or version information.
 
@@ -48,7 +48,7 @@ For `features/payment.feature.md`:
 ```text
 test/features/
 ├── payment.feature.test.ts    # generated; updated automatically
-└── payment.feature.steps.ts   # yours; never overwritten
+└── payment.feature.steps.ts   # synchronized; matching implementations preserved
 ```
 
 The Step Adapter exports `createSteps()`:
@@ -66,6 +66,28 @@ export function createSteps() {
 Each step is converted literally to `camelCase`. Placeholders become `string` parameters;
 DataTable uses `string[][]`, and DocString uses `string`. `Given`, `When`, and `Then` group methods as
 Context, Action, and Outcome.
+
+On every generation, the Feature determines which step methods exist:
+
+- Same signature: preserve the existing implementation. Repeated steps share one method.
+- Missing from the Feature: remove the method.
+- New signature: create a method that throws `PENDING` until implemented.
+
+A signature is the method name and its ordered parameter names and types. Changing either the
+method name or its parameters replaces that method; changing only example values preserves it.
+Async methods and custom return types are preserved when the signature matches.
+Renaming one occurrence of a shared step creates a new method; the old method stays until its last
+occurrence is removed from the Feature.
+
+Methods remain in a flat object. Synchronization orders them by role and first occurrence in the
+Feature, with one generated heading per nonempty group. Existing duplicate headings are repaired;
+retained implementations and their comments are copied without rewriting their code.
+
+Keep step methods in the object returned by `createSteps()`. Imports, factory state, helpers outside
+that object, and retained methods are preserved. Inline methods and function-valued properties are
+supported; dynamic structures such as spreads, computed keys, or multiple returned objects produce
+an error before this Feature's files are written. `--check` detects signature drift without modifying
+either output; it does not execute implementations or fail merely because a step is `PENDING`.
 
 ## CI
 

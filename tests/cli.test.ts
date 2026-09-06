@@ -71,11 +71,13 @@ describe('CLI', () => {
 
     const output = path.join(cwd, 'out')
     const adapter = path.join(output, 'payment.feature.steps.ts')
-    await writeFile(adapter, '// My implementation\n')
+    const implementation =
+      'export function createSteps() { return { paymentIsReady(): void {} } }\n'
+    await writeFile(adapter, implementation)
     const checked = await invoke([...command, '--check'], cwd)
     expect(checked.code, checked.stderr).toBe(0)
     expect(checked.stdout).toContain('Checked 1 Features')
-    expect(await readFile(adapter, 'utf8')).toBe('// My implementation\n')
+    expect(await readFile(adapter, 'utf8')).toBe(implementation)
 
     await writeFile(path.join(cwd, 'payment.feature'), minimal.replace('Accepted', 'Updated'))
     const stale = await invoke([...command, '--check'], cwd)
@@ -96,6 +98,44 @@ describe('CLI', () => {
     const output = await readFile(path.join(cwd, 'out/payment.feature.test.ts'), 'utf8')
     expect(output).toContain("from 'node:test'")
     expect(output).toContain("from './payment.feature.steps.ts'")
+  })
+
+  test('synchronizes executable steps and creates pending methods instead of missing references', async () => {
+    const cwd = await fixture('synchronize')
+    const command = ['generate', 'payment.feature', 'out', '--runner', 'node:test']
+    expect((await invoke(command, cwd)).code).toBe(0)
+    const adapter = path.join(cwd, 'out/payment.feature.steps.ts')
+    const implementation = `import assert from 'node:assert/strict'
+export function createSteps() {
+  const payment = { ready: true }
+  return {
+    paymentIsReady(): void { assert.equal(payment.ready, true) },
+    obsolete(): void { throw new Error('obsolete implementation') }
+  }
+}
+`
+    await writeFile(adapter, implementation)
+    const stale = await invoke([...command, '--check'], cwd)
+    expect(stale.code).toBe(1)
+    expect(stale.stderr).toContain('payment.feature.steps.ts')
+    expect(await readFile(adapter, 'utf8')).toBe(implementation)
+
+    const generated = await invoke(command, cwd)
+    expect(generated.code, generated.stderr).toBe(0)
+    const synchronized = await readFile(adapter, 'utf8')
+    expect(synchronized).toContain('assert.equal(payment.ready, true)')
+    expect(synchronized).not.toContain('obsolete()')
+    const executed = await run([process.execPath, '--test', 'out/payment.feature.test.ts'], cwd)
+    expect(executed.code, executed.stdout + executed.stderr).toBe(0)
+
+    await writeFile(adapter, synchronized.replace('paymentIsReady()', 'previousPaymentIsReady()'))
+    expect((await invoke(command, cwd)).code).toBe(0)
+    const pending = await run([process.execPath, '--test', 'out/payment.feature.test.ts'], cwd)
+    expect(pending.code).toBe(1)
+    expect(pending.stdout + pending.stderr).toContain('PENDING: paymentIsReady')
+    expect(pending.stdout + pending.stderr).not.toContain('is not a function')
+    expect(await readFile(adapter, 'utf8')).not.toContain('previousPaymentIsReady')
+    expect((await invoke([...command, '--check'], cwd)).code).toBe(0)
   })
 
   test('generates directories recursively', async () => {

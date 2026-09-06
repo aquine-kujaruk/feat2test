@@ -236,7 +236,7 @@ describe('the Step Adapter', () => {
   test('scaffolds one pending method per distinct step, grouped by role', async () => {
     const { steps } = await run(MINIMAL)
 
-    expect(steps).toBe(`// Scaffolded by feat2test. Yours to edit: it is never overwritten.
+    expect(steps).toBe(`// Synced by feat2test. Matching step implementations are preserved.
 
 export function createSteps() {
   return {
@@ -308,18 +308,108 @@ export function createSteps() {
     expect(steps).toContain('theOrderContains(table: string[][]): void {')
   })
 
-  test('is never overwritten once it exists', async () => {
+  test('preserves matching implementations and replaces obsolete steps', async () => {
     const input = path.join(workspace, 'shop.feature.md')
     await writeFile(input, MINIMAL, 'utf8')
     const first = await generate(input, workspace, { runner: 'vitest' })
-    await writeFile(first.stepAdapterPath, '// mine\nexport function createSteps() {}\n', 'utf8')
+    const implementation =
+      'const products = ["Pencil"]; if (products.length !== 1) throw new Error("catalog")'
+    const edited = (await read(first.stepAdapterPath)).replace(
+      "throw new Error('PENDING: productsAreListed')",
+      implementation,
+    )
+    await writeFile(first.stepAdapterPath, edited, 'utf8')
 
     await writeFile(input, MINIMAL.replace('the shop is open', 'the shop is closed'), 'utf8')
     const second = await generate(input, workspace, { runner: 'vitest' })
 
-    expect(await read(second.stepAdapterPath)).toBe('// mine\nexport function createSteps() {}\n')
-    expect(second.stepAdapterWritten).toBe(false)
+    const updated = await read(second.stepAdapterPath)
+    expect(updated).toContain(implementation)
+    expect(updated).not.toContain('theShopIsOpen')
+    expect(updated).toContain("throw new Error('PENDING: theShopIsClosed')")
+    expect(second.stepAdapterWritten).toBe(true)
+    expect(await read(second.testPath)).toContain('await steps.theShopIsClosed()')
+    expect(await read(second.testPath)).not.toContain('theShopIsOpen')
+
+    const repeated = await generate(input, workspace, { runner: 'vitest' })
+    expect(repeated.stepAdapterWritten).toBe(false)
+    expect(await read(repeated.stepAdapterPath)).toBe(updated)
+    await expect(
+      generate(input, workspace, { runner: 'vitest', check: true }),
+    ).resolves.toMatchObject({ stepAdapterWritten: false })
   })
+
+  test('keeps a shared step until its final occurrence is removed', async () => {
+    const input = path.join(workspace, 'shop.feature.md')
+    const scenario = MINIMAL.slice(MINIMAL.indexOf('## Scenario:'))
+    await writeFile(input, MINIMAL + scenario)
+    const first = await generate(input, workspace, { runner: 'vitest' })
+    const implementation = (await read(first.stepAdapterPath)).replaceAll(
+      /throw new Error\('PENDING: [^']+'\)/g,
+      'return',
+    )
+    await writeFile(first.stepAdapterPath, implementation)
+
+    await writeFile(input, MINIMAL)
+    const shared = await generate(input, workspace, { runner: 'vitest' })
+    expect(shared.stepAdapterWritten).toBe(false)
+    expect(await read(shared.stepAdapterPath)).toBe(implementation)
+    expect((await read(shared.stepAdapterPath)).match(/theShopIsOpen\(/g)).toHaveLength(1)
+
+    await writeFile(input, MINIMAL.replace('* Given the shop is open\n', ''))
+    const removed = await generate(input, workspace, { runner: 'vitest' })
+    expect(await read(removed.stepAdapterPath)).not.toContain('theShopIsOpen')
+    expect(await read(removed.testPath)).not.toContain('theShopIsOpen')
+    expect(await read(removed.stepAdapterPath)).toContain(
+      'productsAreListed(): void {\n      return',
+    )
+  })
+
+  test('keeps both signatures when only one occurrence of a shared step is renamed', async () => {
+    const input = path.join(workspace, 'shop.feature.md')
+    const repeated = MINIMAL + MINIMAL.slice(MINIMAL.indexOf('## Scenario:'))
+    await writeFile(input, repeated)
+    const first = await generate(input, workspace, { runner: 'vitest' })
+    const implementation = (await read(first.stepAdapterPath)).replace(
+      "throw new Error('PENDING: productsAreListed')",
+      'return',
+    )
+    await writeFile(first.stepAdapterPath, implementation)
+
+    await writeFile(input, repeated.replace('products are listed', 'products are listeD'))
+    await generate(input, workspace, { runner: 'vitest' })
+    const adapter = await read(first.stepAdapterPath)
+    const generated = await read(first.testPath)
+    expect(adapter).toContain('productsAreListed(): void {\n      return')
+    expect(adapter).toContain("throw new Error('PENDING: productsAreListeD')")
+    expect(adapter.match(/\/\/ Outcome/g)).toHaveLength(1)
+    expect(generated).toContain('await steps.productsAreListed()')
+    expect(generated).toContain('await steps.productsAreListeD()')
+
+    await writeFile(input, repeated.replaceAll('products are listed', 'products are listeD'))
+    await generate(input, workspace, { runner: 'vitest' })
+    expect(await read(first.stepAdapterPath)).not.toContain('productsAreListed(')
+    expect(await read(first.testPath)).not.toContain('productsAreListed(')
+  })
+
+  test.each([
+    ['export function createSteps( {', 'INVALID_STEP_ADAPTER'],
+    ['export function createSteps() { return externalSteps }', 'UNSUPPORTED_STEP_ADAPTER'],
+  ])(
+    'leaves both outputs intact if the adapter cannot be synchronized: %s',
+    async (adapter, code) => {
+      const input = path.join(workspace, 'shop.feature.md')
+      await writeFile(input, MINIMAL)
+      const first = await generate(input, workspace, { runner: 'vitest' })
+      const testBefore = await read(first.testPath)
+      await writeFile(first.stepAdapterPath, adapter)
+      await writeFile(input, MINIMAL.replace('the shop is open', 'the shop is closed'))
+
+      await expect(generate(input, workspace, { runner: 'vitest' })).rejects.toMatchObject({ code })
+      expect(await read(first.testPath)).toBe(testBefore)
+      expect(await read(first.stepAdapterPath)).toBe(adapter)
+    },
+  )
 })
 
 describe('step identity', () => {
@@ -489,6 +579,40 @@ describe('warnings', () => {
 })
 
 describe('--check', () => {
+  test.each(['missing method', 'obsolete method', 'changed parameters'])(
+    'detects an adapter with %s without writing',
+    async (drift) => {
+      const input = path.join(workspace, 'shop.feature.md')
+      await writeFile(input, MINIMAL)
+      const first = await generate(input, workspace, { runner: 'vitest' })
+      const original = await read(first.stepAdapterPath)
+      let adapter: string
+      if (drift === 'missing method') {
+        adapter = original.replace(/ {4}theShopIsOpen\(\): void \{[\s\S]*? {4}\},\n/, '')
+      } else if (drift === 'obsolete method') {
+        adapter = original.replace('  return {', '  return {\n    obsolete(): void {},')
+      } else {
+        adapter = original.replace('theShopIsOpen()', 'theShopIsOpen(unused: string)')
+      }
+      await writeFile(first.stepAdapterPath, adapter)
+      const testBefore = await read(first.testPath)
+
+      await expect(
+        generate(input, workspace, { runner: 'vitest', check: true }),
+      ).rejects.toMatchObject({
+        code: 'CHECK_FAILED',
+        message: expect.stringContaining('shop.feature.steps.ts'),
+      })
+      expect(await read(first.stepAdapterPath)).toBe(adapter)
+      expect(await read(first.testPath)).toBe(testBefore)
+
+      await generate(input, workspace, { runner: 'vitest' })
+      await expect(
+        generate(input, workspace, { runner: 'vitest', check: true }),
+      ).resolves.toMatchObject({ stepAdapterWritten: false })
+    },
+  )
+
   test('passes when both outputs are current', async () => {
     const input = path.join(workspace, 'shop.feature.md')
     await writeFile(input, MINIMAL, 'utf8')
@@ -540,7 +664,11 @@ describe('runners and migration', () => {
     const input = path.join(workspace, 'shop.feature.md')
     await writeFile(input, MINIMAL)
     const first = await generate(input, workspace, { runner: 'vitest' })
-    await writeFile(first.stepAdapterPath, '// User-owned implementation\n')
+    const implementation = (await read(first.stepAdapterPath)).replaceAll(
+      /throw new Error\('PENDING: [^']+'\)/g,
+      'return',
+    )
+    await writeFile(first.stepAdapterPath, implementation)
     await expect(
       generate(input, workspace, { runner: 'node:test', check: true }),
     ).rejects.toMatchObject({ code: 'CHECK_FAILED' })
@@ -549,7 +677,7 @@ describe('runners and migration', () => {
     expect(output).toContain("from 'node:test'")
     expect(output).toContain("from './shop.feature.steps.ts'")
     expect(output).not.toContain('vitest')
-    expect(await read(first.stepAdapterPath)).toBe('// User-owned implementation\n')
+    expect(await read(first.stepAdapterPath)).toBe(implementation)
     await expect(
       generate(input, workspace, { runner: 'node:test', check: true }),
     ).resolves.toMatchObject({ scenarioCount: 1 })

@@ -1,4 +1,4 @@
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { CodegenError } from './errors.js'
 import { parseFeature } from './parse.js'
@@ -6,6 +6,7 @@ import { planFeature } from './plan.js'
 import { GENERATED_HEADER } from './render.js'
 import { type RunnerName, resolveRunner } from './runners.js'
 import { renderStepAdapter } from './steps.js'
+import { synchronizeStepAdapter } from './sync-steps.js'
 import type { GenerationReport } from './types.js'
 
 export interface GenerateOptions {
@@ -14,8 +15,8 @@ export interface GenerateOptions {
 }
 
 /**
- * Feature in, two files out: the Feature Test is always rewritten, the Step
- * Adapter is scaffolded only when it does not exist yet.
+ * Feature in, two synchronized files out. Existing step implementations survive
+ * while their signatures still occur in the Feature.
  */
 export async function generate(
   inputPath: string,
@@ -34,27 +35,36 @@ export async function generate(
   const parsed = await parseFeature(input, label)
   const plan = planFeature(parsed, label)
   const test = runner.render(plan, `./${prefix}.steps`)
-  const stepAdapterExists = await isFile(stepAdapterPath)
+  const currentStepAdapter = await read(stepAdapterPath)
+  const stepAdapter =
+    currentStepAdapter === undefined
+      ? renderStepAdapter(plan)
+      : synchronizeStepAdapter(plan, currentStepAdapter, display(stepAdapterPath))
+  const stepAdapterChanged = currentStepAdapter !== stepAdapter
 
   if (options.check) {
     const problems: string[] = []
     if ((await read(testPath)) !== test) problems.push(`out of date: ${display(testPath)}`)
-    if (!stepAdapterExists) problems.push(`missing: ${display(stepAdapterPath)}`)
+    if (currentStepAdapter === undefined) problems.push(`missing: ${display(stepAdapterPath)}`)
+    else if (stepAdapterChanged) problems.push(`out of date: ${display(stepAdapterPath)}`)
     if (problems.length > 0) {
       throw new CodegenError('CHECK_FAILED', `Regenerate this Feature:\n${problems.join('\n')}`)
     }
   } else {
     await mkdir(output, { recursive: true })
     await writeGenerated(testPath, test)
-    if (!stepAdapterExists) {
-      await writeFile(stepAdapterPath, renderStepAdapter(plan), { encoding: 'utf8', flag: 'wx' })
+    if (stepAdapterChanged) {
+      await writeFile(stepAdapterPath, stepAdapter, {
+        encoding: 'utf8',
+        flag: currentStepAdapter === undefined ? 'wx' : 'w',
+      })
     }
   }
 
   return {
     scenarioCount: plan.scenarios.length,
     stepAdapterPath,
-    stepAdapterWritten: !options.check && !stepAdapterExists,
+    stepAdapterWritten: !options.check && stepAdapterChanged,
     stepCount: plan.steps.length,
     testPath,
     warnings: parsed.warnings,
@@ -92,15 +102,6 @@ async function read(target: string): Promise<string | undefined> {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
     return undefined
-  }
-}
-
-async function isFile(target: string): Promise<boolean> {
-  try {
-    return (await stat(target)).isFile()
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
-    return false
   }
 }
 
