@@ -1,6 +1,6 @@
 {
   "name": "feat2test",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Turn Gherkin Features into deterministic tests for Vitest or node:test.",
   "keywords": [
     "bdd",
