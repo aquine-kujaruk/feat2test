@@ -1,67 +1,123 @@
-# Authoring Guide
+# Authoring guide
 
-Worked examples for [the skill](../SKILL.md). They teach sentence structure and
-reasoning, not a taxonomy to copy. The supplied specification and its established
-vocabulary always take precedence over the example domains.
+These constructed examples teach decisions and formulations. Their concepts,
+values, and rules are not requirements for the user's domain. Apply
+[domain discovery](domain-discovery.md) first and
+[format and language](gherkin-format.md) to the chosen representation. Unless
+another target is stated, the examples specify planned software through its
+public use-case interface and therefore carry `@code`.
 
-## Decomposition — relationships and their values
+## Let the objective select the relevant source knowledge
 
-A compound fact hides several independently variable properties. This fragment
-bundles product count, quantity per product, and delivery method:
+Consider a constructed incident handbook: preserve reported symptoms; suggest a
+next diagnostic without claiming it ran; summarize the supplied incident record
+without adding facts. A separate chapter describes organizing staff training.
+
+| Contextual objective | Relevant use case and observable outcome | Target |
+| --- | --- | --- |
+| A skill guiding an agent through investigation planning | Propose a next diagnostic grounded in the reported symptoms; retain what is still unknown and do not claim execution. | `@skill` |
+| A prompt executed by a model to summarize an incident | Summarize the supplied record faithfully; unknown causes remain unknown. | `@prompt` |
+
+The same source supplies different contracts. Neither objective authorizes a
+training-management Feature. If neither objective is established, the calling
+agent exposes that choice; the guide does not select one or conduct an interview.
+Once a purpose is known, a missing diagnostic policy can remain open without
+blocking supported behavior. Source knowledge is evidence, not an asset by itself.
+
+## Software calling a model remains a software target
+
+Suppose an application's public operation answers an eligibility query and calls
+a model internally. If tests invoke that application, its Feature is `@code`.
+Examples describe input facts and the required eligibility answer; they do not
+require a model call count, provider, or deterministic result merely from the
+tag. Testing a prompt directly would be a separate verification boundary. For a
+planned prompt, do not write its implementation into a Background as a condition
+of acceptance: the contract states what its response must accomplish.
+
+## One review contract through a skill and a plugin
+
+This constructed review contract requires evidence for an incompatible public
+interface change and leaves files intact. The requested verification exercises
+both an agent applying a review skill and the hosting plugin's exposed review.
+The same domain examples apply to both targets:
+
+````markdown
+`@skill` `@plugin`
+# Feature: Review a public interface change
+
+## Rule: A finding identifies a supported compatibility defect and preserves files
+
+### Scenario Outline: Report removal of a required public function
+
+* Given the public contract requires exporting the function "`<functionName>`"
+* And the proposed change to "`<changedFile>`" is:
+  ```diff
+  - export function <functionName>() { return "ok"; }
+  + function <functionName>() { return "ok"; }
+  ```
+* When the change is reviewed against its public contract
+* Then a finding identifies "`<changedFile>`" and the missing public export "`<functionName>`"
+* And the finding explains that clients can no longer import "`<functionName>`"
+* And the review leaves the project files unchanged
+
+#### Examples:
+
+  | functionName | changedFile |
+  | formatEntry | public.ts |
+````
+
+The changed code is the review's input, not its implementation. Reading a diff,
+consulting a script, and fetching rules are possible internal steps; they do not
+become separate Features or a required call order. Do not duplicate this contract
+or add an Examples column choosing the test harness. If only the plugin's public
+operation were tested, it would carry only `@plugin`, despite bundling the skill.
+A review that finds no supported defect belongs to this same use case with its
+own example; a separate request to apply a fix has another purpose and contract.
+
+## Relationships, arguments, and roles
+
+Separate facts that can vary independently. A collection's number of distinct
+items, each item's quantity, and a chosen handling category are different facts.
+A subject identity and its quantity can be arguments of one cohesive relationship:
+`the tray contains <quantity> samples of <material>`. Keep the subject explicit;
+do not add a selection action to establish an implicit current subject.
+
+Inspect words as well as digits: “third” and “three” can hide example arguments.
+Inspect names too: a duration argument named `days` can obscure both quantity
+and unit. A horizon, reporting interval, and recurrence interval remain different
+roles even if all currently use the same unit and value. A named category such
+as “double room” stays a category; do not reinterpret its name as a room count.
+
+Separate reusable relationships from their values without dissolving them into
+`the entity has <property> equal to <value>` or `the actor performs <action>`.
+A profile identity can select a strategy; changing that identity does not make
+it a new lifecycle state. Infer the concept without inventing other profiles'
+behavior or catalog administration.
+
+## Fixed rules, source inputs, and diagnostic arguments
+
+In this constructed form, submission requires a ten-digit phone number and an
+answer to question 4. Rejection identifies its cause and preserves answers.
 
 ```markdown
-* Given the order contains three distinct products, five units of each, with standard delivery
-```
+`@code`
+# Feature: Submit a form
 
-Separate the properties and identify their arguments before writing the example:
+## Rule: Submission requires a ten-digit phone number and an answer to question 4
 
-| Relationship template | Example argument values |
-| --- | --- |
-| the order contains `<productCount>` distinct products | productCount = 3 |
-| the order contains `<unitsPerProduct>` units of each product | unitsPerProduct = 5 |
-| the order uses `<deliveryMethod>` delivery | deliveryMethod = standard |
+### Scenario Outline: Accept a complete submission with a valid phone number
 
-This is an explanatory Markdown table, not a Gherkin DataTable. The three
-relationships become separate conditions when all are relevant. In an Outline,
-bind their arguments through `Examples`, even if a value stays constant.
+* Given the form contains the phone number "`<phoneNumber>`"
+* And question `<questionNumber>` has the answer "`<answer>`"
+* When the user submits the form
+* Then the submission is accepted
 
-When a particular product matters, use "the order contains `<quantity>` units
-of product `<product>`". Product identity and quantity are arguments. Changing
-Pencil to Notebook preserves the wording. Keep the subject in the fact instead
-of adding a "select product" action.
+#### Examples:
 
-Units and the qualifier "distinct" belong to their relationships. Keep them:
-three distinct products are not three units. If the use case must discover a
-count, supply the collection to count. If it accepts an existing order with
-quantities, those quantities are valid prior facts. Decomposing them does not
-justify directing an internal counting procedure.
+  | phoneNumber | questionNumber | answer |
+  | 1234567890 | 4 | Yes |
 
-## Written numbers — negatives and rejection reasons
-
-Scan whole sentences for values, including numbers written as words. `ten`
-and `fourth` carry the same example data as `10` and `4`. Negating a fact or
-explaining a rejection does not make its arguments part of the relationship.
-
-These fragments show the relevant transformations:
-
-| Before | After |
-| --- | --- |
-| the fourth question has no answer | question `<questionNumber>` has no answer |
-| the submission is rejected because the phone number does not have ten digits | the submission is rejected; the rejection is due to the phone number not having `<requiredDigits>` digits |
-| the submission is rejected because the fourth question has no answer | the submission is rejected; the rejection is due to a missing answer to question `<questionNumber>` |
-
-The semicolons above separate two proposed assertions, not clauses to put into
-one Gherkin sentence. Bind the arguments and keep the cause observable:
-
-```markdown
-# Feature: Form submission
-
-This form requires a ten-digit phone number and an answer to the fourth question.
-A rejection reports its cause and preserves the entered answers.
-
-## Rule: The phone number must have ten digits
-
-### Scenario Outline: Reject a submission because "`<phoneNumber>`" has the wrong length
+### Scenario Outline: Reject a phone number with the wrong length
 
 * Given the form contains the phone number "`<phoneNumber>`"
 * And question `<questionNumber>` has the answer "`<answer>`"
@@ -76,9 +132,7 @@ A rejection reports its cause and preserves the entered answers.
   | 123456789 | 10 | 4 | Yes |
   | 12345678901 | 10 | 4 | Yes |
 
-## Rule: The fourth question requires an answer
-
-### Scenario Outline: Reject a submission without an answer to question `<questionNumber>`
+### Scenario Outline: Reject a missing required answer
 
 * Given the form contains the phone number "`<phoneNumber>`"
 * But question `<questionNumber>` has no answer
@@ -93,279 +147,159 @@ A rejection reports its cause and preserves the entered answers.
   | 1234567890 | 4 |
 ```
 
-The required ten and the question position four remain fixed by their rules.
-`requiredDigits` describes the expected diagnostic, not a configurable policy;
-`phoneNumber` is the source text the form must examine. Positive and negative
-answer facts use the same question argument. `But` does not replace the explicit `no`.
-Rejecting without the diagnostic would no longer cover the same behavior. Merely
-listing the required length is insufficient: the rejection must identify the
-length violation as its cause, not attach an unrelated policy reminder.
+The fixed counts stay in the rule. `requiredDigits` binds the expected diagnostic,
+not a selectable policy. `phoneNumber` supplies what the use case must examine;
+“the number has the wrong length” would precompute the decision. Positive and
+negative answer facts share their argument role. But does not replace `no`.
+Acceptance and rejection remain one use case with different scenario outcomes.
+The unspecified priority when both requirements fail is not invented here.
 
-Do not specialize a fact because its data violates a rule. A phone number with
-nine digits still uses `the form contains the phone number "<phoneNumber>"`.
-Adding "not ten" to this prior fact repeats a conclusion the use case must reach.
-Keep the failed requirement in the rejection's cause. `But` can introduce a
-positive fact when it expresses a contrast; it does not require extra negation.
+Never hide “question 4 has no answer” inside `<reason>`. Keep the missing-answer
+relationship and its position visible. Named diagnostic categories may be
+arguments when defined, but relevant values within a diagnosis remain explicit.
+Exact message text matters only when its wording is contractual.
 
-## Relative positions — preserve the selector
+## Relative selectors and cohesive collections
 
-`last` selects an item relative to its collection. It is not a fixed ordinal.
-Use an argument for that selector without changing its meaning:
+This constructed operation removes the selected bead and preserves the others'
+order. The collection describes one example; its rows are not separate scenarios.
 
 ```markdown
-# Feature: Shopping list items
+`@code`
+# Feature: Remove a bead from a strand
 
-## Rule: Removing an item preserves the other items and their order
+## Rule: Removing a selected bead preserves the other beads and their order
 
-### Scenario Outline: Remove the `<position>` item
+### Scenario Outline: Remove the `<position>` bead
 
-* Given the shopping list contains, in order:
-  | item |
-  | <firstItem> |
-  | <middleItem> |
-  | <lastItem> |
-* When the customer removes the `<position>` item
-* Then the shopping list contains, in order:
-  | item |
+* Given the strand contains, in order:
+  | bead |
+  | <firstBead> |
+  | <middleBead> |
+  | <lastBead> |
+* When the `<position>` bead is removed from the strand
+* Then the strand contains, in order:
+  | bead |
   | <remainingFirst> |
   | <remainingLast> |
 
 #### Examples:
 
-  | position | firstItem | middleItem | lastItem | remainingFirst | remainingLast |
-  | last | Milk | Bread | Eggs | Milk | Bread |
-  | first | Milk | Bread | Eggs | Bread | Eggs |
+  | position | firstBead | middleBead | lastBead | remainingFirst | remainingLast |
+  | last | Amber | Glass | Shell | Amber | Glass |
+  | first | Amber | Glass | Shell | Glass | Shell |
 ```
 
-Here `position` binds a relative position and `lastItem` identifies an item in
-the initial collection. The last item happens to be third in these examples;
-a longer list would have another last position. Use an absolute position only
-when that is the relationship the example needs. A named concept such as
-"standard delivery" likewise remains a domain concept, even if its definition
-contains a duration; do not replace the concept with an incidental number.
+`position` can bind `last` without fixing the collection's length. Distinct local
+bindings identify simultaneous values of the `bead` field. Renaming all of them
+`<bead>` would force different records to share one value. Preserve known sets
+as collections when that expresses the example best; these local scalar bindings
+make the varying expected collection explicit, not a universal table schema.
+For a fixed collection with no meaningful scalar variation, a plain Scenario
+with a concrete DataTable can be clearer than many artificial columns.
 
-The table heading `item` names a field of the collection. Bindings such as
-`firstItem`, `lastItem`, and `remainingFirst` identify values within this example;
-they all supply that same field without becoming new relationships. Replacing
-them all with `<item>` would force distinct entries to share one Examples value.
-Stable table headings make this correspondence explicit while preserving the
-different bindings. Use a table when the records form a cohesive collection.
-Equivalent scalar facts can also retain distinct local names when needed;
-review their meanings and correspondence rather than requiring identical names.
+A negative selector remains explicit: `the <position> item has no answer`, with
+`position = last`. Do not substitute an expected fixed ordinal or a blank cell.
+When accepted inputs can have different lengths, vary lengths to exercise that
+relative meaning where the source supports it.
 
-## Concise wording — preserve the claim
+## Different purposes, shared quantities
 
-Use the shortest grammatical sentence that preserves the domain relationship.
-Prefer a direct verb and a specific subject. Review nested clauses, repeated
-context, and explanations that merely expand a term already defined in a rule.
-The literal wording should identify the fact or action when its argument values
-are hidden; a reader should not need to decode abbreviations or generic labels.
-
-| Before | After, when supported by the existing rule and vocabulary |
-| --- | --- |
-| the order is rejected because the delivery address does not include both a street and a house number | the order is rejected for an incomplete delivery address |
-| the form indicates that all required fields have answers | the form indicates that it is complete |
-
-The first rewrite applies only when "incomplete delivery address" already means
-that the address lacks a street, a house number, or both. Keep separate examples
-for a missing street with a house number present, and a missing house number
-with a street present. "Does not include both a street and a house number"
-negates their conjunction; it must not become two assertions demanding that both
-be missing. The rejection still names its cause.
-
-In the second rewrite, "complete" must already mean that every required field
-has a response. It says nothing about the format of those responses. Keep the
-length check for the phone number separate: a complete form can still contain an
-invalid phone number. If this meaning is not established, retain the explicit
-claim; do not invent a "valid form" status to shorten the sentence.
-
-Do not move a whole proposition into an argument just to shorten the wording.
-For example, `the submission is rejected because <reason>` with the value
-"the fourth question has no answer" still hides a relation and its position
-inside prose. A named reason can be an argument when the domain already defines
-that category; any relevant quantity or location remains a separate argument.
-
-Precision takes priority over length. Retain `no`, `only`, `all`, `except`,
-units, temporal scope, and required causes. Articles and necessary prepositions
-keep the sentence grammatical. Never change domain terms, erase diacritics,
-or concatenate words to make the specification resemble code.
-
-## A single example — explicit arguments
-
-One concrete example can instantiate a reusable relationship. The quantity is
-an argument in both the action and its result.
-
-```markdown
-# Feature: Cart quantities
-
-## Rule: A cart line accepts at most ten units
-
-### Scenario Outline: Accept `<quantity>` units within the purchase limit
-
-* Given the cart is empty
-* When the customer adds `<quantity>` units of the product
-* Then the cart contains `<quantity>` units of the product
-
-#### Examples:
-
-  | quantity |
-  | 5 |
-```
-
-The example exercises a business action and observes its result. A single row
-is enough; extra cases need a behavioral reason. The product's identity is
-omitted because it does not affect this rule. A plain Scenario remains suitable
-when no scalar arguments are needed, such as emptying an already empty cart.
-
-## Variations — Scenario Outline
-
-Add rows when several examples share the same intent and kind of outcome.
-
-```markdown
-# Feature: Number formatting
-
-## Rule: Values follow the selected language conventions
-
-### Scenario Outline: Display `<value>` using `<language>`
-
-* When value `<value>` is formatted for language `<language>`
-* Then display shows `<formatted>`
-
-#### Examples:
-
-  | value | language | formatted |
-  | 1234.56 | Spanish | 1.234,56 |
-  | 1234.56 | English | 1,234.56 |
-```
-
-The action stays the same while the applicable language convention changes.
-These examples expose the variation without prescribing its implementation.
-Formatting is an observation: it does not require a business-state mutation.
-
-## Boundaries — same Rule, different Scenario
-
-Rows sharing an outcome stay together; the example that flips it gets its own
-Outline. Ten stays fixed in the rule; the requested quantity is an argument,
-including the row whose value is ten. The customer does not choose the limit.
-The prior quantity also matters: the limit applies to the resulting cart line.
-
-```markdown
-# Feature: Cart quantities
-
-## Rule: A cart line accepts at most ten units
-
-### Scenario Outline: Accept `<quantity>` units with `<initialQuantity>` already in the cart
-
-* Given the cart initially contains `<initialQuantity>` units of the product
-* When the customer adds `<quantity>` units of the product
-* Then the cart contains `<resultingQuantity>` units of the product
-
-#### Examples:
-
-  | initialQuantity | quantity | resultingQuantity |
-  | 0 | 9 | 9 |
-  | 0 | 10 | 10 |
-  | 4 | 6 | 10 |
-
-### Scenario Outline: Reject `<quantity>` units with `<initialQuantity>` already in the cart
-
-* Given the cart initially contains `<initialQuantity>` units of the product
-* When the customer adds `<quantity>` units of the product
-* Then adding the product is rejected because the purchase limit is reached
-* And the cart still contains `<initialQuantity>` units of the product
-
-#### Examples:
-
-  | initialQuantity | quantity |
-  | 0 | 11 |
-  | 4 | 7 |
-```
-
-The same action keeps the same wording and argument in both outcomes. The
-rejection names the violated rule and observes the preserved state. Replacing
-the two outcomes with a generic assertion such as "the result is `<result>`"
-would hide these distinctions.
-
-`initialQuantity`, `quantity`, and `resultingQuantity` have different meanings
-even where their values coincide. Reusing `initialQuantity` in the rejection's
-consequence expresses preservation. Zero is relevant here: it establishes an
-empty initial quantity without an implicit default.
-
-## Presence, absence, and the relevant property
-
-```markdown
-* Given the customer has a billing address
-* Given the customer has no billing address
-* Then the billing address has postal code `<postalCode>`
-```
-
-These are alternative examples of phrasing, not conditions to combine. The first
-two state presence or absence without incidental address details. The third
-is an Outline template: bind `postalCode` to a concrete value such as 28013 in
-`Examples`. It names only the property the rule verifies.
-
-## Collections — a DataTable of one cohesive set
-
-```markdown
-# Feature: Order confirmation
-
-## Rule: Every requested product must be available for confirmation
-
-### Scenario Outline: Reject an order containing unavailable `<unavailableProduct>`
-
-* Given the order contains:
-  | product |
-  | <availableProduct> |
-  | <unavailableProduct> |
-* And product `<availableProduct>` is available
-* But product `<unavailableProduct>` is unavailable
-* When the customer confirms the order
-* Then order confirmation is rejected because a requested product is unavailable
-
-#### Examples:
-
-  | availableProduct | unavailableProduct |
-  | Pencil | Notebook |
-```
-
-The table describes the contents of one order. The unavailable product is part
-of that order, so its unavailability explains the rejection. `But` contrasts the
-two products' availability while continuing the prior conditions; it does not
-negate the sentence automatically.
-
-The product references stay consistent between the collection and its conditions.
-Placeholders inside the DataTable are bare; adding backticks there would make
-the backticks part of the product names. The `Examples` values are plain data too.
-
-## Coherent domain facts
-
-```markdown
-* Given the parcel is oversized
-* And the destination is outside the delivery area
-```
-
-Size and destination are independent conditions. Keep them separate. Conversely,
-when eligibility for a service depends on a domain category such as "oversized",
-use that term. Expand its defining measurements only in examples about the
-category's thresholds.
-
-Every condition must remain true alongside the others. For example, an order
-cannot contain an unavailable product while all its requested products are
-available. Make exceptions explicit and keep the subject of each condition clear.
-
-## Source inputs — let the use case establish the result
-
-When a form counts words in a comment, begin with the entered text. This example
-uses native `.feature` syntax:
+In this constructed coating model, material volume is area multiplied by
+consumption per area; the factors use matching units. There is no conversion or
+rounding policy. The whole use case estimates required material:
 
 ```gherkin
-Feature: Word counts for comments
+@code
+Feature: Estimate coating volume
+
+  Rule: Required volume equals area multiplied by consumption per area
+
+    Scenario Outline: Estimate <requiredVolume> <volumeUnit> for a surface
+      Given the surface area is <area> <areaUnit>
+      And coating consumption is <consumption> <volumeUnit> per <areaUnit>
+      When required coating volume is estimated
+      Then required coating volume is <requiredVolume> <volumeUnit>
+
+      Examples:
+        | area | areaUnit | consumption | volumeUnit | requiredVolume |
+        | 3    | m2       | 2           | L          | 6              |
+        | 4    | m2       | 2           | L          | 8              |
+```
+
+A factor of 2 exposes an omitted multiplication that factor 1 would hide.
+Units and quantity roles remain explicit, even if a unit has only one supported
+value. This example does not authorize arbitrary units or conversions.
+
+A separately requested sufficiency decision is another use case. It accepts an
+already established requirement and available volume. Its comparison preserves
+availability; determining the requirement is outside this particular boundary.
+
+```gherkin
+@code
+Feature: Check coating availability
+
+  Rule: Available coating is sufficient when it meets the required volume
+
+    Scenario Outline: Enough coating is available
+      Given required coating volume is <requiredVolume> <volumeUnit>
+      And available coating volume is <availableVolume> <volumeUnit>
+      When coating sufficiency is assessed
+      Then available coating is sufficient
+      And available coating volume remains <availableVolume> <volumeUnit>
+
+      Examples:
+        | requiredVolume | availableVolume | volumeUnit |
+        | 6              | 6               | L          |
+        | 6              | 7               | L          |
+
+    Scenario Outline: Available coating is insufficient
+      Given required coating volume is <requiredVolume> <volumeUnit>
+      And available coating volume is <availableVolume> <volumeUnit>
+      When coating sufficiency is assessed
+      Then available coating is insufficient
+      And available coating volume remains <availableVolume> <volumeUnit>
+
+      Examples:
+        | requiredVolume | availableVolume | volumeUnit |
+        | 6              | 5               | L          |
+```
+
+Both Features share the meaning of required volume. Neither scenario relies on
+another having run. Equality belongs to the accepted class; below it belongs to
+rejection. The same quantity values in different roles do not justify merging
+those arguments. A composition that chooses a coating plan could have its own
+purpose if the source defines it; do not invent that process from these examples.
+
+## Preserve logic and independent dimensions
+
+“Does not include both a street and a house number” means at least one is missing.
+It must not become two assertions requiring both to be absent. If “incomplete
+address” already names that criterion, the shorter diagnosis can use it; retain
+examples for each mixed state and both absent. Do not invent that term solely to
+shorten a sentence.
+
+Likewise, completeness does not imply validity: all required form answers can
+be present while one answer violates its format. Keep those dimensions distinct.
+A verdict can summarize established criteria; it cannot replace examples that
+distinguish their failures. Use the shortest grammatical wording that preserves
+subjects, `only`, `all`, `except`, negation, comparisons, units, timing and causes.
+Length is a review signal, not an acceptance metric.
+
+## Examine the actual input to a derivation
+
+This constructed word-counting rule defines words as nonempty groups separated
+by spaces. It does not require any particular splitting algorithm.
+
+```gherkin
+@code
+Feature: Count words in a comment
 
   Rule: Words are nonempty groups of characters separated by spaces
 
-    Scenario Outline: Report <wordCount> words for "<text>"
+    Scenario Outline: Report <wordCount> words in a comment
       Given the comment contains "<text>"
-      When the user requests the comment word count
+      When the comment word count is requested
       Then the word count is <wordCount>
 
       Examples:
@@ -375,50 +309,16 @@ Feature: Word counts for comments
         | red   blue | 2         |
 ```
 
-The rows distinguish one word, multiple words, and repeated separators. Starting
-with "the comment has already been divided into words" would assume the work
-being examined. Directing the user to split, filter, and count would prescribe
-the algorithm. The business action remains requesting the word count.
+Starting with an already computed word list would assume the work under
+examination. For another use case that accepts a saved count, that count may be
+appropriate prior state. Keep that boundary explicit.
 
-A derived fact can still be appropriate prior state for a different rule. A saved
-order total may be relevant to a delivery discount if that use case accepts an
-order whose total has already been established. Check the actual boundary rather
-than treating every derived property as forbidden or silently changing what the
-user supplies.
+## Discover coverage without inventing outcomes
 
-## Business use cases and observable consequences
-
-```markdown
-* When the customer confirms the order
-* Then the order is confirmed
-```
-
-Avoid:
-
-```markdown
-* When the customer clicks the confirm button
-* And a POST request is sent
-* Then the orders table contains a confirmed row
-```
-
-The first example names the business use case and its result. In the Detroit
-approach, the domain's actual behavior is exercised through that use case.
-Internal call sequences and component interactions are outside the specification.
-Naming the class that implements the use case would also expose mechanism.
-
-## Coverage sketch
-
-Optional. When coverage feels incomplete, sketch business states against the
-action to find the missing scenarios — not to document them, and not to generate
-every permutation.
-
-```text
-Pending   x Confirm order -> Confirmed
-Confirmed x Confirm order -> Unchanged
-Cancelled x Confirm order -> Rejected
-```
-
-Each scenario supplies one concrete example of a transition or observation.
-For rejection, include any relevant preserved state. For a query, identify the
-observable answer; no mutation is needed. Independent examples never rely on
-the preceding scenario to establish their initial state.
+Sketch state/event pairs from the source to find unanswered questions. Consider
+mixed independent dimensions, repeated requests, refusals, observations, and
+missing inputs. A query checks an answer; relevant preserved state may also be
+part of its contract. A recommendation is observed as advice, not as proof of
+compliance. Complete supported cases while identifying a missing conversion,
+rounding, or transition rule separately. Do not invent a policy to fill the
+sketch or claim exhaustiveness from the number of combinations.

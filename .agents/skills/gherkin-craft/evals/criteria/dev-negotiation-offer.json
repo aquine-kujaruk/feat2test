@@ -1,0 +1,18 @@
+{
+  "case_id": "dev-negotiation-offer",
+  "predeclared": true,
+  "criteria": {
+    "F": "No acceptance, conversion or invented non-price policy; original offer preserved.",
+    "A": "Separate concepts from instances and retain independent dimensions; infer only needed abstractions.",
+    "T": "Keep consistent meanings and distinguish semantic roles or ambiguous terms.",
+    "U": "One whole purpose per Feature; shared concepts and supported composition remain coherent; outcome variants stay together.",
+    "C": "Below/equal/above limit and absent limit; same currency; observed reason.",
+    "P": "Explicit meaningful bindings, units, identities, constants, quantifiers, source inputs and cohesive collections.",
+    "I": "Observable source-domain behavior; no unnecessary implementation or evaluation machinery.",
+    "L": "Requested format and language; concrete rows survive parsing; Spanish native declaration; unresolved Markdown dialect reported honestly.",
+    "D": "Requested files/findings only; review-only untouched; editorial review or disclosed fallback; gaps separate from defects.",
+    "O": "Specify offer assessment, not preparation or attendance. Shared source concepts retain their meanings.",
+    "B": "One offer-assessment contract with pass/fail/undecided outcomes together.",
+    "V": "@prompt only; scoring strategy does not change tag."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "case_id": "dev-transcript-review",
+  "criteria": {
+    "F": "Findings grounded in transcript; do not claim all boundary classes missing because 9/10/11 already exist.",
+    "A": "Recognizes independent components and understanding, and advice distinct from capability acquisition.",
+    "T": "Identifies readiness and preparation advice as different purposes.",
+    "U": "Broad Feature combines advice, readiness, checklist completeness and qualification; flag meaning-based boundaries without mere Feature count criticism.",
+    "C": "Finds missing single-failure readiness examples, repeated advice behavior and unsupported knowledge change; retains qualification boundaries.",
+    "P": "Finds position 3 conflicts with relative last for five checks; detects missing concrete bindings/Examples of first Outline; not-both should not be narrowed to neither.",
+    "I": "No recommendation claimed to execute activity.",
+    "L": "Does not claim # language: es resolves Markdown dialect; current review proceeds despite future format constraint.",
+    "D": "No writes; findings only with evidence and minimum corrections, source gap separate from defect.",
+    "O": "Reuse prior executable objective; source facts support that purpose and do not substitute another asset.",
+    "B": "One public action/query per Feature; no Features for implementation-only steps.",
+    "V": "Review should identify missing @prompt Feature metadata along with intent and use-case errors."
+  },
+  "predeclared": true
+}

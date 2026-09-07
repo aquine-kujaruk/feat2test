@@ -1,0 +1,99 @@
+{
+  "predeclared": true,
+  "assessment": "Independent criterion-level pass/fail/unverified. Use not-applicable only with a reason. Every applicable criterion is mandatory; semantic failures cannot be averaged away.",
+  "rubric_path": ".agents/skills/gherkin-craft/evals/rubric.json",
+  "authoring_visibility": "Evaluator-only until candidate freeze; never include this file or findings in an authoring run.",
+  "evidence_policy": "Cite source section and produced file lines; use run trace for context-reuse and review claims. Wording and filenames may vary. Evaluate contracts and retained behavior, not matching a preferred answer.",
+  "case_id": "transfer-plugin-procedure",
+  "criteria": {
+    "E-purpose": {
+      "name": "Executable asset and domain purpose",
+      "mandatory": true,
+      "check": "Specifications describe clerk-visible parcel placement and cancellation through the installed ParcelNook plugin. Domain concepts come from the parcel-room allocation procedure. They do not specify the skill-writing workflow, recreate a physical parcel-room SOP as the tested object, or silently replace the installable plugin with the picker skill or store library.",
+      "source_evidence": ["Project context", "Placing a parcel", "Canceling a placement"]
+    },
+    "E-context": {
+      "name": "Use established context and respect actor responsibilities",
+      "mandatory": true,
+      "check": "The authoring agent reuses the named plugin, two public commands, release stage, source agreement, and scope rather than asking the user to choose the already stated asset or domain. It may flag undecided policy in the requested comments. If process responsibility is discussed, calling-agent context gathering and interaction remain distinct from gherkin-craft guidance; the guide is not a runtime orchestrator.",
+      "source_evidence": ["Request", "Project context", "Release scope"]
+    },
+    "E-boundary": {
+      "name": "Boundary metadata",
+      "mandatory": true,
+      "check": "Both public-use-case Features carry @plugin as actual Markdown Gherkin Feature metadata. The locker-picker skill and LockerStore code library are internal dependencies, not independent tested boundaries here; @skill, @code, or @prompt category tags are unsupported. Multiple category tags require an explicit same-contract test through every named boundary, which is absent.",
+      "source_evidence": ["Project context", "Fit scan", "Release scope"]
+    },
+    "F": {
+      "name": "Fidelity, scope, and unknown policy",
+      "mandatory": true,
+      "check": "Retain the choice rule, equality sufficiency, placement/cancellation effects, preserved state, active retry rule, and refusal reason. Keep equal-capacity tie breaking, changed inputs under a reused active request ID, unknown assignment ID response, and canceled request-ID reuse unresolved. Scope is ordinary ambient parcels, allocation, and cancellation; no settled behavior for chilled/hazardous handling, ownership checks, physical deposit/collection, or service-condition changes is invented.",
+      "source_evidence": ["Fit scan", "Placing a parcel", "Canceling a placement", "Release scope"]
+    },
+    "A": {
+      "name": "Useful abstraction and independent facts",
+      "mandatory": true,
+      "check": "Locker ID, capacity in litres, service condition, and allocation are distinct; assignment ID, request ID, parcel ID, and deposited status retain their different roles. Do not conflate blocked with assigned or canceled with serviceable. State changes are attached to the right object. Shared concepts remain coherent across both public use cases without gratuitous entities or lifecycle operations.",
+      "source_evidence": ["The locker ledger", "Training ledger", "Canceling a placement"]
+    },
+    "T": {
+      "name": "Terminology and semantic identity",
+      "mandatory": true,
+      "check": "Placement request ID is the active retry key, assignment ID is the cancellation target, parcel ID identifies the parcel, and locker ID identifies the allocated place. Usable/blocked, assigned/unassigned, active/canceled, and deposited/not deposited remain distinct meanings. A cancellation makes a locker unassigned without implying usable.",
+      "source_evidence": [
+        "The locker ledger",
+        "Placing a parcel retry paragraph",
+        "Canceling a placement"
+      ]
+    },
+    "U": {
+      "name": "Whole-use-case decomposition with shared concepts",
+      "mandatory": true,
+      "check": "Represent placement and cancellation as two distinct whole Feature purposes with shared ledger/assignment concepts. Group successful placement, no eligible locker, and active retry under placement; group cancellation success, deposited refusal, and canceled retry under cancellation. The fit scan, ledger schema, and source chapter headings do not justify additional Features; neither does splitting outcomes into accept/reject Features. Do not collapse both public intentions into one undifferentiated lifecycle Feature.",
+      "source_evidence": [
+        "Project context",
+        "Fit scan",
+        "Placing a parcel",
+        "Canceling a placement"
+      ]
+    },
+    "C": {
+      "name": "Independent state, boundaries, repeats, preservation",
+      "mandatory": true,
+      "check": "Placement examples discriminate service and allocation facts, minimum sufficient capacity including equality, too-small rejection, and smallest eligible choice; the mixed training ledger must not select blocked or assigned lockers. An active retry returns the original assignment and locker without allocating another, including after blocking. Cancellation covers active/not-deposited success on a blocked locker, deposited refusal, canceled repeat, preserved capacity/service condition, and unrelated assignments. Rejection/no-eligible behavior preserves ledger state. Equivalent concrete examples are acceptable.",
+      "source_evidence": [
+        "Training ledger and worked placements",
+        "Placing a parcel",
+        "Canceling a placement"
+      ]
+    },
+    "P": {
+      "name": "Arguments, quantities, and collections",
+      "mandatory": true,
+      "check": "Capacities and requirements carry litres; comparisons bind the same parcel requirement to candidate lockers. Explicit request/parcel/assignment/locker identities support creation, retries, and cancellation; created assignment IDs may be captured rather than assigned an invented generation algorithm. Ledger tables retain cohesive rows and meanings, including existing assignment identity and deposit fact. Expected no-change claims have a clear starting ledger or named object set.",
+      "source_evidence": [
+        "The locker ledger",
+        "Training ledger and worked placements",
+        "Canceling a placement"
+      ]
+    },
+    "I": {
+      "name": "Implementation independence at the plugin boundary",
+      "mandatory": true,
+      "check": "Behavior may refer to the real public command names and installed plugin context, but remains clerk-observable allocation/cancellation behavior. Do not prescribe router code, storage schema, skill invocation trace, transaction design, UUID format, API/server setup, or expose the private fit-scan routine as a public action. Service-condition changes or deposited status can be scenario premises; no unsupported public operation is invented to create them.",
+      "source_evidence": ["Project context", "Fit scan", "Release scope"]
+    },
+    "L": {
+      "name": "Markdown English format and parsed rows",
+      "mandatory": true,
+      "check": "Produce English .feature.md files under output/ using the supported Markdown Gherkin dialect. Features, rules, scenarios, category tags, examples, and tables must survive the applicable parser; concrete ledger row counts and units/identities must not be lost. Decisions remain comments rather than asserted rules. If the actual parser is unavailable, report that limitation honestly instead of asserting parse success.",
+      "source_evidence": ["Request"]
+    },
+    "D": {
+      "name": "Deliverables and review",
+      "mandatory": true,
+      "check": "Only requested specifications and indispensable unresolved decisions are delivered; no implementation, plugin skeleton, skill implementation, or unrelated documentation. A separate editorial review is evidenced, or its absence and local fallback are accurately disclosed. Unknown source policy is separate from implementation or spec defects.",
+      "source_evidence": ["Request", "Project context"]
+    }
+  }
+}

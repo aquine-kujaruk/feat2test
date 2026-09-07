@@ -1,0 +1,18 @@
+{
+  "case_id": "reserved-b",
+  "criteria": {
+    "F": "Only reading-list completeness and dated-entry window decision; empty-list and undated classification unresolved, no automatic window inference.",
+    "A": "Publication edition and event edition distinct contexts; known/unknown identifier separate from missing date.",
+    "T": "Publication year, event year, assigned date, window start/end not collapsed despite similar temporal types.",
+    "U": "Two distinct decision purposes share consistent reading-entry meanings and do not depend on scenario execution order.",
+    "C": "Inclusive endpoints exercised and derived outside window values may be used; list assessment does not change it; missing last date distinct from unknown identity.",
+    "P": "Ordered reading-list entries remain cohesive; last stays relative; explicit absence not blank; concrete values bind across rows.",
+    "I": "No registration/catalog-management/backend implementation.",
+    "L": "Markdown interpreted tables preserve rows, no separator formatting data.",
+    "D": "Only requested specs and indispensable open decisions.",
+    "O": "Reuse prior executable objective; source facts support that purpose and do not substitute another asset.",
+    "B": "One public action/query per Feature; no Features for implementation-only steps.",
+    "V": "Completed Features @plugin only; no automatic @skill or @code dependency tags."
+  },
+  "predeclared": true
+}

@@ -1,0 +1,18 @@
+{
+  "case_id": "dev-prose",
+  "criteria": {
+    "F": "Ideal-model/source claims retained; no invented partial-reel, joining or rounding policy; no unit conversion.",
+    "A": "Marker count, gaps, gap length, cord requirement, available cord and reel length meaningful concepts with roles.",
+    "T": "Shared required cord quantity consistent between calculation and capacity question.",
+    "U": "Cord calculation and capacity decision separate purposes; reel estimate qualified unresolved where needed.",
+    "C": "Derived example with more than two markers distinguishes n−1 multiplier from factor one; capacity includes equality and meaningful sides; query does not reserve cord.",
+    "P": "Calculation begins with marker count/gap length, not required cord already supplied; output bindings vary correctly.",
+    "I": "Agent outcomes concern supported planning answers; do not invent purchases or execution of the future skill.",
+    "L": "Markdown headings and steps, indented tables, no separator rows or literal formatting markup in data.",
+    "D": "No unsolicited glossary; unresolved purchasing decisions separate from established calculation.",
+    "O": "Reuse prior executable objective; source facts support that purpose and do not substitute another asset.",
+    "B": "One public action/query per Feature; no Features for implementation-only steps.",
+    "V": "Completed Features @skill only; advice/calculation does not claim the workshop acted."
+  },
+  "predeclared": true
+}

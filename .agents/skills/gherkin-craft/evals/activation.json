@@ -1,0 +1,64 @@
+{
+  "version": "2.0",
+  "target_host": "Codex desktop",
+  "observation_required": "Actual skill file load and selected path in target host; self-reported hypothetical activation is not evidence. CLI selection is supplementary only.",
+  "cases": [
+    {
+      "id": "explicit",
+      "request": "Use $gherkin-craft to write native .feature specifications for our planned library lending application. A loan is granted only when the copy is available; granting it makes the copy unavailable. A rejected loan preserves availability.",
+      "expected_selection": true,
+      "coverage": "explicit invocation"
+    },
+    {
+      "id": "native-author",
+      "request": "Write Gherkin .feature files for an equipment-loan application: availability queries preserve state; lending an available unit makes it unavailable; unavailable units cannot be lent.",
+      "expected_selection": true,
+      "coverage": "native Gherkin"
+    },
+    {
+      "id": "markdown-review",
+      "request": "Review this .feature.md against that requirement, findings only: # Feature: Review a change\n## Scenario: Review preserves files\n* Given a changed project\n* When review is requested\n* Then the project files are automatically edited",
+      "expected_selection": true,
+      "coverage": "Markdown review",
+      "prior_context": "We are specifying a review skill for an agent. Reviews must leave project files intact."
+    },
+    {
+      "id": "article-domain",
+      "request": "Use this article to define the intended behavior as concrete examples: a finding cites a changed file, a violated public rule and an input showing the defect; if no defect is supported, report none. The article also describes meeting attendance, unrelated to review.",
+      "expected_selection": true,
+      "coverage": "intent carried in context; source without Gherkin keyword",
+      "prior_context": "We are building a development skill that guides an agent in reviewing a change and returns evidence-backed findings without editing files."
+    },
+    {
+      "id": "transcript-domain",
+      "request": "Turn this transcript into behavioral specifications: if a component is missing, recommend acquiring it; if assembly knowledge is missing, recommend practice; if both, recommend both. Advice changes neither components nor knowledge.",
+      "expected_selection": true,
+      "coverage": "transcript without Gherkin keyword",
+      "prior_context": "We are designing a prompt executed by a model to suggest preparation for a workshop."
+    },
+    {
+      "id": "ordinary-summary",
+      "request": "Summarize in three plain-language sentences: a review finding should cite a changed file and a public rule; unsupported findings should be omitted; review leaves project files intact. Do not produce specifications.",
+      "expected_selection": false,
+      "coverage": "nearby plain summary"
+    },
+    {
+      "id": "ordinary-code",
+      "request": "Implement a Python function that sums a list of integers. Include a short usage example.",
+      "expected_selection": false,
+      "coverage": "ordinary code task"
+    },
+    {
+      "id": "file-count",
+      "request": "Count how many .feature files exist in this directory. Do not read or change their content.",
+      "expected_selection": false,
+      "coverage": "keyword-only near miss"
+    },
+    {
+      "id": "transcript-edit",
+      "request": "Fix punctuation only in this transcript, preserving every word: speaker one review the patch speaker two leave the files intact",
+      "expected_selection": false,
+      "coverage": "ordinary transcript editing"
+    }
+  ]
+}

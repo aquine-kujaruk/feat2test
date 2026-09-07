@@ -1,0 +1,78 @@
+{
+  "version": "2.0",
+  "assessment": "Criterion-level pass/fail/unverified/not applicable with source and complete output evidence. Mandatory semantic failures cannot be averaged away. No target test execution is inferred from an authoring run or parser check.",
+  "criteria": [
+    {
+      "id": "F",
+      "name": "Fidelity and evidence",
+      "mandatory": true,
+      "check": "Preserve supported claims, explicit scope and unknown policy; do not invent material behavior."
+    },
+    {
+      "id": "A",
+      "name": "Useful abstraction",
+      "mandatory": true,
+      "check": "Separate concepts from instances and retain independent dimensions; infer only needed abstractions."
+    },
+    {
+      "id": "T",
+      "name": "Terminology",
+      "mandatory": true,
+      "check": "Keep consistent meanings and distinguish semantic roles or ambiguous terms."
+    },
+    {
+      "id": "U",
+      "name": "Use-case boundaries and composition",
+      "mandatory": true,
+      "check": "One whole purpose per Feature; shared concepts and supported composition remain coherent; outcome variants stay together."
+    },
+    {
+      "id": "C",
+      "name": "State, event and boundary coverage",
+      "mandatory": true,
+      "check": "Cover relevant independent facts, discriminating examples, repeated events, queries and preserved states when supported."
+    },
+    {
+      "id": "P",
+      "name": "Argument semantics",
+      "mandatory": true,
+      "check": "Explicit meaningful bindings, units, identities, constants, quantifiers, source inputs and cohesive collections."
+    },
+    {
+      "id": "I",
+      "name": "Implementation independence",
+      "mandatory": true,
+      "check": "Observable source-domain behavior; no unnecessary implementation or evaluation machinery."
+    },
+    {
+      "id": "L",
+      "name": "Format and language",
+      "mandatory": true,
+      "check": "Requested format and language; concrete rows survive parsing; Spanish native declaration; unresolved Markdown dialect reported honestly."
+    },
+    {
+      "id": "D",
+      "name": "Deliverable discipline and review",
+      "mandatory": true,
+      "check": "Requested files/findings only; review-only untouched; editorial review or disclosed fallback; gaps separate from defects."
+    },
+    {
+      "id": "O",
+      "name": "Objective and contextual intent",
+      "mandatory": true,
+      "check": "Reuse the intended executable asset and purpose from all context. Sources inform that purpose. A genuinely missing objective remains a caller-owned decision; chapter-based Features cannot count as a completed contract."
+    },
+    {
+      "id": "B",
+      "name": "Detroit boundary and responsibilities",
+      "mandatory": true,
+      "check": "Agent applying the guide proposes domain/use-case decomposition by public purposes and access patterns. Observe whole outcomes; do not turn internal steps into contracts or embed a newly authored target implementation in acceptance premises."
+    },
+    {
+      "id": "V",
+      "name": "Verification target metadata",
+      "mandatory": true,
+      "check": "Completed Features use @code/@skill/@prompt/@plugin at Feature scope for exercised boundaries, not dependencies. Shared contracts may have multiple tags; retain unrelated metadata. Unknown classification remains pending. Tags do not prescribe determinism, products, scoring or claim scaffolding/test execution."
+    }
+  ]
+}

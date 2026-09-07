@@ -1,0 +1,18 @@
+{
+  "case_id": "dev-procedure",
+  "criteria": {
+    "F": "Only C12; support-fit decision must not become loan prerequisite; no return/fine/admin behavior.",
+    "A": "Availability, inspection and orientation independent; unit vs magnitude distinct.",
+    "T": "Mass of instrument, packaging, total and capacity distinct.",
+    "U": "Availability query, lending and support-fit comparison have distinct purposes; acceptance/rejection not split by outcome alone.",
+    "C": "5/6/7 kg boundary classes; success plus missing single loan requirements; query and rejection preserve availability.",
+    "P": "Deriving total provides instrument and packaging masses, no arithmetic result assumed as the source input; 6 kg fixed.",
+    "I": "Public operations preserve the physical domain rules without prescribing software internals.",
+    "L": "First-line # language: es; Spanish keywords, vocabulary and arguments, literal C12 preserved.",
+    "D": "Only allowed specifications; meaningful gaps if any.",
+    "O": "Reuse prior executable objective; source facts support that purpose and do not substitute another asset.",
+    "B": "One public action/query per Feature; no Features for implementation-only steps.",
+    "V": "Completed Features @code only."
+  },
+  "predeclared": true
+}

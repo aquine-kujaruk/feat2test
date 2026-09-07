@@ -1,0 +1,12 @@
+{
+  "case_id": "dev-missing-intent",
+  "predeclared": true,
+  "criteria": {
+    "O": "Identify unresolved executable objective and incompatible preparation/evaluation alternatives; do not claim an agreed complete target specification.",
+    "B": "No arbitrary system chosen or chapter-based completed Features.",
+    "V": "Target classification remains pending, no invented tag.",
+    "D": "Calling agent owns resolving intent; no claim the skill interviews user or dictates separate questionnaire.",
+    "F": "Do not invent a purpose/policy; source itself does not select executable behavior.",
+    "L": "No fabricated completed Feature or claimed test execution."
+  }
+}

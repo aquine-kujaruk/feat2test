@@ -1,94 +1,100 @@
 # Editor brief
 
-You review the whole specification against the original requirements and
-[the skill](../SKILL.md). Use the [authoring guide](authoring-guide.md) when a
-rewrite needs an example. Do not delegate or restart the creator-editor workflow.
+Review the **complete specification** against the original request, relevant raw
+sources, existing specifications, and [the skill](../SKILL.md). Read
+[domain discovery](domain-discovery.md), [verification targets](verification-targets.md),
+and [format and language](gherkin-format.md).
+Use [the authoring guide](authoring-guide.md) when a formulation needs an example.
+Do not delegate or restart the caller's creator/editor workflow.
 
-## Inputs and independence
+## Evidence and independence
 
-Read the original request, business requirements, source specifications, agreed
-vocabulary, complete candidate, and coverage map. Treat the map as a claim to
-verify. Do not rely on the creator's assurances, a selected excerpt, or a prior
-review score. For the final pass, also inspect findings and their dispositions.
-Establish the output language from the user's explicit request, defaulting to
-English rather than inferring it from the conversation or source material.
+Receive the complete candidate, working vocabulary and evidence distinctions,
+coverage map, and open decisions. These are claims to verify, not an answer key.
+Inspect every scenario, sentence, and example row; selected excerpts or the
+creator's assurance cannot replace the full text. On recheck, also inspect each
+finding and its disposition. Determine output language from explicit user choice,
+defaulting to English rather than copying conversation or source language.
 
-## Review in this order
+## Review priorities
 
-1. **Scope, business meaning, and coverage.** Match the candidate to the supplied
-   application, taxonomy, vocabulary, and use cases. Flag unsupported actors,
-   concepts, rules, states, or workflows, including concepts copied from guide
-   examples. Distinguish concrete test data and justified consequences from
-   added domain policy. If the user delegated domain choice, assess its minimal
-   coherent scope rather than rejecting invention itself.
-   Check every requirement against concrete examples. Could the rule be ignored
-   while every consequence still holds?
-   Could a forbidden state change go unnoticed? Require discriminating inputs,
-   relevant boundaries and failures, and observable preserved state where needed.
-2. **Scenario integrity.** Can all prior facts hold together? Does the use case
-   accept these inputs? Is the example assuming the derivation it should exercise,
-   or directing an internal algorithm? Check subject identity, a whole business
-   action, resulting state or answer, and independence from other scenarios.
-3. **Hidden arguments.** Examine every condition, action, consequence, negative,
-   and diagnostic. Mark quantities, identities, positions, and expected values
-   embedded in wording, including words such as "ten" and "fourth". Keep relative
-   positions relative and named concepts intact. Verify
-   meaningful argument names, concrete bindings, coherent repeated references,
-   and unchanged rule constants.
-4. **Decomposition and vocabulary.** Can one property change independently of
-   another? Can the same relationship retain its wording when an argument changes?
-   Flag compound facts, synonym rotation, vague subjects, and universal phrases
-   that hide domain meaning. A whole sentence hidden in `<reason>` is not a
-   well-factored argument. Do not split a cohesive concept merely to shorten it.
-5. **Consistency across scenarios.** Group equivalent formulations throughout
-   the complete candidate, including repeated facts within one scenario. Compare
-   their relationships independently of placeholder names and example values,
-   retaining subjects, negation, scope, and timing. Check argument meaning,
-   order, units, data shape, and table headings. Flag accidental renaming or
-   incompatible meanings hidden behind the same wording.
-   Distinguish a relationship's fields from local bindings for its instances.
-   Different Outline column names alone are not a defect: preserve names needed
-   to identify simultaneous values and verify their correspondence to the fields.
-   A table with stable headings can make that mapping clear for a cohesive
-   collection; it is not mandatory for equivalent scalar facts. Do not merge
-   distinct bindings or invent synonyms merely to make formulations look alike
-   or different.
-6. **Conciseness and precision.** Flag empty framing, nominalized actions,
-   repeated rule explanations, and clauses whose subject or cause is unclear.
-   Prefer direct grammatical wording. Verify that each suggested shortening
-   preserves negation, comparisons, quantities, units, quantifiers, temporal scope,
-   and causal links. Under negation, splitting "and" can change the requirement;
-   do not trade an accurate sentence for a shorter but stronger assertion.
-7. **Gherkin semantics.** Check keyword roles and explicit negation where intended;
-   `But` can also contrast a positive fact. Check Outline bindings, independent
-   rows, and cohesive DataTables. Check native or
-   Markdown structure as appropriate. Ensure the interpreted examples retain all
-   intended scenarios and exact data; successful parsing alone is insufficient.
-8. **Language.** Check titles, descriptions, sentences, and argument names against
-   the selected language. Preserve required literal data and domain meaning
-   through translation. For non-English native Gherkin, require the first-line
-   `# language: <code>` declaration and matching dialect keywords. Flag an
-   unresolved non-English Markdown format constraint or a claim that its dialect
-   is configured by this header.
+First recover the intended executable asset and purpose from the whole context.
+Do the Features specify that asset's relevant capabilities, or merely rewrite
+source sections? Check that clear prior intent was reused. A genuinely missing
+objective remains a decision for the calling agent, not an invented system or a
+skill-owned interview. Do not call a target contract complete while that choice
+is unresolved.
 
-Judge only defects supported by the requirements or this skill. Sentence length
-alone is not a defect. Neither fewer sentences nor fewer formulations proves
-better domain coverage. Do not invent vocabulary, expected diagnostics, or
-additional business behavior to make a proposed rewrite work.
+1. **Domain meaning and evidence.** Compare claims and conditions with the source.
+   Check both missing abstractions and unsupported policy. Does a named example
+   obscure its concept? Do independent dimensions disappear into a generic state?
+   Are a unit and a magnitude, a profile and a strategy, or two temporal roles
+   conflated? Inference itself is allowed; unsupported behavior is not. Respect
+   explicit category restrictions. Flag concepts imported from teaching examples.
+   Preserve assumptions and attribution in explanatory texts.
+2. **Use-case boundaries and relationships.** Verify one Feature per whole
+   public purpose from the Detroit perspective. Distinct purposes under one topic must be separated; acceptance and
+   rejection of one action belong together. Do not split internal steps into
+   use cases. Check containing context, shared vocabulary, prerequisites and
+   supported composition across the complete set without execution dependencies.
+   Distinguish domain policies, application workflow, and external mechanisms
+   without demanding architectural directories or contracts for every dependency.
+3. **Coverage and scenario integrity.** Compare every claimed rule and class with
+   the actual examples. Can a factor be ignored and the assertions still hold?
+   Would an unintended state change be visible? Inspect relevant state/event
+   gaps, mixed independent states, repeat requests, missing information and
+   boundaries. Recognize already-covered classes. All prior facts must coexist;
+   each scenario supplies its own context, accepted inputs, one whole action or
+   query, and supported consequences. No invented mutation, calculation premise,
+   implementation call sequence, or assertion that advice causes execution.
+4. **Arguments and meaning.** Inspect conditions, inputs, consequences, negatives,
+   and diagnostics for quantities, identities, categories, units, expected values,
+   and positions hidden in words or names. Preserve relative selectors and fixed
+   rule criteria. Verify concrete Outline bindings, causal diagnoses, meaningful
+   argument roles and source inputs for derivations. Do not accept whole condition
+   or diagnostic sentences hidden in generic arguments.
+5. **Shared language and data shape.** Compare equivalent relationships across all
+   Features, preserving subject, negation, scope and timing. Separate independent
+   facts; keep cohesive records, collections, and named concepts intact. Different
+   local bindings can represent simultaneous instances of the same relationship.
+   Stable field headings can show that correspondence. Do not merge those values
+   just to make argument names identical, or use identical names for different
+   semantic roles merely because values currently match.
+6. **Precision and representation.** Prefer direct grammatical sentences without
+   deleting quantifiers, units, comparisons, causes, or necessary qualifiers.
+   In particular, “not both” must not become “neither.” Length alone is not a
+   defect. Verify keyword roles, explicit negation, independent rows, native or
+   Markdown structure, selected language and actual table interpretation. Check
+   the native language declaration; flag unresolved Markdown dialect assumptions.
+   Parsing does not establish semantic correctness.
+   Check every completed Feature's target tags against the requested tested
+   boundary. Reject dependency inventories, deterministic/stochastic inferences,
+   duplicate contracts or Examples solely for test routes, and newly authored
+   target implementations embedded as acceptance premises. Multiple tags must
+   describe the same complete contract; multiple checkers do not change asset
+   kind. Inspect each Markdown tag's separate code span.
+7. **Deliverable scope.** Keep review-only requests read-only, including no
+   unsolicited report files. A working taxonomy is not an extra deliverable by
+   default. Distinguish actual editorial actions from unverified independence
+   claims. Missing policy remains visible; unrelated supported behavior can still
+   be complete once their objective is established. Labeling does not establish
+   test generation or execution; unsupported scaffolding must be reported.
 
-## Output and recheck
+## Findings and recheck
 
-Return `ready` or `changes required`, with each finding giving:
+Return `ready` or `changes required`. For each supported finding identify:
 
-- The affected scenario and exact sentence or example values.
-- The semantic or authoring defect and the requirement it affects.
-- The smallest concrete correction, preserving the intended behavior.
+- The affected Feature/scenario and exact sentence or example values.
+- The source/rule affected and whether this is a defect or unresolved decision.
+- The smallest correction that preserves meaning and existing coverage.
 
-Separate unsupported assumptions or missing business decisions from wording
-defects. Report only actionable findings; do not pad a clean review.
+Judge evidence, not preferred wording, a larger taxonomy, or counts of Features
+and arguments. Do not invent rules or diagnostics to make a correction work.
+Do not pad a clean review. A missing decision can be adequately disclosed while
+supported portions are ready; state that limited scope explicitly and do not
+claim the unresolved behavior is fully specified.
 
-After correction, review the complete revised candidate again, not just the
-diff. Check that fixes address the findings without losing coverage, altering
-constants, weakening a consequence, or changing example data. Return `ready`
-only when no supported defect or material unresolved question remains. After
-the permitted correction cycles, report remaining findings plainly.
+After correction, recheck the entire revised candidate, including unchanged
+rules, shared relationships, boundaries and example meanings. Return `ready`
+only when the stated scope has no supported defect or hidden material decision.
+Respect the caller's two-cycle limit; report any remaining findings plainly.

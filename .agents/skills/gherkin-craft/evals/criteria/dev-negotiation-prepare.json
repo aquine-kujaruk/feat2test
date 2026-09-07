@@ -1,0 +1,18 @@
+{
+  "case_id": "dev-negotiation-prepare",
+  "predeclared": true,
+  "criteria": {
+    "F": "Interests/fallback preserve source and explicit unknown; no acceptance/agreement claims.",
+    "A": "Separate concepts from instances and retain independent dimensions; infer only needed abstractions.",
+    "T": "Keep consistent meanings and distinguish semantic roles or ambiguous terms.",
+    "U": "One whole purpose per Feature; shared concepts and supported composition remain coherent; outcome variants stay together.",
+    "C": "Known and unknown fallback; observed preparation content, no execution claim.",
+    "P": "Explicit meaningful bindings, units, identities, constants, quantifiers, source inputs and cohesive collections.",
+    "I": "Observable source-domain behavior; no unnecessary implementation or evaluation machinery.",
+    "L": "Requested format and language; concrete rows survive parsing; Spanish native declaration; unresolved Markdown dialect reported honestly.",
+    "D": "Requested files/findings only; review-only untouched; editorial review or disclosed fallback; gaps separate from defects.",
+    "O": "Specify preparation, not offer evaluation or workshop administration; reuse prior objective.",
+    "B": "One preparation contract; source sections do not create unrelated public operations.",
+    "V": "@skill only."
+  }
+}

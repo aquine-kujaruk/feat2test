@@ -1,0 +1,18 @@
+{
+  "case_id": "dev-software",
+  "criteria": {
+    "F": "Only Cedar defined; no profile administration; no invented ordering of simultaneous failures.",
+    "A": "Packet identity, profile identity, guarded-submission strategy, attachment set, approval, submission status retain separate meanings. One configured profile/cylinder-style instance may instantiate a reusable relationship.",
+    "T": "Readiness remains missing required attachments plus missing approval throughout inspect, submit and composed profile behavior.",
+    "U": "Inspect readiness, submit packet, and apply profile are distinct purposes; accepted/rejected submission share one Feature.",
+    "C": "Includes complete attachments without approval and approval without all attachments, success, repeated submission, invalid code. Query/rejection preserve facts.",
+    "P": "Four decimal digits fixed; packet/code/attachments/expected missing identifiers explicit, including leading zero; meaningful diagnostic instead of arbitrary <reason>.",
+    "I": "No database/mock/API assertion unless specified as actual domain requirement.",
+    "L": "Native English defaults and concrete Outline bindings.",
+    "D": "Only requested specs/open decisions, review fallback disclosed if no independent tools.",
+    "O": "Reuse prior executable objective; source facts support that purpose and do not substitute another asset.",
+    "B": "One public action/query per Feature; no Features for implementation-only steps.",
+    "V": "Completed Features @code only."
+  },
+  "predeclared": true
+}

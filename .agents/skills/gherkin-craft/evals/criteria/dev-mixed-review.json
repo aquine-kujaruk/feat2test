@@ -1,0 +1,18 @@
+{
+  "case_id": "dev-mixed-review",
+  "predeclared": true,
+  "criteria": {
+    "F": "Source policy/evidence and preserved files.",
+    "A": "Separate concepts from instances and retain independent dimensions; infer only needed abstractions.",
+    "T": "Keep consistent meanings and distinguish semantic roles or ambiguous terms.",
+    "U": "One whole purpose per Feature; shared concepts and supported composition remain coherent; outcome variants stay together.",
+    "C": "Equality defect and no-supported-finding behavior.",
+    "P": "Explicit meaningful bindings, units, identities, constants, quantifiers, source inputs and cohesive collections.",
+    "I": "Observable source-domain behavior; no unnecessary implementation or evaluation machinery.",
+    "L": "Requested format and language; concrete rows survive parsing; Spanish native declaration; unresolved Markdown dialect reported honestly.",
+    "D": "Requested files/findings only; review-only untouched; editorial review or disclosed fallback; gaps separate from defects.",
+    "O": "One review purpose exercised through two explicit boundaries.",
+    "B": "One complete shared Feature; no duplicate Feature solely for test strategy; neutral domain steps fit both routes.",
+    "V": "Exactly @skill @plugin; no @code from calculator."
+  }
+}

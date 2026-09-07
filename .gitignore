@@ -8,3 +8,5 @@ graphify-out/
 *.log
 
 examples
+.agents/skills/openspec-*
+.agents/skills/.openspec-target

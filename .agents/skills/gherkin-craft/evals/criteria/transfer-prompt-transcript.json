@@ -1,0 +1,111 @@
+{
+  "predeclared": true,
+  "assessment": "Independent criterion-level pass/fail/unverified. Use not-applicable only with a reason. Every applicable criterion is mandatory; semantic failures cannot be averaged away.",
+  "rubric_path": ".agents/skills/gherkin-craft/evals/rubric.json",
+  "authoring_visibility": "Evaluator-only until candidate freeze; never include this file or findings in an authoring run.",
+  "evidence_policy": "Cite source section and produced file lines; use run trace for context-reuse and review claims. Wording and filenames may vary. Evaluate contracts and retained behavior, not matching a preferred answer.",
+  "case_id": "transfer-prompt-transcript",
+  "criteria": {
+    "E-purpose": {
+      "name": "Executable asset and domain purpose",
+      "mandatory": true,
+      "check": "Specifications describe the reusable inventory-handoff prompt producing one evidence-based documentation handoff from a supplied survey packet. The domain is street-tree inventory documentation. They do not specify the gherkin-craft authoring process, generic prompt quality, the entire plugin, a physical survey, or a software implementation invented to host the prompt.",
+      "source_evidence": [
+        "Project context",
+        "Nadia opening statement",
+        "Tom and Nadia exchange on exact sentences"
+      ]
+    },
+    "E-context": {
+      "name": "Use established context and respect actor responsibilities",
+      "mandatory": true,
+      "check": "The authoring agent uses the already stated template, plugin context, selected contract, domain, scope, and source evidence. It need not ask the user to select the already established asset or rediscover the domain before drafting. Unresolved policy may be recorded as requested rather than silently resolved. Any description of the work keeps context gathering, interpretation, proposals, and user interaction with the calling agent; gherkin-craft is guidance rather than the owner of these runtime actions.",
+      "source_evidence": ["Request", "Project context", "Final Eli and Nadia statements"]
+    },
+    "E-boundary": {
+      "name": "Boundary metadata",
+      "mandatory": true,
+      "check": "Every Feature carries @prompt as the tested asset category. Arbor Ledger and CensusExtract are context/dependencies, so they do not justify @plugin or @skill, and there is no separately tested @code contract. Multiple category tags would require evidence that this same Feature contract is explicitly tested through each boundary; this source provides none. Tags must be actual Feature metadata in the native file, not prose about a possible future target.",
+      "source_evidence": ["Project context"]
+    },
+    "F": {
+      "name": "Fidelity and evidence",
+      "mandatory": true,
+      "check": "Preserve the packet-only basis, selected-block restriction, source-backed note, no health assessment or inventory mutation, and street-tree scope. Conflicting observations for one tree ID remain an explicit open decision; no latest-wins, merge, reject, or ask-before-output policy is specified as settled behavior. Do not fabricate image repair, locator updates, lookups, health diagnoses, source notes, or park-survey policy.",
+      "source_evidence": [
+        "Project context",
+        "Nadia selected-block and note rules",
+        "Nadia response on exact sentences",
+        "Final Eli and Nadia statements"
+      ]
+    },
+    "A": {
+      "name": "Useful abstraction and independent facts",
+      "mandatory": true,
+      "check": "Model tree ID and block ID as identities rather than types; locator confirmation and photograph usability as independent inputs; recorded note as evidence text. Documentation readiness is derived from both requirements, not a replacement for them. A meaningful source-packet/record collection is sufficient; no speculative taxonomy, backend, or actor hierarchy is needed.",
+      "source_evidence": [
+        "Eli description of separate facts",
+        "Sample packet",
+        "Nadia grouping rules"
+      ]
+    },
+    "T": {
+      "name": "Terminology",
+      "mandatory": true,
+      "check": "Keep locator confirmation separate from photograph usability; distinguish selected block from a record block and ready/revisit output groups from input facts. Missing requirements refer to locator confirmation and usable crown photograph consistently. Do not treat photograph unavailability as locator failure.",
+      "source_evidence": ["Eli separate-facts statement", "Nadia grouping rules", "Sample packet"]
+    },
+    "U": {
+      "name": "One whole use case",
+      "mandatory": true,
+      "check": "Use one coherent Feature for preparing the documentation handoff. Filtering, documentation checking, grouping, missing-requirement reporting, all-incomplete packets, and empty selected blocks are internal rules or outcome variants of that purpose, not separate Features. The transcript speakers or scratch-outline stages do not determine Feature boundaries.",
+      "source_evidence": [
+        "Project context",
+        "Tom three-stage scratch outline",
+        "Nadia empty-block distinction"
+      ]
+    },
+    "C": {
+      "name": "State and output coverage",
+      "mandatory": true,
+      "check": "Cover all four locator/photo combinations with all missing requirements for the double failure; selected-block filtering excluding T-90 from both groups; the both-satisfied record and its source note; empty selected-block input with explicit no-record result and empty groups; distinguish that case from existing records all needing visits. Preserve input facts and packet-only meaning; a repeat may not turn missing documentation into satisfied documentation. Do not require byte-identical generated wording.",
+      "source_evidence": [
+        "Sample packet",
+        "Nadia sample interpretation and empty-block rule",
+        "Nadia response on exact sentences"
+      ]
+    },
+    "P": {
+      "name": "Meaningful bindings and arguments",
+      "mandatory": true,
+      "check": "Bind selected block, tree IDs, independent documentation flags, and recorded note explicitly. Input tables or doc strings retain cohesive records with identity and source values; expected groups and missing requirement collections identify which tree they concern. Elm-4/Pine-2 and T-81 through T-90 are examples, not hard-coded vocabulary. Avoid hidden last-record references and unsupported exact text constraints.",
+      "source_evidence": [
+        "Sample packet",
+        "Nadia sample interpretation",
+        "Tom and Nadia exact-sentences exchange"
+      ]
+    },
+    "I": {
+      "name": "Implementation independence at the requested prompt boundary",
+      "mandatory": true,
+      "check": "Express observable input-to-response behavior of the prompt with source-domain terms. Prompt response is a legitimate observable result; no API server, database, parser implementation, model choice, token count, internal chain of thought, tool routing, or evaluation machinery is required. Internal template stages do not become externally tested operations.",
+      "source_evidence": [
+        "Project context",
+        "Tom scratch outline",
+        "Tom and Nadia exact-sentences exchange"
+      ]
+    },
+    "L": {
+      "name": "Native English format",
+      "mandatory": true,
+      "check": "Produce English native .feature files under output/. Use valid Gherkin with concrete scenario bindings and table cells surviving parsing; no Markdown wrapper substituted for a native file. Applicable boundary metadata must attach to the Feature. Unknown policy comments are legal comments and do not become invented acceptance rules.",
+      "source_evidence": ["Request"]
+    },
+    "D": {
+      "name": "Deliverables and review",
+      "mandatory": true,
+      "check": "Only requested feature files and indispensable unresolved decisions are delivered; no implementation, prompt template, plugin scaffold, extra domain documents, or source edits. A separate editorial review is evidenced, or its unavailability and the actual local fallback are reported honestly. Source policy gaps remain separate from specification defects.",
+      "source_evidence": ["Request", "Project context"]
+    }
+  }
+}

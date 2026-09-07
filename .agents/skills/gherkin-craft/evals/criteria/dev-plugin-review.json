@@ -1,0 +1,18 @@
+{
+  "case_id": "dev-plugin-review",
+  "predeclared": true,
+  "criteria": {
+    "F": "Same supported findings, evidence and preserved files as source.",
+    "A": "Separate concepts from instances and retain independent dimensions; infer only needed abstractions.",
+    "T": "Keep consistent meanings and distinguish semantic roles or ambiguous terms.",
+    "U": "One whole purpose per Feature; shared concepts and supported composition remain coherent; outcome variants stay together.",
+    "C": "Equality defect at 2 kg and no-supported-defect output.",
+    "P": "Explicit meaningful bindings, units, identities, constants, quantifiers, source inputs and cohesive collections.",
+    "I": "Observable source-domain behavior; no unnecessary implementation or evaluation machinery.",
+    "L": "Requested format and language; concrete rows survive parsing; Spanish native declaration; unresolved Markdown dialect reported honestly.",
+    "D": "Requested files/findings only; review-only untouched; editorial review or disclosed fallback; gaps separate from defects.",
+    "O": "Review operation through plugin host, not book chapters.",
+    "B": "One review contract; neither packaged components nor workflow steps justify Features.",
+    "V": "@plugin only, despite bundled skill/script."
+  }
+}

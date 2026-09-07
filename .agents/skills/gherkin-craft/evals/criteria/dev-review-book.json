@@ -1,0 +1,18 @@
+{
+  "case_id": "dev-review-book",
+  "predeclared": true,
+  "criteria": {
+    "F": "Fee rule remains <=2 at 4 EUR and >2 at 7 EUR; no invented mass rules.",
+    "A": "Separate concepts from instances and retain independent dimensions; infer only needed abstractions.",
+    "T": "Keep consistent meanings and distinguish semantic roles or ambiguous terms.",
+    "U": "One whole purpose per Feature; shared concepts and supported composition remain coherent; outcome variants stay together.",
+    "C": "Observable finding locates fees.ts and equality defect, with a discriminating 2 kg example; correct change/no-supported-finding behavior represented; review preserves files.",
+    "P": "Mass/unit, fee/currency, path and boundary concrete; no opaque <finding> replacing the evidence relationship.",
+    "I": "Observable source-domain behavior; no unnecessary implementation or evaluation machinery.",
+    "L": "Requested format and language; concrete rows survive parsing; Spanish native declaration; unresolved Markdown dialect reported honestly.",
+    "D": "Requested files/findings only; review-only untouched; editorial review or disclosed fallback; gaps separate from defects.",
+    "O": "The intended asset reviews project changes; no meeting facilitation or source-chapter Features. Reuse prior goal without requiring it again.",
+    "B": "One complete public review use case; internal calculator, rules lookup and diff-reading do not become separate Features or ordered acceptance steps.",
+    "V": "@skill only; internal script/service are not test targets."
+  }
+}
