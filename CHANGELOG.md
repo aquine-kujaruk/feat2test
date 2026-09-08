@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/aquine-kujaruk/feat2test/compare/v2.1.0...v2.1.1) (2026-09-08)
+
+
+### Bug Fixes
+
+* handle Gherkin table separators by format ([6b8ebe6](https://github.com/aquine-kujaruk/feat2test/commit/6b8ebe6c70cfc95bb1d089c59f4c92eb04ee6802))
+
 # [2.1.0](https://github.com/aquine-kujaruk/feat2test/compare/v2.0.0...v2.1.0) (2026-09-07)
 
 
