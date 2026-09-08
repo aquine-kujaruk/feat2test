@@ -1,86 +1,94 @@
+> **Retrospective terminology migration — 2026-09-09.** This archived
+> design is restated using the later `@code`/`@ai` modality contract from
+> `classify-verification-modalities`. It preserves the historical plan's
+> scope; it is not evidence of an execution or evaluation performed in 2026.
+
 ## Context
 
-See [proposal.md](proposal.md) for motivation and the three delta specifications for the behavior contract. The existing skill separates its entrypoint, domain discovery, authoring, editing, formatting, and evaluation guidance. Those routes need a consistent definition of the intended executable asset and its verification boundary.
-
-The CLI currently selects a renderer through `--runner`. Its generation plan does not use asset tags to choose scaffolding. This change supplies a labeling convention for future consumers without modifying that interface.
+The archived skill separated entrypoint, domain discovery, authoring, editing,
+formatting, and evaluation guidance. Those routes need a consistent definition
+of the intended system, observable behavior, and required verification
+evidence. The CLI selects a renderer through `--runner`; this plan never added
+modality-based dispatch.
 
 ## Goals / Non-Goals
 
-**Goals:** Keep the instruction flow small; give each rule one authoritative home; preserve useful discovery and Gherkin guidance; demonstrate changed agent behavior with a comparable baseline.
+**Goals:** Keep the instruction flow small; give each rule one authoritative
+home; preserve discovery and Gherkin guidance; compare changed agent behavior
+with a baseline.
 
-**Non-Goals:** Introduce a new authoring API, a compulsory interview, or a test execution platform. Architecture concepts organize responsibilities; they do not mandate directories in the systems being specified.
+**Non-Goals:** Introduce an authoring API, compulsory interview, test execution
+platform, modality aliases, generator selection, or directory conventions for
+the systems being specified.
 
 ## Decisions
 
-### 1. Organize the guide around the intended asset
+### 1. Organize the guide around an intended system
 
 Use one sequence throughout the instructions:
 
 ```text
-Contextual intent → target asset → relevant domain → use cases → verification targets
+Contextual intent → intended system and observable behavior
+                  → relevant domain → complete use cases
+                  → one verification modality per Feature
 ```
 
-The agent applies that sequence. The skill supplies criteria and examples, not an independent decision-maker. Intent can already exist in earlier conversation, a proposal, or an existing specification. Guide the agent to reuse it before reporting missing information. A material gap remains a decision for the calling agent; it does not trigger a prescribed interview or an invented purpose.
+The agent applies that sequence. The skill supplies criteria and examples, not
+an independent decision maker. Intent can already exist in earlier conversation,
+a proposal, or an existing specification. A material gap remains a decision for
+the calling agent; it does not trigger a prescribed interview or an invented
+purpose.
 
-Keep the working model internal: purpose, target boundary, concepts, rules, use cases, and unresolved decisions. Do not introduce a required JSON structure or extra output document. Existing source-evidence distinctions still apply: a target's purpose does not authorize inventing its policies.
+### 2. Keep guidance responsibilities separate
 
-Alternative considered: an extraction-first workflow would keep selecting behavior from the source before knowing what the user wants to build. A formal input schema would add an unnecessary calling convention.
-
-### 2. Separate guidance responsibilities without duplicating rules
-
-| Resource | Responsibility after the change |
+| Resource | Responsibility |
 | --- | --- |
 | `SKILL.md` and `agents/openai.yaml` | Purpose, activation, agent/guide distinction, short workflow, resource routing |
 | `references/domain-discovery.md` | Relevant domains, contextual language, responsibility boundaries, use-case decomposition |
-| New `references/verification-targets.md` | Common asset tags, boundary selection, multiple targets, pending classifications, future scaffolding limits |
-| `references/creator.md` | Apply the sequence and produce complete use-case Features |
-| `references/editor.md` | Review intent fit, Detroit boundaries, labels, and retained semantic coverage |
-| `references/authoring-guide.md` | Contrasting examples connecting source knowledge to executable objectives |
-| `references/gherkin-format.md` | Native and Markdown tag placement and interpretation; link to tag meanings |
-| `references/evaluation.md` and `evals/` | Evidence that agents apply the revised guidance |
+| `references/verification-modalities.md` | Modality definitions, selection evidence, pending route, and generation limits |
+| creator/editor briefs | Apply or review the sequence and complete use cases |
+| authoring/formatting references | Worked examples and native/Markdown representation |
+| evaluation protocol and corpus | Evidence that agents apply the revised guidance |
 
-Paths above are relative to `.agents/skills/gherkin-craft/`. Both authoring and review routes load the target-label reference. Remove or reconcile old instructions that make source transformation sufficient without an executable objective. Preserve argument precision, language defaults, evidence handling, independent examples, and review-only scope.
+### 3. Select execution evidence, not packaging
 
-Alternative considered: repeating the tag table in every brief would create conflicting definitions during maintenance. Extending the already broad discovery reference would mix domain modeling with verification metadata.
+Every completed Feature receives exactly one tag. `@code` exercises
+programmed rules; `@ai` exercises a model or agent interpreting instructions
+and context. Rules and scenarios inherit the Feature choice. A real model
+behind a software interface can require `@ai`; a fixed model response used to
+test programmed handling requires `@code`. Direct agent guidance and the same
+guidance through a host remain one `@ai` contract. An unresolved route remains
+a named decision, not a combined tag.
 
-### 3. Classify the tested boundary, not the implementation inventory
+A checker cannot select the modality: exact checks of agent-created files remain
+`@ai`, and an AI judge of programmed output remains `@code`. Language,
+framework, runner, repetition, and file layout remain later decisions.
 
-Use the vocabulary defined in the use-case delta: `@code`, `@skill`, `@prompt`, `@plugin`. Keep it in the target-label reference rather than creating a registry or generator configuration in this change.
+### 4. Evaluate observed behavior
 
-The guide asks the agent to identify what the requested test will exercise. A software operation calling a model remains `@code`; a plugin containing a skill receives both tags only when the same contract is deliberately verified through both boundaries. A script inside a skill does not automatically get another Feature. Distinct public purposes still require distinct Features.
-
-Tags are emitted at Feature scope. Use native tag lines for `.feature` and backtick tags for `.feature.md`, preserving applicable unrelated metadata. Multiple verification strategies for the same asset kind share its tag. Runner choice, repetition, and scoring remain separate from this classification.
-
-Alternative considered: deterministic/stochastic labels conflate the target with execution properties. Framework-name labels bind specifications to products and still fail to identify the asset under test.
-
-### 4. Develop against agent behavior before refining the prose
-
-Apply Red–Green–Refactor to the guide using the existing evaluation approach:
-
-- **Red:** Freeze relevant cases and the current complete skill, then record the baseline failures against the new contract. Include purpose/decomposition failures as well as missing labels.
-- **Green:** Revise the guide and compare agent outputs on the same development cases and execution conditions.
-- **Refactor:** Consolidate repeated guidance and simplify examples while retaining the demonstrated behavior. Recheck affected cases after material edits.
-
-The corpus pairs each source with a target objective or an explicit missing-intent case. Cover all four asset kinds, a shared contract with two targets, internal dependencies that must not add tags, and distinct use cases that must stay separate. Retain the existing semantic boundary cases; add objectives without replacing their original constraints.
-
-Use the installed Gherkin parser to inspect generated tags, scenario expansion, and data in native and Markdown outputs. Inspect the agent's artifacts against source and intent for semantic correctness. Neither instruction-text checks nor successful parsing establish that behavior alone. Evaluate discovery separately from forced loading.
-
-Previously published reserved cases are regression material. Use fresh reserved cases for another transfer claim, held apart from instruction development. Record model, context, tools, versions, outcomes, and material variability using the current protocol. No particular provider, optimizer, or additional project dependency is needed.
-
-Alternative considered: a static wording checklist could pass a guide that still produces chapter-based Features. Building the future scaffolder would expand scope without establishing better modeling behavior.
+Freeze the corpus and the complete prior skill before editing. Run preserved and
+candidate versions under comparable isolated conditions, inspect parser output
+separately from semantics, use independent editorial review, and retain fresh
+transfer cases. Record source identity, settings, resource reads, outputs,
+limitations, and any unexecuted checks. Do not claim that a future system or its
+tests ran because an agent authored a specification.
 
 ## Risks / Trade-offs
 
-- **An objective check becomes repetitive questioning** → Include a case whose objective exists only in earlier context and assess reuse of that intent.
-- **A book's rules become invented system policy** → Retain evidence distinctions and report unresolved design decisions.
-- **Packaging adds spurious tags** → Contrast a plugin tested alone with the same contract deliberately tested through plugin and skill boundaries.
-- **Labels imply unsupported generation** → Explain the current CLI limitation and report unavailable scaffolding when tests are requested.
-- **A small corpus hides regressions** → Preserve existing semantic cases, use independent review, and report the limits of the evidence.
+- Packaging can look like a classification rule: select from execution evidence.
+- Mixed implementations can suggest two tags: keep one selected modality and
+  name unresolved routes.
+- Modality can be mistaken for test technology: preserve later generation
+  choices as separate decisions.
+- A small corpus can hide regressions: retain semantic cases, independent
+  review, and transfer evidence.
+- Archive wording can falsify history: retain this note and keep raw historical
+  evidence unchanged.
 
 ## Migration Plan
 
-1. Snapshot the complete working skill before implementation, including its current uncommitted content. Capture baseline evidence against the selected cases.
-2. Update its guidance, examples, metadata, and evaluation resources together. Preserve existing example coverage; do not bulk-migrate project Features.
-3. Run the scoped comparisons, parser checks, activation checks, and independent editorial review. Report any unavailable check rather than claiming it passed.
-4. Accept only after required new checks pass, retained guarantees have no material regression, and at least one supported behavioral correction is evidenced against the baseline. Labels alone do not establish the modeling improvement.
-5. If the revision fails, restore only the affected skill files from that snapshot. Leave unrelated working changes intact. Generator support remains a separate change.
+1. Preserve the complete prior skill and evaluation evidence.
+2. Update guidance, examples, metadata, and evaluation resources together.
+3. Check syntax, behavior, activation, and editorial review separately.
+4. Accept only with required new evidence and no material semantic regression.
+5. Keep generator support as a separate change.

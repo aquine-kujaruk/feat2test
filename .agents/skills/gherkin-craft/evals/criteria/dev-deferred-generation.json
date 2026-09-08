@@ -1,0 +1,11 @@
+{
+  "case_id": "dev-deferred-generation",
+  "predeclared": true,
+  "criteria": {
+    "V": "@code only despite deliberately unresolved language, framework, runner, and test-file layout.",
+    "B": "One validation Feature groups accepted and rejected configurations.",
+    "F": "Preserve endpoint-letter and inclusive 1-to-30-second rules, diagnostics, no connection, and no mutation.",
+    "C": "Cover each stated rejection class and both timeout endpoints.",
+    "D": "Do not infer test-generation choices or implement the loader/tests."
+  }
+}

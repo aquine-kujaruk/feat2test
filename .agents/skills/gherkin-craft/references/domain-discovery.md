@@ -3,12 +3,15 @@
 Read before authoring or reviewing. These are lenses for understanding the
 provided context, not an ontology that every source must contain.
 
-## Start from the intended asset
+## Start from the intended system and behavior
 
-Recover what the user wants to build and accomplish from the entire available
+Recover what the user wants to build, accomplish, and make observable from the
+entire available
 context, including an earlier proposal or agreed objective. A book about review
-can inform a review skill, a prompt, or a software application; its table of
-contents does not choose between them. A planned asset is sufficient.
+can inform a review system implemented in different ways; its table of contents,
+filename, package, or instruction format does not choose the system or its
+verification modality. A planned system is sufficient and need not fit a fixed
+artifact catalog.
 
 Select the source concepts and rules relevant to that purpose. If context leaves
 incompatible objectives open, name the alternatives and the decision needed;
@@ -23,9 +26,9 @@ Read the request, its corrections, relevant supplied or available sources,
 existing specifications, and agreed vocabulary. Resolve definitions from that
 context before asking the user. More context does not authorize unrelated work.
 
-Maintain a compact working model of purpose, target boundary, terms, meanings,
-representative values, relationships, use cases, and evidence. Distinguish these
-claim statuses:
+Maintain a compact working model of purpose, observable behavior, terms,
+meanings, representative values, relationships, use cases, verification
+evidence, and evidence status. Distinguish these claim statuses:
 
 | Status | Treatment |
 | --- | --- |
@@ -107,7 +110,7 @@ An undefined pair is a question, not permission to invent its result.
 
 ## Find whole use cases and their containing contexts
 
-Use the intended asset's access patterns to identify relevant domains and parts
+Use the intended system's access patterns to identify relevant domains and parts
 of a domain: which whole actions or queries can be requested, with what inputs,
 prior facts, and observable outcomes? Propose separate specifications for distinct
 purposes or contexts, explaining their shared meanings and relationships. Keep
@@ -128,7 +131,9 @@ responsibilities, not mandatory directories, classes, or a Feature per reference
 script, CLI command, MCP call, or invoked skill. From the Detroit perspective,
 reorganizing internal calls should preserve acceptance when the public behavior
 is unchanged. An interaction itself belongs in acceptance only when that exposed
-interaction is part of the requested contract.
+interaction is part of the requested contract. Select verification modality later
+from the behavior that must be exercised, not from these implementation or
+packaging descriptions.
 
 A composition can itself have a distinct purpose and Feature. Specify its
 observable effect without narrating internal call sequences. Each example

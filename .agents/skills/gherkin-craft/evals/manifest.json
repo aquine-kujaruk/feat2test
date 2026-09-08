@@ -1,8 +1,50 @@
 {
-  "version": "2.0",
+  "version": "3.0",
   "constructed_fixtures": true,
-  "protocol": "Thirteen development/regression inputs frozen before baseline. Expected findings are evaluator-only. Old published reserved cases are regression material. Fresh transfer cases are independently retained until candidate freeze.",
+  "protocol": "Frozen before baseline for classify-verification-modalities. Inputs are identical for preserved and candidate guide runs. Expected findings remain evaluator-only. Published transfer fixtures are regression material; a fresh independent transfer source is retained outside this manifest until candidate freeze.",
   "rubric": "rubric.json",
+  "prior_manifest_sha256": "4b3b4ea3f79c3033bf983db520483ddbc28d810b891892704598152d8e4dfb6c",
+  "prior_frozen_at_utc": "2026-09-07T19:10:56.805897+00:00",
+  "frozen_at_utc": "2026-09-08T00:00:00Z",
+  "coverage_map": {
+    "code": [
+      "dev-software",
+      "dev-procedure",
+      "reserved-a",
+      "dev-model-response-handling",
+      "dev-ai-judge-code",
+      "dev-deferred-generation"
+    ],
+    "ai": [
+      "dev-prose",
+      "dev-review-book",
+      "dev-negotiation-prepare",
+      "dev-negotiation-offer",
+      "dev-model-app",
+      "dev-plugin-review",
+      "dev-mixed-review",
+      "transfer-prompt-transcript",
+      "dev-policy-format"
+    ],
+    "exclusivity_and_pending": [
+      "dev-modality-review",
+      "dev-unresolved-modality",
+      "dev-missing-intent",
+      "reserved-b",
+      "transfer-plugin-procedure"
+    ],
+    "custom_openspec": ["dev-openspec-customization"],
+    "retained_semantics": [
+      "dev-software",
+      "dev-procedure",
+      "dev-prose",
+      "dev-transcript-review",
+      "reserved-a",
+      "reserved-b",
+      "transfer-plugin-procedure",
+      "transfer-prompt-transcript"
+    ]
+  },
   "cases": [
     {
       "id": "dev-software",
@@ -18,15 +60,16 @@
         "repeated event",
         "query without mutation",
         "contextual executable objective",
-        "Feature target metadata"
+        "verification modality"
       ],
       "input_path": "cases/dev-software.md",
       "sha256": "d4e0b1b75e167620127ee7da588019e55d5939dbdfa25177b0960120745cd0ab",
+      "prior_input_sha256": "d4e0b1b75e167620127ee7da588019e55d5939dbdfa25177b0960120745cd0ab",
       "provenance": "Original constructed evaluation fixture; not a published source; original source text retained, executable objective added for specify-executable-assets",
       "allowed_deliverables": "output/*.feature",
       "availability": "published",
       "evaluator_criteria_path": "criteria/dev-software.json",
-      "previous_input_sha256": "61efb2cdf5e8f3aa3e3a61bf639a019d24082442187493f99a8eafb6b87a3341"
+      "evaluator_criteria_sha256": "310b4fa45141a08ebd6e1f480eac4021f22a92ad7b90056fd6937c7688897b28"
     },
     {
       "id": "dev-procedure",
@@ -41,15 +84,16 @@
         "acceptance and rejection grouping",
         "native Spanish",
         "contextual executable objective",
-        "Feature target metadata"
+        "verification modality"
       ],
       "input_path": "cases/dev-procedure.md",
       "sha256": "addeed4a60905c904712ba7ce1cc0055e9dfb51dbae871cfe86507cdea62757f",
+      "prior_input_sha256": "addeed4a60905c904712ba7ce1cc0055e9dfb51dbae871cfe86507cdea62757f",
       "provenance": "Original constructed evaluation fixture; not a published source; original source text retained, executable objective added for specify-executable-assets",
       "allowed_deliverables": "output/*.feature",
       "availability": "published",
       "evaluator_criteria_path": "criteria/dev-procedure.json",
-      "previous_input_sha256": "80f47b3a08f8625b9b2b742e01bbeae6c11b194df5e1b5b39a72e7817e29e131"
+      "evaluator_criteria_sha256": "4cee4f2b81ca8f93e6c512e5a6d3e34bf00536a1029b2a839dc6680e39783b5a"
     },
     {
       "id": "dev-prose",
@@ -66,15 +110,16 @@
         "rounding unresolved",
         "Markdown rows",
         "contextual executable objective",
-        "Feature target metadata"
+        "verification modality"
       ],
       "input_path": "cases/dev-prose.md",
       "sha256": "02c887776e34e423d64a6a4dd0c8878ae2fc209126f3b5ea7e6b45ddbaf95c1a",
+      "prior_input_sha256": "02c887776e34e423d64a6a4dd0c8878ae2fc209126f3b5ea7e6b45ddbaf95c1a",
       "provenance": "Original constructed evaluation fixture; not a published source; original source text retained, executable objective added for specify-executable-assets",
       "allowed_deliverables": "output/*.feature.md",
       "availability": "published",
       "evaluator_criteria_path": "criteria/dev-prose.json",
-      "previous_input_sha256": "59677438b09e9327d0591abd2a069e2cf4c2867125aad81c5c5ab52834f6f648"
+      "evaluator_criteria_sha256": "d844f8e076629cacabf43ce5df8b7589ca22d1e1e3c5a5a3bfa80ca7140b66da"
     },
     {
       "id": "dev-transcript-review",
@@ -91,15 +136,16 @@
         "retained boundary coverage",
         "unresolved non-English Markdown",
         "contextual executable objective",
-        "Feature target metadata"
+        "verification modality"
       ],
       "input_path": "cases/dev-transcript-review.md",
       "sha256": "088ae7b52c9f96c46e4436304f7b2be8876ae522d7857e5dc4427129d80a002b",
+      "prior_input_sha256": "088ae7b52c9f96c46e4436304f7b2be8876ae522d7857e5dc4427129d80a002b",
       "provenance": "Original constructed evaluation fixture; not a published source; original source text retained, executable objective added for specify-executable-assets",
       "allowed_deliverables": "findings in response only; no filesystem changes",
       "availability": "published",
       "evaluator_criteria_path": "criteria/dev-transcript-review.json",
-      "previous_input_sha256": "9f5a8ec6491a4dd41ce626f7d1da70ee218917961c616ff6e6e589b494666f54"
+      "evaluator_criteria_sha256": "5bb6db2ab614fad489268032834180ca91f358360a12d07660f1ee63e711647f"
     },
     {
       "id": "reserved-a",
@@ -114,15 +160,16 @@
         "observation without mutation",
         "no-human-actor domain",
         "contextual executable objective",
-        "Feature target metadata"
+        "verification modality"
       ],
       "input_path": "cases/reserved-a.md",
       "sha256": "88b4542c02d00e2baa025eaec7307b427fc04986775460709aa702d3e0f2eda5",
+      "prior_input_sha256": "88b4542c02d00e2baa025eaec7307b427fc04986775460709aa702d3e0f2eda5",
       "provenance": "Original constructed evaluation fixture; not a published source; original source text retained, executable objective added for specify-executable-assets",
       "allowed_deliverables": "output/*.feature",
       "availability": "previously published; not reserved for this revision",
       "evaluator_criteria_path": "criteria/reserved-a.json",
-      "previous_input_sha256": "bae9bbaa3ed0e561ca9b8921d41fda8fb089d76c13ed3a0e418bb034ffca70ce"
+      "evaluator_criteria_sha256": "3e31d572ce73ce15428449ea06714893b2b50b002d40e32f6ad710eb87949592"
     },
     {
       "id": "reserved-b",
@@ -138,15 +185,16 @@
         "scope restriction",
         "unknown policy",
         "contextual executable objective",
-        "Feature target metadata"
+        "verification modality"
       ],
       "input_path": "cases/reserved-b.md",
       "sha256": "823be50deb93cc5db74daa27d24774e6e4956ee8fb582d90d2be8d79a6854dd0",
+      "prior_input_sha256": "823be50deb93cc5db74daa27d24774e6e4956ee8fb582d90d2be8d79a6854dd0",
       "provenance": "Original constructed evaluation fixture; not a published source; original source text retained, executable objective added for specify-executable-assets",
       "allowed_deliverables": "output/*.feature.md",
       "availability": "previously published; not reserved for this revision",
       "evaluator_criteria_path": "criteria/reserved-b.json",
-      "previous_input_sha256": "2c65a512adf0e5ab3d68ba39211ea4352cb1fc8ba64bbce27375cb2aca13927f"
+      "evaluator_criteria_sha256": "70d95c1c7944f402b1956046fec1900115321eb4838c7aed5d126bcc2c17751a"
     },
     {
       "id": "dev-review-book",
@@ -157,11 +205,12 @@
       "coverage": ["O", "B", "V", "F", "C", "P"],
       "input_path": "cases/dev-review-book.md",
       "sha256": "6855f833b0e87e6ba8605a675b28ecbe541cb24d45e12cd65eeac1abd55d1b2e",
-      "source_sha256": "8a1bb95a7756c76c3b33bed4d14e6b21e0b15fae2abea5362f44ae3d9265a51d",
+      "prior_input_sha256": "6855f833b0e87e6ba8605a675b28ecbe541cb24d45e12cd65eeac1abd55d1b2e",
       "provenance": "Original constructed evaluation fixture for specify-executable-assets; not a published source",
       "allowed_deliverables": "response gap only if objective unresolved; otherwise output/*.feature or output/*.feature.md and concise open decisions",
       "availability": "published development",
-      "evaluator_criteria_path": "criteria/dev-review-book.json"
+      "evaluator_criteria_path": "criteria/dev-review-book.json",
+      "evaluator_criteria_sha256": "a095c5dab6a3ba3a4d0905c5bdd2318137bfef89aa21b64ccda322688393413a"
     },
     {
       "id": "dev-negotiation-prepare",
@@ -172,11 +221,12 @@
       "coverage": ["O", "B", "V", "F", "C"],
       "input_path": "cases/dev-negotiation-prepare.md",
       "sha256": "498ab8ceb4c736a1f1243f476b4599956ded2db1b78cd19fd619284d655728e7",
-      "source_sha256": "5278ae5f94735afcce2c1621443e0ce036d0af55d451d631d6d80f859d4adfdf",
+      "prior_input_sha256": "498ab8ceb4c736a1f1243f476b4599956ded2db1b78cd19fd619284d655728e7",
       "provenance": "Original constructed evaluation fixture for specify-executable-assets; not a published source",
       "allowed_deliverables": "response gap only if objective unresolved; otherwise output/*.feature or output/*.feature.md and concise open decisions",
       "availability": "published development",
-      "evaluator_criteria_path": "criteria/dev-negotiation-prepare.json"
+      "evaluator_criteria_path": "criteria/dev-negotiation-prepare.json",
+      "evaluator_criteria_sha256": "66b3b3bf8f240f77250adf939e2c4b4214028b8bef544e3589a696499e09643f"
     },
     {
       "id": "dev-negotiation-offer",
@@ -187,11 +237,12 @@
       "coverage": ["O", "B", "V", "F", "C"],
       "input_path": "cases/dev-negotiation-offer.md",
       "sha256": "d665052cbe25ae28b982665ef847075f98b9785c13522408b3e3ce5a2d4644e4",
-      "source_sha256": "5278ae5f94735afcce2c1621443e0ce036d0af55d451d631d6d80f859d4adfdf",
+      "prior_input_sha256": "d665052cbe25ae28b982665ef847075f98b9785c13522408b3e3ce5a2d4644e4",
       "provenance": "Original constructed evaluation fixture for specify-executable-assets; not a published source",
       "allowed_deliverables": "response gap only if objective unresolved; otherwise output/*.feature or output/*.feature.md and concise open decisions",
       "availability": "published development",
-      "evaluator_criteria_path": "criteria/dev-negotiation-offer.json"
+      "evaluator_criteria_path": "criteria/dev-negotiation-offer.json",
+      "evaluator_criteria_sha256": "eb6f2407d1ea49ce1fbb3438549519ba79c0464ccc4f19c3c9cb432d2033ef04"
     },
     {
       "id": "dev-model-app",
@@ -201,12 +252,34 @@
       "language": "default English",
       "coverage": ["O", "B", "V", "F", "C"],
       "input_path": "cases/dev-model-app.md",
-      "sha256": "17394134b06541f6f0c7d3f26e91ec73c6b27e4d9f96d110a97037a5efbaadab",
-      "source_sha256": "a03034ea5a7d87c718930e37f01daad2adca6b9774ed2cff5dead05a5987565b",
+      "sha256": "b4433a818ce8f09b30dc30c52e1e3374f9f267b33c54483e30ec073c4101b86d",
+      "prior_input_sha256": "17394134b06541f6f0c7d3f26e91ec73c6b27e4d9f96d110a97037a5efbaadab",
       "provenance": "Original constructed evaluation fixture for specify-executable-assets; not a published source",
       "allowed_deliverables": "response gap only if objective unresolved; otherwise output/*.feature or output/*.feature.md and concise open decisions",
       "availability": "published development",
-      "evaluator_criteria_path": "criteria/dev-model-app.json"
+      "evaluator_criteria_path": "criteria/dev-model-app.json",
+      "evaluator_criteria_sha256": "bf48c1bc57c8b0679a157cc3be496ecf5c4098e460a176ccbffe69c0fcdbd796"
+    },
+    {
+      "id": "dev-model-response-handling",
+      "family": "software requirements",
+      "split": "development",
+      "format": "native",
+      "language": "default English",
+      "coverage": [
+        "programmed response handling",
+        "fixed model response",
+        "@code modality",
+        "preserved state",
+        "limited verification claim"
+      ],
+      "input_path": "cases/dev-model-response-handling.md",
+      "provenance": "Constructed fixture added for classify-verification-modalities; contrasts real-model behavior with programmed response handling.",
+      "allowed_deliverables": "output/*.feature",
+      "availability": "published development",
+      "evaluator_criteria_path": "criteria/dev-model-response-handling.json",
+      "sha256": "bb2f06fd411bb0c72b4187657be8e2bbb781890cb15014fcf94cc4777a7b599c",
+      "evaluator_criteria_sha256": "d222d6a97a50a8913df85126c9187564492f612dfca21f4d0be5b8ad1eb82df2"
     },
     {
       "id": "dev-plugin-review",
@@ -216,12 +289,13 @@
       "language": "default English",
       "coverage": ["O", "B", "V", "F", "C"],
       "input_path": "cases/dev-plugin-review.md",
-      "sha256": "918192288fd5225893d47661fb69ef7ced9ede87e3b02283dad44a37da88274d",
-      "source_sha256": "8a1bb95a7756c76c3b33bed4d14e6b21e0b15fae2abea5362f44ae3d9265a51d",
+      "sha256": "52e9165e49bd0887f2760ab7504f8d7aa0696612c5fd30b2c7da80e991e78c6d",
+      "prior_input_sha256": "918192288fd5225893d47661fb69ef7ced9ede87e3b02283dad44a37da88274d",
       "provenance": "Original constructed evaluation fixture for specify-executable-assets; not a published source",
       "allowed_deliverables": "response gap only if objective unresolved; otherwise output/*.feature or output/*.feature.md and concise open decisions",
       "availability": "published development",
-      "evaluator_criteria_path": "criteria/dev-plugin-review.json"
+      "evaluator_criteria_path": "criteria/dev-plugin-review.json",
+      "evaluator_criteria_sha256": "a3ae3c8ba9646644f84b1153550bde0b0cb994aec0df703b801eb21911a76cb2"
     },
     {
       "id": "dev-mixed-review",
@@ -232,11 +306,134 @@
       "coverage": ["O", "B", "V", "F", "C"],
       "input_path": "cases/dev-mixed-review.md",
       "sha256": "6d75cb49510284e417e2df77cd05936e1cc26e8ce492c00b123effc1e8580789",
-      "source_sha256": "8a1bb95a7756c76c3b33bed4d14e6b21e0b15fae2abea5362f44ae3d9265a51d",
+      "prior_input_sha256": "6d75cb49510284e417e2df77cd05936e1cc26e8ce492c00b123effc1e8580789",
       "provenance": "Original constructed evaluation fixture for specify-executable-assets; not a published source",
       "allowed_deliverables": "response gap only if objective unresolved; otherwise output/*.feature or output/*.feature.md and concise open decisions",
       "availability": "published development",
-      "evaluator_criteria_path": "criteria/dev-mixed-review.json"
+      "evaluator_criteria_path": "criteria/dev-mixed-review.json",
+      "evaluator_criteria_sha256": "5585722c41255ac5531cb1f51fe2a837525767a3415d06c6d533c706bd2ccfaf"
+    },
+    {
+      "id": "dev-openspec-customization",
+      "family": "custom OpenSpec configuration and schema",
+      "split": "development",
+      "format": "Markdown",
+      "language": "default English",
+      "coverage": [
+        "custom configuration/schema",
+        "programmed validation",
+        "agent workflow",
+        "exact AI assertions",
+        "deferred generation choices",
+        "both modalities across distinct purposes"
+      ],
+      "input_path": "cases/dev-openspec-customization.md",
+      "provenance": "Constructed fixture added for classify-verification-modalities; it does not request an OpenSpec implementation.",
+      "allowed_deliverables": "output/*.feature.md",
+      "availability": "published development",
+      "evaluator_criteria_path": "criteria/dev-openspec-customization.json",
+      "sha256": "58b59819da818c9694ed39240db32beb96642a952a4fc9d976e9fdf45ce6640b",
+      "evaluator_criteria_sha256": "fb27857157bf5f274dde4ffd0270a98f24bba7b30e124fdcc61832a9fde79820"
+    },
+    {
+      "id": "dev-modality-review",
+      "family": "review-only malformed Markdown Gherkin",
+      "split": "development",
+      "format": "review only",
+      "language": "default English",
+      "coverage": [
+        "combined modality rejection",
+        "Rule/scenario conflict",
+        "unrelated metadata",
+        "Markdown tag syntax"
+      ],
+      "input_path": "cases/dev-modality-review.md",
+      "provenance": "Constructed adversarial review fixture added for classify-verification-modalities.",
+      "allowed_deliverables": "findings in response only; no filesystem changes",
+      "availability": "published development",
+      "evaluator_criteria_path": "criteria/dev-modality-review.json",
+      "sha256": "54ead0807f90586150589f81296ac68ef27ef9f7fa43b2eb4709c5f2743ad389",
+      "evaluator_criteria_sha256": "d571fb6cf47e19a89ff7b5e7b1c369619ee18630a66cfb52927a07e98f83bb2f"
+    },
+    {
+      "id": "dev-unresolved-modality",
+      "family": "review requirements with selected system but pending verification route",
+      "split": "development",
+      "format": "native",
+      "language": "default English",
+      "coverage": [
+        "pending modality",
+        "established objective",
+        "no duplicate contract",
+        "deferred generation choices"
+      ],
+      "input_path": "cases/dev-unresolved-modality.md",
+      "provenance": "Constructed fixture added for classify-verification-modalities.",
+      "allowed_deliverables": "output/*.feature and concise pending decision",
+      "availability": "published development",
+      "evaluator_criteria_path": "criteria/dev-unresolved-modality.json",
+      "sha256": "73136c0bf8c0d873418871255c8719384683695667101095410da227c528e610",
+      "evaluator_criteria_sha256": "cb359cac24d182a0db50c66eb8b4d884d7959fb73237caf1c1b94335f216641a"
+    },
+    {
+      "id": "dev-ai-judge-code",
+      "family": "programmed report generation",
+      "split": "development",
+      "format": "native",
+      "language": "default English",
+      "coverage": [
+        "AI judge contrast",
+        "programmed behavior",
+        "@code modality",
+        "semantic output acceptance"
+      ],
+      "input_path": "cases/dev-ai-judge-code.md",
+      "provenance": "Constructed fixture added for classify-verification-modalities.",
+      "allowed_deliverables": "output/*.feature",
+      "availability": "published development",
+      "evaluator_criteria_path": "criteria/dev-ai-judge-code.json",
+      "sha256": "66a9fd6818e3a64c7d0c421ae4797ba5716ed74af52dc74d7f368f200755f241",
+      "evaluator_criteria_sha256": "21f0c12ad202df1df19a05e372924f5ff9a7dff8f40c0f5db2891b85bf2e9942"
+    },
+    {
+      "id": "dev-policy-format",
+      "family": "project policy instruction format",
+      "split": "development",
+      "format": "Markdown",
+      "language": "default English",
+      "coverage": [
+        "unfamiliar instruction packaging",
+        "agent interpretation",
+        "@ai modality",
+        "review boundaries"
+      ],
+      "input_path": "cases/dev-policy-format.md",
+      "provenance": "Constructed fixture added for classify-verification-modalities.",
+      "allowed_deliverables": "output/*.feature.md",
+      "availability": "published development",
+      "evaluator_criteria_path": "criteria/dev-policy-format.json",
+      "sha256": "38aff74301eeca775a3b4eaf0fe28fc614b1188be3d9d3e61a37d8fda8a70115",
+      "evaluator_criteria_sha256": "2ccebd91c79729ac186cd7a06848ecf03259c443cd169d3259c65907a45be83c"
+    },
+    {
+      "id": "dev-deferred-generation",
+      "family": "programmed configuration validation",
+      "split": "development",
+      "format": "native",
+      "language": "default English",
+      "coverage": [
+        "known @code modality",
+        "language/framework/runner/layout deferred",
+        "inclusive boundary",
+        "preserved state"
+      ],
+      "input_path": "cases/dev-deferred-generation.md",
+      "provenance": "Constructed fixture added for classify-verification-modalities.",
+      "allowed_deliverables": "output/*.feature and concise open decisions",
+      "availability": "published development",
+      "evaluator_criteria_path": "criteria/dev-deferred-generation.json",
+      "sha256": "f457fa99ac9ec5760275cd7d6515218976980673609aff2e1963685f43c60075",
+      "evaluator_criteria_sha256": "41379dc491f56709d1e85f08d3dd56cc38ed25a11492e44fdbca3bf31bc32214"
     },
     {
       "id": "dev-missing-intent",
@@ -247,11 +444,12 @@
       "coverage": ["O", "B", "V", "D"],
       "input_path": "cases/dev-missing-intent.md",
       "sha256": "22b01a3e2b653530e702d4e44700f737b3db983a943bb135d1c3cde11e212b75",
-      "source_sha256": "5278ae5f94735afcce2c1621443e0ce036d0af55d451d631d6d80f859d4adfdf",
+      "prior_input_sha256": "22b01a3e2b653530e702d4e44700f737b3db983a943bb135d1c3cde11e212b75",
       "provenance": "Original constructed evaluation fixture for specify-executable-assets; not a published source",
       "allowed_deliverables": "No completed Feature without an established objective; indispensable missing decisions in the response or a concise note in output/. Other source-derived contracts must not be invented.",
       "availability": "published development",
-      "evaluator_criteria_path": "criteria/dev-missing-intent.json"
+      "evaluator_criteria_path": "criteria/dev-missing-intent.json",
+      "evaluator_criteria_sha256": "966c9f8bad0ea7e769fbd156b66e3d514b8efa59252673980a429ad9db049282"
     },
     {
       "id": "transfer-prompt-transcript",
@@ -262,7 +460,7 @@
       "coverage": [
         "purpose discovery",
         "existing context reuse",
-        "prompt boundary",
+        "verification modality",
         "one whole use case",
         "internal mechanisms",
         "independent facts",
@@ -273,14 +471,12 @@
       ],
       "input_path": "cases/transfer-prompt-transcript.md",
       "sha256": "b69e6fb0ca53eeca061c1f05ca676948d0270042c33fe89416bbd47b0757eee9",
+      "prior_input_sha256": "b69e6fb0ca53eeca061c1f05ca676948d0270042c33fe89416bbd47b0757eee9",
       "provenance": "Original constructed evaluator fixture created 2026-09-07; not a published source or real transcript; distinct from existing teaching examples and corpus domains.",
       "allowed_deliverables": "output/*.feature; indispensable unresolved decisions as comments in those files",
-      "output_directory": "output/",
       "availability": "Published after completed frozen transfer; use as regression in future revisions",
       "evaluator_criteria_path": "criteria/transfer-prompt-transcript.json",
-      "evaluator_criteria_sha256": "ba54b256b903ac8ae0387b2265250ba39b6ca09de76824117de5339b2706d917",
-      "comparison_split": "reserved for specify-executable-assets frozen transfer",
-      "reserved_unsealed_at_utc": "2026-09-07T19:36:17.479248+00:00"
+      "evaluator_criteria_sha256": "8895c6d6a7f345bf35b33ee3a00dcac5d7bcac0cc876a40dfa6f1125bd66356c"
     },
     {
       "id": "transfer-plugin-procedure",
@@ -291,7 +487,7 @@
       "coverage": [
         "purpose discovery",
         "existing context reuse",
-        "plugin boundary",
+        "verification modality",
         "two public use cases",
         "shared concepts",
         "internal selection mechanism",
@@ -304,28 +500,12 @@
       ],
       "input_path": "cases/transfer-plugin-procedure.md",
       "sha256": "b46239ac5cf67d7b7980ba5b89d07e97d953a21223d0fdcc02e46f989b090884",
+      "prior_input_sha256": "b46239ac5cf67d7b7980ba5b89d07e97d953a21223d0fdcc02e46f989b090884",
       "provenance": "Original constructed evaluator fixture created 2026-09-07; not a published source or real transcript; distinct from existing teaching examples and corpus domains.",
       "allowed_deliverables": "output/*.feature.md; indispensable unresolved decisions as comments in those files",
-      "output_directory": "output/",
       "availability": "Published after completed frozen transfer; use as regression in future revisions",
       "evaluator_criteria_path": "criteria/transfer-plugin-procedure.json",
-      "evaluator_criteria_sha256": "3e4a3c9bf3367d099ce4daf5ce8a0dbc951cb1f78606d6618de51dfce1a267a8",
-      "comparison_split": "reserved for specify-executable-assets frozen transfer",
-      "reserved_unsealed_at_utc": "2026-09-07T19:36:17.479248+00:00"
+      "evaluator_criteria_sha256": "3c23a33cb4232854eb1d85cdaf803dfc4acf6009449bd24ae7607e3d36e09323"
     }
-  ],
-  "previous_frozen_at_utc": "2026-09-06T19:38:58.951773+00:00",
-  "frozen_at_utc": "2026-09-07T19:10:56.805897+00:00",
-  "previous_reservation": {
-    "unsealed_at_utc": "2026-09-06T19:52:11.451443+00:00",
-    "freeze_evidence": ".artifacts/gherkin-craft-eval/rebuild-gherkin-craft/validation/candidate-freeze.json"
-  },
-  "current_reservation": {
-    "status": "published after completed frozen transfer; future transfer claims require fresh cases",
-    "case_ids": ["transfer-prompt-transcript", "transfer-plugin-procedure"],
-    "manifest_sha256": "e33d50d732eeef364d55249c3b8b8c5d855ddb77d9821c97349bec579d6cb9b2",
-    "candidate_freeze_evidence": ".artifacts/gherkin-craft-eval/specify-executable-assets/validation/candidate-freeze.json",
-    "transfer_evidence": ".artifacts/gherkin-craft-eval/specify-executable-assets/review/transfer-assessment.json",
-    "unsealed_at_utc": "2026-09-07T19:36:17.479248+00:00"
-  }
+  ]
 }

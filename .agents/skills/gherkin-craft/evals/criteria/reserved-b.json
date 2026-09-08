@@ -12,7 +12,7 @@
     "D": "Only requested specs and indispensable open decisions.",
     "O": "Reuse prior executable objective; source facts support that purpose and do not substitute another asset.",
     "B": "One public action/query per Feature; no Features for implementation-only steps.",
-    "V": "Completed Features @plugin only; no automatic @skill or @code dependency tags."
+    "V": "Leave the Feature modality pending: the host/plugin packaging and helper dependencies do not establish whether verification exercises programmed rules or an interpreting agent. Attach neither @code nor @ai."
   },
   "predeclared": true
 }

@@ -13,6 +13,6 @@
     "D": "Requested files/findings only; review-only untouched; editorial review or disclosed fallback; gaps separate from defects.",
     "O": "The intended asset reviews project changes; no meeting facilitation or source-chapter Features. Reuse prior goal without requiring it again.",
     "B": "One complete public review use case; internal calculator, rules lookup and diff-reading do not become separate Features or ordered acceptance steps.",
-    "V": "@skill only; internal script/service are not test targets."
+    "V": "@ai only; internal script and service are not separate behavior under test."
   }
 }

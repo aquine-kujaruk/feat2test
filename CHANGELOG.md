@@ -10,7 +10,7 @@
 
 ### Features
 
-* **skill:** model executable asset use cases ([b7f9ae4](https://github.com/aquine-kujaruk/feat2test/commit/b7f9ae4e727b37fd937a0634769f674e040a9c4b))
+* **skill:** model observable system use cases ([b7f9ae4](https://github.com/aquine-kujaruk/feat2test/commit/b7f9ae4e727b37fd937a0634769f674e040a9c4b))
 
 # [2.0.0](https://github.com/aquine-kujaruk/feat2test/compare/v1.2.0...v2.0.0) (2026-09-06)
 

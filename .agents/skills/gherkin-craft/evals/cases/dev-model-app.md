@@ -1,6 +1,6 @@
 # Prior context
 
-Earlier context: Specify the public classify-ticket operation of a support application. Verification invokes the application interface; its production implementation internally calls a model.
+Earlier context: Specify the public classify-ticket operation of a support application. Its production implementation calls a model. Verification must invoke the application with its real model and demonstrate the classification behavior; a fixed or stubbed model response cannot satisfy this verification.
 
 # Request
 

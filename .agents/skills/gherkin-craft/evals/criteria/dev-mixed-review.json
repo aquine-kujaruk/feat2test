@@ -13,6 +13,6 @@
     "D": "Requested files/findings only; review-only untouched; editorial review or disclosed fallback; gaps separate from defects.",
     "O": "One review purpose exercised through two explicit boundaries.",
     "B": "One complete shared Feature; no duplicate Feature solely for test strategy; neutral domain steps fit both routes.",
-    "V": "Exactly @skill @plugin; no @code from calculator."
+    "V": "One @ai Feature only. Direct and host-plugin executions apply the same agent guidance; the calculator does not add @code."
   }
 }

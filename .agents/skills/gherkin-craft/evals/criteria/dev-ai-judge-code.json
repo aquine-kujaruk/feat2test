@@ -1,0 +1,11 @@
+{
+  "case_id": "dev-ai-judge-code",
+  "predeclared": true,
+  "criteria": {
+    "V": "@code only because programmed report generation is exercised; an AI judge does not add @ai.",
+    "B": "One report-generation Feature groups critical and noncritical outcomes.",
+    "F": "Retain incident ID, severity, symptom, escalation only for critical incidents, no mutation, and stated scope.",
+    "C": "Cover both defined severities and preserved incident state.",
+    "D": "Do not implement the generator, judge, or tests."
+  }
+}

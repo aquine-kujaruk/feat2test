@@ -1,0 +1,13 @@
+{
+  "case_id": "dev-model-response-handling",
+  "predeclared": true,
+  "criteria": {
+    "O": "Reuse the established programmed response-handling purpose rather than inventing model classification behavior.",
+    "B": "One handling Feature groups accepted labels and mismatched-ID rejection as outcomes of the same operation.",
+    "V": "@code only: the fixture supplies a model response and verification does not exercise model interpretation.",
+    "F": "Preserve routing/triage outcomes, original text preservation, and mismatch rejection without adding a model policy.",
+    "C": "Cover billing, access, unclassified, and mismatched ticket IDs with the stated preserved record.",
+    "L": "Produce native English Gherkin in output/.",
+    "D": "Do not implement or claim tests ran."
+  }
+}

@@ -13,6 +13,6 @@
     "D": "Requested files/findings only; review-only untouched; editorial review or disclosed fallback; gaps separate from defects.",
     "O": "Review operation through plugin host, not book chapters.",
     "B": "One review contract; neither packaged components nor workflow steps justify Features.",
-    "V": "@plugin only, despite bundled skill/script."
+    "V": "@ai only because the host operation exercises an interpreting agent; bundled packaging and calculator do not select another modality."
   }
 }

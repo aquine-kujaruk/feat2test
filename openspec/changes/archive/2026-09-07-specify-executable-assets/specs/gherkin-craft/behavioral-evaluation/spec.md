@@ -1,69 +1,82 @@
+> **Retrospective terminology migration — 2026-09-09.** This archived delta
+> is restated with the later modality contract. It does not claim that the
+> archived evaluation was performed under this contract.
+
 ## ADDED Requirements
 
-### Requirement: Assess application of guidance to asset-directed contracts
+### Requirement: Assess application of guidance to behavior-directed contracts
 
-Evaluation SHALL observe the calling agent applying the guide to contextual intent and sources. It SHALL check relevant domain selection, proposed decomposition, Detroit use-case boundaries, and correct Feature-level asset tags. Merely mentioning principles or labels in the skill document SHALL NOT establish the agent behavior. Cases SHALL distinguish intent already present in earlier context from a genuinely unresolved objective. Mixed-asset cases SHALL distinguish verification targets from internal dependencies.
+Evaluation SHALL observe the calling agent applying the guide to contextual
+intent and sources. It SHALL check relevant domain selection, proposed
+decomposition, Detroit use-case boundaries, and exactly one selected
+verification modality per completed Feature. Cases SHALL distinguish
+established intent, unresolved objective, unresolved verification route,
+programmed behavior, and model/agent interpretation. Packaging, dependencies,
+public software interfaces, and checker technology SHALL NOT decide the tag.
 
-#### Scenario: A source is rewritten without specifying the intended asset
-- **WHEN** an agent turns a negotiation book into chapter-based Features although the contextual goal is a proposal-evaluation skill
-- **THEN** evaluation records a purpose and decomposition failure even if all Features parse
-- **AND** it identifies the requested use case missing from the result
+#### Scenario: A real model supplies required evidence
+- **WHEN** verification exercises an application's real model to classify
+  supplied text
+- **THEN** evaluation expects `@ai`
+- **AND** an application interface alone does not add `@code`
 
-#### Scenario: Asset tags follow verification boundaries
-- **WHEN** an agent specifies an application's public classification operation that internally calls a model
-- **THEN** evaluation expects `@code` for that target
-- **AND** it rejects an extra `@prompt` tag justified only by the internal dependency
+#### Scenario: A fixed response limits the claim
+- **WHEN** verification supplies a model response to exercise programmed
+  handling rules
+- **THEN** evaluation expects `@code`
+- **AND** it does not claim real-model classification was demonstrated
 
-#### Scenario: Multiple targets share an observable contract
-- **WHEN** requested coverage exercises the same review contract through a skill and a plugin
-- **THEN** evaluation expects one Feature with `@skill @plugin`
-- **AND** it checks that the domain outcomes remain applicable through both targets
+#### Scenario: Two hosts run the same agent behavior
+- **WHEN** direct guidance and a host integration both exercise the same
+  interpreting review agent
+- **THEN** evaluation expects one `@ai` Feature
+- **AND** it does not duplicate the use case or add another tag
 
-#### Scenario: An unresolved objective is handled by the caller
-- **WHEN** source material admits incompatible executable objectives and the supplied context selects none
-- **THEN** evaluation expects the agent to identify the pending objective without presenting an invented system as agreed
-- **AND** identifying the gap is distinguished from successfully delivering a complete target specification
-
-## MODIFIED Requirements
+#### Scenario: A route is not selected
+- **WHEN** an established contract could be verified through programmed rules
+  or an interpreting agent but context selects neither
+- **THEN** evaluation preserves supported domain behavior and records the
+  pending selection
+- **AND** it accepts neither a combined tag nor an invented category
 
 ### Requirement: Evaluate activation separately from output quality
 
-Evaluation SHALL distinguish whether the agent loads the guide for an appropriate executable-asset specification request from whether it applies the guidance correctly. Activation cases SHALL include relevant intent in prior context and nearby requests that only ask for source summaries. Explicit invocation SHALL remain available independently of automatic selection, including when the guide helps the calling agent recognize a missing objective.
-
-#### Scenario: A request expresses the skill's purpose without naming Gherkin
-- **WHEN** prior context establishes a development skill as the target and the user supplies an article's rules to define its behavior
-- **THEN** activation evaluation treats the contextual request as relevant to the guide
-- **AND** loading is assessed separately from the correctness of the resulting specification
-
-#### Scenario: An adjacent request only asks for a summary
-- **WHEN** the user requests a plain article summary without executable-asset specification intent
-- **THEN** activation evaluation treats a forced specification workflow as a false positive
-- **AND** merely mentioning an article or domain term is insufficient evidence of appropriate activation
+Evaluation SHALL distinguish actual guide loading for an appropriate
+system-behavior specification request from correct application of the guide.
+Activation cases SHALL include relevant prior intent, nearby source summaries,
+ordinary code work, and explicit invocation. Observed loading and selected path
+are recorded separately from output quality.
 
 ### Requirement: Use varied sources and reserve independent cases
 
-The evaluation corpus SHALL cover software requirements, a real-world procedure, explanatory prose, and a transcript, paired with intended executable assets or an explicit unresolved-intent case. It SHALL cover the four common asset kinds and a mixed-target contract, alongside single-instance abstractions, independent facts, state/event gaps, use-case composition, and explicit scope constraints. Cases reserved from instruction development SHALL check transfer beyond the examples used to write the guide.
+The evaluation corpus SHALL cover software requirements, real-world procedure,
+explanatory prose, transcripts, configurations, and unfamiliar instruction
+formats. It SHALL cover both modalities, invalid combined or conflicting tags,
+pending selection, custom OpenSpec configuration validation and agent workflow,
+exact checks of AI behavior, AI judges of programmed behavior, real-model
+applications, supplied-response handling, and deferred generation details.
+Reserved cases check transfer beyond instruction-development examples.
 
-#### Scenario: General guidance is assessed on an unrelated source
-- **WHEN** the revised guide is applied to a reserved source and asset objective absent from its development examples
-- **THEN** the resulting specification is assessed against that target's purpose and relevant source concepts and rules
-- **AND** imported terminology or policies count as unsupported contamination
+### Requirement: Keep skill evaluation independent of system execution
 
-#### Scenario: The user limits generalization
-- **WHEN** an evaluation request fixes a category or excludes capabilities from the target asset
-- **THEN** successful output preserves the constraint while expressing relevant domain relationships
-- **AND** discovery is not rewarded for introducing excluded capabilities
+Evaluation SHALL remain possible before implementing the systems described by
+Features. Its report SHALL distinguish observed agent runs, parser results, and
+later execution of those systems' tests. Correct modality metadata SHALL NOT
+claim an adapter exists or that a system was exercised.
 
-### Requirement: Keep skill evaluation independent of specification execution
+## MODIFIED Requirements
 
-Evaluation of the guide SHALL remain possible before implementing the target assets described by the resulting Features. Its report SHALL distinguish the observed agent run from later execution of those assets' tests, identifying compared versions, corpus coverage, criteria, outcomes, review findings, and unexecuted checks. An executable objective SHALL be required for a completed specification; an existing implementation, generated tests, or a published glossary SHALL NOT be a prerequisite for authoring it.
+### Requirement: Assess semantic quality and retained compatibility
 
-#### Scenario: The domain has no executable implementation
-- **WHEN** a reserved article is supplied to specify a planned development skill that does not yet exist
-- **THEN** the agent's output is assessable through its intended purpose, relevant domain rules, use cases, target labels, and format
-- **AND** the evaluation does not claim that the future skill or its tests have been executed
+Evaluation SHALL assess fidelity, useful abstraction, terminology, whole
+use-case boundaries, state/event coverage, meaningful arguments, implementation
+independence, language/format, deliverable discipline, contextual intent, and
+modality selection. Parser success cannot override a material semantic failure.
+Markdown table compatibility remains assessed through interpreted bindings,
+values, and example counts.
 
-#### Scenario: A required behavioral evaluation could not run
-- **WHEN** the evaluation environment cannot execute a planned agent comparison
-- **THEN** the report marks that comparison as unexecuted and states the limitation
-- **AND** it does not claim demonstrated superiority of the revised guide on that comparison
+#### Scenario: A Markdown separator is formatting
+- **WHEN** equivalent Markdown specifications use valid tables with or without
+  header separators
+- **THEN** evaluation gives the same result when bindings and values match
+- **AND** a separator interpreted as native table data remains a format defect.

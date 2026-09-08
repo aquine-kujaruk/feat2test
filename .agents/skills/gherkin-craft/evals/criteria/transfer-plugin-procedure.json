@@ -19,9 +19,9 @@
       "source_evidence": ["Request", "Project context", "Release scope"]
     },
     "E-boundary": {
-      "name": "Boundary metadata",
+      "name": "Verification modality metadata",
       "mandatory": true,
-      "check": "Both public-use-case Features carry @plugin as actual Markdown Gherkin Feature metadata. The locker-picker skill and LockerStore code library are internal dependencies, not independent tested boundaries here; @skill, @code, or @prompt category tags are unsupported. Multiple category tags require an explicit same-contract test through every named boundary, which is absent.",
+      "check": "Both public-use-case Features leave modality pending: the clerk commands, plugin packaging, locker-picker skill, and LockerStore do not establish whether verification exercises programmed rules or an interpreting agent. Neither @code nor @ai appears as Feature metadata or on a Rule/scenario; the specific pending route is disclosed.",
       "source_evidence": ["Project context", "Fit scan", "Release scope"]
     },
     "F": {
@@ -86,7 +86,7 @@
     "L": {
       "name": "Markdown English format and parsed rows",
       "mandatory": true,
-      "check": "Produce English .feature.md files under output/ using the supported Markdown Gherkin dialect. Features, rules, scenarios, category tags, examples, and tables must survive the applicable parser; concrete ledger row counts and units/identities must not be lost. Decisions remain comments rather than asserted rules. If the actual parser is unavailable, report that limitation honestly instead of asserting parse success.",
+      "check": "Produce English .feature.md files under output/ using the supported Markdown Gherkin dialect. Features, rules, scenarios, any selected modality tag, examples, and tables must survive the applicable parser; concrete ledger row counts and units/identities must not be lost. Decisions remain comments rather than asserted rules. If the actual parser is unavailable, report that limitation honestly instead of asserting parse success.",
       "source_evidence": ["Request"]
     },
     "D": {

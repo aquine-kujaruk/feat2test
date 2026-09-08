@@ -60,7 +60,7 @@
       "id": "O",
       "name": "Objective and contextual intent",
       "mandatory": true,
-      "check": "Reuse the intended executable asset and purpose from all context. Sources inform that purpose. A genuinely missing objective remains a caller-owned decision; chapter-based Features cannot count as a completed contract."
+      "check": "Reuse the intended system, observable behavior, and purpose from all context. Sources inform that purpose. A genuinely missing objective remains a caller-owned decision; chapter-based Features cannot count as a completed contract."
     },
     {
       "id": "B",
@@ -70,9 +70,9 @@
     },
     {
       "id": "V",
-      "name": "Verification target metadata",
+      "name": "Verification modality metadata",
       "mandatory": true,
-      "check": "Completed Features use @code/@skill/@prompt/@plugin at Feature scope for exercised boundaries, not dependencies. Shared contracts may have multiple tags; retain unrelated metadata. Unknown classification remains pending. Tags do not prescribe determinism, products, scoring or claim scaffolding/test execution."
+      "check": "Each completed Feature has exactly one Feature-level @code or @ai selected from the behavior execution required as evidence. Rules and scenarios inherit it and cannot override it. Packaging, dependencies, test-language choices, determinism, checkers, and output products do not select the modality. Retain unrelated metadata. A genuinely unknown route remains pending without either modality tag; tags do not claim scaffolding or test execution."
     }
   ]
 }

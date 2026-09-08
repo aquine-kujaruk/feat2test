@@ -3,46 +3,54 @@
 These constructed examples teach decisions and formulations. Their concepts,
 values, and rules are not requirements for the user's domain. Apply
 [domain discovery](domain-discovery.md) first and
-[format and language](gherkin-format.md) to the chosen representation. Unless
-another target is stated, the examples specify planned software through its
-public use-case interface and therefore carry `@code`.
+[format and language](gherkin-format.md) to the chosen representation. Select
+the Feature modality with [verification modalities](verification-modalities.md)
+from the behavior that verification must exercise. Unless execution evidence
+states otherwise, examples of programmed behavior carry `@code`.
 
-## Let the objective select the relevant source knowledge
+## Let the objective select the system and relevant source knowledge
 
 Consider a constructed incident handbook: preserve reported symptoms; suggest a
 next diagnostic without claiming it ran; summarize the supplied incident record
 without adding facts. A separate chapter describes organizing staff training.
 
-| Contextual objective | Relevant use case and observable outcome | Target |
-| --- | --- | --- |
-| A skill guiding an agent through investigation planning | Propose a next diagnostic grounded in the reported symptoms; retain what is still unknown and do not claim execution. | `@skill` |
-| A prompt executed by a model to summarize an incident | Summarize the supplied record faithfully; unknown causes remain unknown. | `@prompt` |
+| Contextual objective | Relevant use case and observable outcome | Required execution evidence | Modality |
+| --- | --- | --- | --- |
+| Agent guided through investigation planning | Propose a next diagnostic grounded in the reported symptoms; retain what is still unknown and do not claim execution. | Agent interpretation of the guidance and incident context. | `@ai` |
+| Model instructed to summarize an incident | Summarize the supplied record faithfully; unknown causes remain unknown. | Model interpretation of instructions and supplied record. | `@ai` |
+| Programmed incident lookup | Return the stored symptoms without changing them. | Programmed lookup rules. | `@code` |
 
 The same source supplies different contracts. Neither objective authorizes a
 training-management Feature. If neither objective is established, the calling
 agent exposes that choice; the guide does not select one or conduct an interview.
 Once a purpose is known, a missing diagnostic policy can remain open without
-blocking supported behavior. Source knowledge is evidence, not an asset by itself.
+blocking supported behavior. A system can be a custom configuration, schema, or
+project policy; its packaging does not need a recognized category.
 
-## Software calling a model remains a software target
+## Classify the behavior that verification must exercise
 
-Suppose an application's public operation answers an eligibility query and calls
-a model internally. If tests invoke that application, its Feature is `@code`.
-Examples describe input facts and the required eligibility answer; they do not
-require a model call count, provider, or deterministic result merely from the
-tag. Testing a prompt directly would be a separate verification boundary. For a
-planned prompt, do not write its implementation into a Background as a condition
-of acceptance: the contract states what its response must accomplish.
+Suppose an application's public operation classifies tickets using a real model.
+When verification must demonstrate that model's interpretation of ticket text,
+the Feature is `@ai`, even though a software interface invokes it. Examples
+describe input facts and required classification behavior; they do not require a
+model call count, provider, or deterministic result merely from the tag.
 
-## One review contract through a skill and a plugin
+If verification instead supplies a fixed model response and checks the
+application's programmed parsing, routing, or persistence of that response, the
+Feature is `@code`. It must not claim to have demonstrated real-model
+classification. The interface, model dependency, package name, or a checker
+does not settle the distinction.
+
+## One review contract across AI execution contexts
 
 This constructed review contract requires evidence for an incompatible public
 interface change and leaves files intact. The requested verification exercises
-both an agent applying a review skill and the hosting plugin's exposed review.
-The same domain examples apply to both targets:
+an interpreting agent both directly and through a host operation that applies
+the same guidance. The same domain examples apply to both contexts and the
+Feature has one modality:
 
 ````markdown
-`@skill` `@plugin`
+`@ai` `@regression`
 # Feature: Review a public interface change
 
 ## Rule: A finding identifies a supported compatibility defect and preserves files
@@ -69,10 +77,26 @@ The same domain examples apply to both targets:
 The changed code is the review's input, not its implementation. Reading a diff,
 consulting a script, and fetching rules are possible internal steps; they do not
 become separate Features or a required call order. Do not duplicate this contract
-or add an Examples column choosing the test harness. If only the plugin's public
-operation were tested, it would carry only `@plugin`, despite bundling the skill.
+or add an Examples column choosing an execution context. The same agent behavior
+remains `@ai` whether direct guidance, a plugin host, a prompt file, a custom
+configuration, or a policy file supplies its instructions. If the host operation
+instead exercises only programmed rules, it is `@code`.
 A review that finds no supported defect belongs to this same use case with its
 own example; a separate request to apply a fix has another purpose and contract.
+
+## Keep checking and generation choices separate
+
+An agent creating workflow files remains `@ai` when filenames and contents are
+checked exactly. A programmed report generator remains `@code` when an AI
+judge assesses the result. Exact versus semantic assertions, deterministic versus
+stochastic execution, and who authored implementation code do not select a
+modality.
+
+The tag also does not choose Python, TypeScript, Vitest, another framework, a
+runner, or a test/support-file layout. When behavior execution is known, select
+the tag and leave those later choices open. If the verification route itself is
+not selected, retain supported behavior and name that pending decision without
+tagging it twice.
 
 ## Relationships, arguments, and roles
 

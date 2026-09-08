@@ -23,9 +23,9 @@
       "source_evidence": ["Request", "Project context", "Final Eli and Nadia statements"]
     },
     "E-boundary": {
-      "name": "Boundary metadata",
+      "name": "Verification modality metadata",
       "mandatory": true,
-      "check": "Every Feature carries @prompt as the tested asset category. Arbor Ledger and CensusExtract are context/dependencies, so they do not justify @plugin or @skill, and there is no separately tested @code contract. Multiple category tags would require evidence that this same Feature contract is explicitly tested through each boundary; this source provides none. Tags must be actual Feature metadata in the native file, not prose about a possible future target.",
+      "check": "Every Feature carries exactly one @ai tag because verification exercises model interpretation of the handoff instructions. Arbor Ledger and CensusExtract are context/dependencies and do not add @code; no Rule or scenario declares another modality. The tag is actual Feature metadata in the native file, not prose about a possible future target.",
       "source_evidence": ["Project context"]
     },
     "F": {

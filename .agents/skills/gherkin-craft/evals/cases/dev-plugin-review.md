@@ -1,6 +1,6 @@
 # Prior context
 
-Earlier context: We are creating a code-review plugin that bundles a review skill and a calculator script. Test coverage invokes only the review operation exposed by the host.
+Earlier context: We are creating a code-review plugin that bundles review guidance and a calculator script. Test coverage invokes the host's review operation and exercises an agent interpreting that guidance; the calculator is only supporting machinery.
 
 # Request
 

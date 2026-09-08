@@ -13,6 +13,6 @@
     "D": "Requested files/findings only; review-only untouched; editorial review or disclosed fallback; gaps separate from defects.",
     "O": "Application classify-ticket public operation.",
     "B": "One classification query; no inference/logging Features or interaction-count requirements.",
-    "V": "@code only; internal model does not add @prompt or promise determinism."
+    "V": "@ai only because verification must exercise real-model classification through the application; its software interface does not add @code."
   }
 }

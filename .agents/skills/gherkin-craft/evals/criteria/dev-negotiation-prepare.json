@@ -13,6 +13,6 @@
     "D": "Requested files/findings only; review-only untouched; editorial review or disclosed fallback; gaps separate from defects.",
     "O": "Specify preparation, not offer evaluation or workshop administration; reuse prior objective.",
     "B": "One preparation contract; source sections do not create unrelated public operations.",
-    "V": "@skill only."
+    "V": "@ai only because verification exercises an agent applying the guidance."
   }
 }

@@ -1,0 +1,11 @@
+{
+  "case_id": "dev-policy-format",
+  "predeclared": true,
+  "criteria": {
+    "V": "@ai only because verification exercises an agent interpreting the project policy file. Its unfamiliar format does not require another tag.",
+    "B": "One review Feature groups supported-defect and no-supported-defect outcomes.",
+    "F": "Preserve 2 kg boundary evidence, required finding evidence, and file preservation.",
+    "L": "Produce Markdown Gherkin in output/ with a Feature-level modality.",
+    "D": "Do not create policy, implementation, or tests."
+  }
+}

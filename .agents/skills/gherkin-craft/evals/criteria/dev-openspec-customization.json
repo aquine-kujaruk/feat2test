@@ -1,0 +1,13 @@
+{
+  "case_id": "dev-openspec-customization",
+  "predeclared": true,
+  "criteria": {
+    "O": "Reuse both established purposes: programmed configuration-reference validation and agent workflow behavior.",
+    "B": "Separate the loader validation Feature from the agent workflow Feature; do not make configuration packaging a third purpose.",
+    "V": "The validation Feature is @code and the agent workflow Feature is @ai. Exact filename/content checks do not change the latter, and neither Feature has both tags.",
+    "F": "Preserve resolving/unresolved schema-reference behavior, required proposal.md/review.md obligations, grounded review concern, and no implementation artifact. Keep stated gaps open.",
+    "C": "Cover loader acceptance and rejection plus agent creation of both required artifacts with no implementation artifact.",
+    "L": "Produce Markdown Gherkin in output/ with one Feature-level modality per Feature.",
+    "D": "Do not implement OpenSpec, its configuration/schema, or tests; leave generation technology open."
+  }
+}

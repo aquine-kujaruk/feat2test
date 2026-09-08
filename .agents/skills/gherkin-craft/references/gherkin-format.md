@@ -55,16 +55,18 @@ Outline placeholders. A DataTable follows its step. Do not add Markdown heading
 markers, bullet steps, or Markdown formatting separator rows. In native tables,
 those separators become data, including additional Examples cases.
 
-Place bare asset tags on the line before `Feature`, for example:
+Place the one selected bare modality tag on the line before `Feature`, with
+any unrelated metadata, for example:
 
 ```gherkin
-@skill @plugin
+@ai @regression
 Feature: Review a proposed change
 ```
 
 For a non-English native file, keep `# language: <code>` first, then tags before
-the translated Feature keyword. Target meanings and selection belong to
-[verification targets](verification-targets.md).
+the translated Feature keyword. Exactly one of `@code` or `@ai` is allowed
+on a completed Feature; Rules and scenarios inherit it. Modality meanings and
+selection belong to [verification modalities](verification-modalities.md).
 
 ## Markdown `.feature.md`
 
@@ -77,13 +79,15 @@ other prose remains documentation.
 Place each Feature tag in its **own** backtick span before the Feature heading:
 
 ```markdown
-`@skill` `@plugin`
+`@ai` `@regression`
 # Feature: Review a proposed change
 ```
 
-A single span containing `@skill @plugin` parses as one compound tag, losing
-the intended two-target classification. Native bare tag syntax in Markdown is
-ordinary prose. Keep applicable unrelated tags alongside the target tags.
+A single span containing several tags parses as one compound tag, losing their
+individual metadata. Native bare tag syntax in Markdown is ordinary prose. Keep
+applicable unrelated tags alongside the one modality tag, but do not combine
+`@code` and `@ai`: parser acceptance does not make that semantic
+classification valid.
 
 Use two leading spaces on every table row so Examples and DataTables are
 recognized. Insufficient indentation may silently hide a table.
@@ -104,9 +108,9 @@ Markdown separators; do not confuse them with Gherkin tables.
 
 Where parsing is available, inspect scenario and expanded-example counts,
 Feature tags and their inheritance by expanded scenarios, bindings, selected
-dialect, and resulting step/table values. Check all intended
-rows survived and formatting did not become data. Successful parsing is not a
-semantic review and does not demonstrate domain execution.
+dialect, and resulting step/table values. Check all intended rows survived and
+formatting did not become data. Successful parsing is not a semantic review,
+does not validate modality selection, and does not demonstrate domain execution.
 
 ## References
 

@@ -13,6 +13,6 @@
     "D": "Requested files/findings only; review-only untouched; editorial review or disclosed fallback; gaps separate from defects.",
     "O": "Specify offer assessment, not preparation or attendance. Shared source concepts retain their meanings.",
     "B": "One offer-assessment contract with pass/fail/undecided outcomes together.",
-    "V": "@prompt only; scoring strategy does not change tag."
+    "V": "@ai only because verification exercises model interpretation; scoring strategy does not change modality."
   }
 }

@@ -1,0 +1,11 @@
+{
+  "case_id": "dev-modality-review",
+  "predeclared": true,
+  "criteria": {
+    "V": "Identify both Feature-level tags as a classification defect and the Rule-level @code as a conflicting override. Recommend only @ai while retaining unrelated @regression metadata.",
+    "B": "Keep the review as one complete use case; do not propose duplicate Features or Examples routes.",
+    "F": "Retain the required evidence and file-preservation rules.",
+    "D": "Return findings only; make no files or edits.",
+    "L": "Recognize that each Markdown tag is separately encoded even though their combination is semantically invalid."
+  }
+}

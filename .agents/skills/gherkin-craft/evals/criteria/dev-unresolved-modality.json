@@ -1,0 +1,11 @@
+{
+  "case_id": "dev-unresolved-modality",
+  "predeclared": true,
+  "criteria": {
+    "O": "Reuse the established review objective without asking the user to repeat it.",
+    "V": "Identify the pending choice between programmed and interpreting-agent verification; attach neither @code nor @ai and do not combine or duplicate the Feature.",
+    "B": "Preserve one review contract with supported outcomes.",
+    "F": "Preserve defect evidence, no-supported-finding outcome, and file preservation.",
+    "D": "Do not invent a reviewer implementation or test generation decision."
+  }
+}
