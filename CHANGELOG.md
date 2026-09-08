@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/aquine-kujaruk/feat2test/compare/v2.1.1...v2.2.0) (2026-09-08)
+
+
+### Features
+
+* **skill:** classify verification modalities ([d5a9e5a](https://github.com/aquine-kujaruk/feat2test/commit/d5a9e5ad5215b894746f52dbd69db7015a8da2b4))
+
 ## [2.1.1](https://github.com/aquine-kujaruk/feat2test/compare/v2.1.0...v2.1.1) (2026-09-08)
 
 
