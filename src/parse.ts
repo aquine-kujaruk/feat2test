@@ -123,11 +123,11 @@ export async function parseFeature(absolutePath: string, label: string): Promise
   }
 }
 
-/** Two traps that Cucumber accepts silently and that corrupt the generated data. */
+/** Warn when native separators become data or Markdown indentation hides rows. */
 function lint(source: string, markdown: boolean, label: string): string[] {
   const warnings: string[] = []
   for (const [position, line] of source.split(/\r?\n/).entries()) {
-    if (/^\s*\|(?:\s*:?-{2,}:?\s*\|)+\s*$/.test(line)) {
+    if (!markdown && /^\s*\|(?:\s*:?-{2,}:?\s*\|)+\s*$/.test(line)) {
       warnings.push(`${label}:${position + 1} Markdown separator row is read as data. Delete it.`)
     } else if (markdown && /^ ?\|/.test(line)) {
       warnings.push(`${label}:${position + 1} table row needs two leading spaces to be parsed.`)

@@ -545,24 +545,6 @@ Característica: Tienda
 })
 
 describe('warnings', () => {
-  test('flags a Markdown separator row that Cucumber reads as data', async () => {
-    const { warnings } = await run(`# Feature: Shop
-
-## Scenario Outline: Add <quantity>
-
-* When the customer adds \`<quantity>\` units
-* Then the cart is updated
-
-#### Examples:
-
-  | quantity |
-  | --- |
-  | 2 |
-`)
-
-    expect(warnings.join('\n')).toContain('Markdown separator row')
-  })
-
   test('flags a Markdown table row indented by fewer than two spaces', async () => {
     const { warnings } = await run(`# Feature: Shop
 

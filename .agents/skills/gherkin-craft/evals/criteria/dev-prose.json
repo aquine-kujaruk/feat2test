@@ -8,7 +8,7 @@
     "C": "Derived example with more than two markers distinguishes n−1 multiplier from factor one; capacity includes equality and meaningful sides; query does not reserve cord.",
     "P": "Calculation begins with marker count/gap length, not required cord already supplied; output bindings vary correctly.",
     "I": "Agent outcomes concern supported planning answers; do not invent purchases or execution of the future skill.",
-    "L": "Markdown headings and steps, indented tables, no separator rows or literal formatting markup in data.",
+    "L": "Markdown headings and steps, indented tables; with or without supported header separators, intended Examples bindings, DataTable values and executable example counts survive parsing without unintended formatting data.",
     "D": "No unsolicited glossary; unresolved purchasing decisions separate from established calculation.",
     "O": "Reuse prior executable objective; source facts support that purpose and do not substitute another asset.",
     "B": "One public action/query per Feature; no Features for implementation-only steps.",

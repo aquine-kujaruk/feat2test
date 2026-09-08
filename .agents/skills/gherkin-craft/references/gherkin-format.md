@@ -52,7 +52,8 @@ silently switch a requested format or invent a Markdown language attribute.
 
 Use native keyword structure, indentation for readability, and ordinary bare
 Outline placeholders. A DataTable follows its step. Do not add Markdown heading
-markers, bullet steps, or Markdown separator rows.
+markers, bullet steps, or Markdown formatting separator rows. In native tables,
+those separators become data, including additional Examples cases.
 
 Place bare asset tags on the line before `Feature`, for example:
 
@@ -84,12 +85,14 @@ A single span containing `@skill @plugin` parses as one compound tag, losing
 the intended two-target classification. Native bare tag syntax in Markdown is
 ordinary prose. Keep applicable unrelated tags alongside the target tags.
 
-Two mistakes may parse successfully while corrupting the interpreted examples:
+Use two leading spaces on every table row so Examples and DataTables are
+recognized. Insufficient indentation may silently hide a table.
 
-- Indent **every table row by at least two spaces**. Otherwise a table may be
-  ignored.
-- Never add a Markdown separator row (`| --- |`) to a Gherkin table. It becomes
-  a data row, including in Examples.
+Cucumber's Markdown parser accepts header separators such as `| --- |`,
+including left, right, and centered alignment markers. These are formatting:
+they do not add Examples cases or DataTable values. Tables without separators
+are also supported. Do not report a separator as data corruption solely because
+it appears in Markdown; verify the intended rows and values with the consumer.
 
 Backticks around placeholders in headings or sentences protect their Markdown
 rendering. Inside Examples cells, DataTable cells, and Doc String contents, use
