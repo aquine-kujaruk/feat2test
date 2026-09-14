@@ -476,7 +476,8 @@
       "allowed_deliverables": "output/*.feature; indispensable unresolved decisions as comments in those files",
       "availability": "Published after completed frozen transfer; use as regression in future revisions",
       "evaluator_criteria_path": "criteria/transfer-prompt-transcript.json",
-      "evaluator_criteria_sha256": "8895c6d6a7f345bf35b33ee3a00dcac5d7bcac0cc876a40dfa6f1125bd66356c"
+      "evaluator_criteria_sha256": "bbfc70d4fb24d3ea0c25136909da178fe608c1c6cac3b40c6cd314ceaa7b0f2c",
+      "prior_evaluator_criteria_sha256": "8895c6d6a7f345bf35b33ee3a00dcac5d7bcac0cc876a40dfa6f1125bd66356c"
     },
     {
       "id": "transfer-plugin-procedure",
@@ -505,7 +506,8 @@
       "allowed_deliverables": "output/*.feature.md; indispensable unresolved decisions as comments in those files",
       "availability": "Published after completed frozen transfer; use as regression in future revisions",
       "evaluator_criteria_path": "criteria/transfer-plugin-procedure.json",
-      "evaluator_criteria_sha256": "3c23a33cb4232854eb1d85cdaf803dfc4acf6009449bd24ae7607e3d36e09323"
+      "evaluator_criteria_sha256": "9a2dc2ae844155dc4dfa1ddec06b138d176592ca10501d5f466b4770bd183e7d",
+      "prior_evaluator_criteria_sha256": "3c23a33cb4232854eb1d85cdaf803dfc4acf6009449bd24ae7607e3d36e09323"
     }
   ]
 }

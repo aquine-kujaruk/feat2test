@@ -1,7 +1,7 @@
 {
   "predeclared": true,
   "assessment": "Independent criterion-level pass/fail/unverified. Use not-applicable only with a reason. Every applicable criterion is mandatory; semantic failures cannot be averaged away.",
-  "rubric_path": ".agents/skills/gherkin-craft/evals/rubric.json",
+  "rubric_path": "../rubric.json",
   "authoring_visibility": "Evaluator-only until candidate freeze; never include this file or findings in an authoring run.",
   "evidence_policy": "Cite source section and produced file lines; use run trace for context-reuse and review claims. Wording and filenames may vary. Evaluate contracts and retained behavior, not matching a preferred answer.",
   "case_id": "transfer-prompt-transcript",
