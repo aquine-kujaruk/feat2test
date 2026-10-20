@@ -1,3 +1,28 @@
+# [3.0.0](https://github.com/aquine-kujaruk/feat2test/compare/v2.2.0...v3.0.0) (2026-10-20)
+
+
+* feat!: reduce Gherkin Craft to the generator's deterministic contract ([3ab6655](https://github.com/aquine-kujaruk/feat2test/commit/3ab6655fbadd034a9e545b13f4888add5fc237ba))
+
+
+### Features
+
+* support workflow integration ([adbb15b](https://github.com/aquine-kujaruk/feat2test/commit/adbb15becb0fdda8d81a882ea427aba75a7d26d5))
+
+
+### BREAKING CHANGES
+
+* the published skill bundle drops these resources:
+skills/gherkin-craft/references/domain-discovery.md,
+skills/gherkin-craft/references/verification-modalities.md,
+skills/gherkin-craft/references/evaluation.md,
+skills/gherkin-craft/references/creator.md,
+skills/gherkin-craft/references/editor.md and the whole skills/gherkin-craft/evals/ corpus.
+The skill no longer requires or explains @code and @ai tags. The bundle is now SKILL.md,
+references/generator-contract.md, references/gherkin-format.md, references/authoring-guide.md and
+agents/openai.yaml. CLI behavior is unchanged.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
 # [2.2.0](https://github.com/aquine-kujaruk/feat2test/compare/v2.1.1...v2.2.0) (2026-09-08)
 
 
