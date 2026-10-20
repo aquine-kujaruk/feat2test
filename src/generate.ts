@@ -1,13 +1,14 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { lstat, mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { CodegenError } from './errors.js'
-import { parseFeature } from './parse.js'
-import { planFeature } from './plan.js'
+import { type PreparedFeature, prepareFeature } from './prepare.js'
 import { GENERATED_HEADER } from './render.js'
 import { type RunnerName, resolveRunner } from './runners.js'
-import { renderStepAdapter } from './steps.js'
+import { type FeatureSource, readSource, textSource } from './source.js'
 import { synchronizeStepAdapter } from './sync-steps.js'
 import type { GenerationReport } from './types.js'
+
+export { outputPrefix } from './source.js'
 
 export interface GenerateOptions {
   readonly runner: RunnerName
@@ -23,22 +24,40 @@ export async function generate(
   outputDirectory: string,
   options: GenerateOptions,
 ): Promise<GenerationReport> {
-  const runner = resolveRunner(options.runner)
+  resolveRunner(options.runner)
   const input = path.resolve(inputPath)
-  const output = path.resolve(outputDirectory)
-  const label = display(input)
+  const source = await readSource(input, display(input))
+  return generatePrepared(prepareFeature(source, options.runner), outputDirectory, options)
+}
 
-  const prefix = outputPrefix(path.basename(input))
+export async function generateSource(
+  source: FeatureSource,
+  outputDirectory: string,
+  options: GenerateOptions,
+): Promise<GenerationReport> {
+  const checked = textSource(source.text, source.format, source.identity)
+  const prepared = prepareFeature(checked, options.runner)
+  const output = path.resolve(outputDirectory)
+  const destination = path.join(output, path.dirname(checked.identity))
+  await checkDescendants(output, path.join(destination, `${prepared.prefix}.test.ts`))
+  await checkDescendants(output, path.join(destination, `${prepared.prefix}.steps.ts`))
+  return generatePrepared(prepared, destination, options)
+}
+
+export async function generatePrepared(
+  prepared: PreparedFeature,
+  outputDirectory: string,
+  options: GenerateOptions,
+): Promise<GenerationReport> {
+  const output = path.resolve(outputDirectory)
+  const { prefix, plan, test } = prepared
   const testPath = path.join(output, `${prefix}.test.ts`)
   const stepAdapterPath = path.join(output, `${prefix}.steps.ts`)
 
-  const parsed = await parseFeature(input, label)
-  const plan = planFeature(parsed, label)
-  const test = runner.render(plan, `./${prefix}.steps`)
   const currentStepAdapter = await read(stepAdapterPath)
   const stepAdapter =
     currentStepAdapter === undefined
-      ? renderStepAdapter(plan)
+      ? prepared.initialAdapter
       : synchronizeStepAdapter(plan, currentStepAdapter, display(stepAdapterPath))
   const stepAdapterChanged = currentStepAdapter !== stepAdapter
 
@@ -67,15 +86,26 @@ export async function generate(
     stepAdapterWritten: !options.check && stepAdapterChanged,
     stepCount: plan.steps.length,
     testPath,
-    warnings: parsed.warnings,
+    warnings: prepared.warnings,
   }
 }
 
-/** Everything before the last extension, guaranteed to end in `.feature`. */
-export function outputPrefix(filename: string): string {
-  const extension = path.extname(filename)
-  const stem = extension ? filename.slice(0, -extension.length) : filename
-  return stem.endsWith('.feature') ? stem : `${stem}.feature`
+/** Existing descendant links must not redirect a virtual source outside its output root. */
+async function checkDescendants(root: string, target: string): Promise<void> {
+  let current = root
+  for (const part of path.relative(root, target).split(path.sep)) {
+    current = path.join(current, part)
+    try {
+      if ((await lstat(current)).isSymbolicLink()) {
+        throw new CodegenError(
+          'OUTPUT_CONFLICT',
+          `Output path is a symbolic link: ${display(current)}`,
+        )
+      }
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
+    }
+  }
 }
 
 /** Refuse to replace a file the generator did not write. */

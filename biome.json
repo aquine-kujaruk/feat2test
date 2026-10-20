@@ -12,7 +12,8 @@
       "!coverage",
       "!node_modules",
       "!.artifacts",
-      "!**/*.feature.test.ts"
+      "!**/*.feature.test.ts",
+      "!tests/regression/expected"
     ]
   },
   "formatter": {

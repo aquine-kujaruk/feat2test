@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { access, cp, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -21,6 +21,33 @@ function run(command, args, cwd = workspace) {
   return result.stdout
 }
 
+const SKILL_FILES = [
+  'SKILL.md',
+  'agents/openai.yaml',
+  'references/authoring-guide.md',
+  'references/generator-contract.md',
+  'references/gherkin-format.md',
+]
+
+async function checkSkill(bundle) {
+  const files = await readdir(bundle, { recursive: true })
+  for (const required of SKILL_FILES) {
+    assert.ok(files.includes(required), `Missing skill resource: ${required}`)
+  }
+  for (const file of files.filter((name) => name.endsWith('.md'))) {
+    const text = await readFile(path.join(bundle, file), 'utf8')
+    for (const [, link] of text.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
+      if (/^(?:https?:|#)/.test(link)) continue
+      const target = path.resolve(bundle, path.dirname(file), link.split('#')[0])
+      assert.ok(
+        target.startsWith(`${bundle}${path.sep}`),
+        `Resource escapes bundle: ${file}: ${link}`,
+      )
+      await access(target)
+    }
+  }
+}
+
 try {
   // verify builds first; pack only the actual files that npm will distribute.
   const [packed] = JSON.parse(
@@ -28,10 +55,20 @@ try {
   )
   assert.equal(packed.name, 'feat2test')
   const files = packed.files.map((entry) => entry.path)
-  for (const required of ['dist/cli.mjs', 'README.md', 'LICENSE']) {
+  for (const required of [
+    'dist/cli.mjs',
+    'README.md',
+    'LICENSE',
+    'skills/gherkin-craft/SKILL.md',
+  ]) {
     assert.ok(files.includes(required), `Missing ${required} in tarball`)
   }
   assert.ok(files.every((name) => !/^(src|tests|examples|node_modules|\.agents)\//.test(name)))
+  assert.deepEqual(
+    files.filter((name) => name.startsWith('skills/')).sort(),
+    SKILL_FILES.map((name) => `skills/gherkin-craft/${name}`),
+    'Skill bundle must contain exactly its entry point, references and agent metadata',
+  )
   const tarball = path.join(workspace, packed.filename)
   await writeFile(path.join(workspace, 'package.json'), '{"private":true,"type":"module"}\n')
   run('npm', ['install', '--ignore-scripts', '--omit=dev', '--no-audit', '--no-fund', tarball])
@@ -40,6 +77,30 @@ try {
   assert.ok(!dependencies.includes('typescript'), 'CLI must not install TypeScript')
   assert.equal(run('npx', ['--no-install', 'feat2test', '--version']).trim(), metadata.version)
   assert.match(run('npx', ['--no-install', 'feat2test', '--help']), /feat2test generate/)
+  const bundle = path.join(workspace, 'node_modules/feat2test/skills/gherkin-craft')
+  await checkSkill(bundle)
+  const copied = path.join(workspace, 'copied-skill')
+  await cp(bundle, copied, { recursive: true })
+  await checkSkill(copied)
+  const source = 'Feature: Payment\n  Scenario: Accepted\n    Given payment is ready\n'
+  const report = JSON.parse(
+    run('npx', [
+      '--no-install',
+      'feat2test',
+      'validate',
+      '--text',
+      source,
+      '--format',
+      'feature',
+      '--source',
+      'payment.feature',
+      '--runner',
+      'node:test',
+      '--json',
+    ]),
+  )
+  assert.equal(report.evidence, 'generability')
+  assert.equal(report.scenarioCount, 1)
   await writeFile(
     path.join(workspace, 'payment.feature'),
     'Feature: Payment\n  Scenario: Accepted\n    Given payment is ready\n',
@@ -75,7 +136,7 @@ try {
     metadata.version,
   )
   process.stdout.write(
-    'Package smoke passed: tarball, production install, npx, generate --check, native Node tests.\n',
+    'Package smoke passed: tarball, complete/copyable skill, production install, npx, validate, generate --check, native Node tests.\n',
   )
 } finally {
   await rm(workspace, { recursive: true, force: true })

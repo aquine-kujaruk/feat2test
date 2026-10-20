@@ -1,4 +1,3 @@
-import { readFile } from 'node:fs/promises'
 import {
   AstBuilder,
   compile,
@@ -15,6 +14,7 @@ import {
   type Step,
 } from '@cucumber/messages'
 import { CodegenError } from './errors.js'
+import { type FeatureSource, readSource } from './source.js'
 
 export interface SourceStep {
   readonly keyword: string
@@ -42,14 +42,12 @@ export interface ParsedFeature {
  * Gherkin honours a `# language:` header on its own; Markdown Gherkin is English.
  */
 export async function parseFeature(absolutePath: string, label: string): Promise<ParsedFeature> {
-  let source: string
-  try {
-    source = await readFile(absolutePath, 'utf8')
-  } catch {
-    throw new CodegenError('INPUT_UNREADABLE', `Cannot read ${label}`)
-  }
+  return parseSource(await readSource(absolutePath, label))
+}
 
-  const markdown = absolutePath.toLowerCase().endsWith('.md')
+export function parseSource(input: FeatureSource): ParsedFeature {
+  const { text: source, identity: label } = input
+  const markdown = input.format === 'mdg'
   const newId = IdGenerator.incrementing()
   const matcher = markdown ? new GherkinInMarkdownTokenMatcher() : new GherkinClassicTokenMatcher()
 
