@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/aquine-kujaruk/feat2test/compare/v3.0.0...v3.0.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* **ci:** allow npm packaging on supported Node 24 runtime ([e050f15](https://github.com/aquine-kujaruk/feat2test/commit/e050f158f39ea25b4b2196fb9f8967b6eee3ebf8))
+
 # [3.0.0](https://github.com/aquine-kujaruk/feat2test/compare/v2.2.0...v3.0.0) (2026-10-20)
 
 
