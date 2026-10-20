@@ -31,7 +31,9 @@ describe.each(['checkout.feature', 'orders.feature.md'])('%s', (name) => {
 
   test('runs red: every scenario fails on a pending step', async () => {
     const result = await generate(path.join(fixtures, name), workspace, { runner: 'node:test' })
-    const run = spawnSync(process.execPath, ['--test', result.testPath], { encoding: 'utf8' })
+    const run = spawnSync(process.execPath, ['--test', '--test-reporter=tap', result.testPath], {
+      encoding: 'utf8',
+    })
     expect(run.status).toBe(1)
     expect(run.stdout).toContain('# pass 0')
     expect(run.stdout).toContain(`# fail ${result.scenarioCount}`)
