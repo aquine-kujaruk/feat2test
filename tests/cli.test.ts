@@ -306,7 +306,7 @@ describe('memory workflow', () => {
     )
     await writeFile(path.join(cwd, 'out/payment.feature.test.ts'), 'stale output')
     const before = await readFile(path.join(cwd, 'out/payment.feature.test.ts'), 'utf8')
-    const permissionArgs = [process.execPath, '--experimental-permission', '--allow-fs-read=*', cli]
+    const permissionArgs = [process.execPath, '--permission', '--allow-fs-read=*', cli]
     for (const args of [
       ['--stdin', ...sourceArgs],
       ['--text', minimal, ...sourceArgs],
