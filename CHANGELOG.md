@@ -1,3 +1,11 @@
+## [3.0.2](https://github.com/aquine-kujaruk/feat2test/compare/v3.0.1...v3.0.2) (2026-10-20)
+
+
+### Bug Fixes
+
+* **deps:** align Babel parser with updated AST types ([66c7efa](https://github.com/aquine-kujaruk/feat2test/commit/66c7efa62c304c9e5db5d88a01082708b5d19178))
+* **deps:** align Babel types with parser 8 ([8ed215b](https://github.com/aquine-kujaruk/feat2test/commit/8ed215bfdfb0ed781dc704792a607f49fb866587))
+
 ## [3.0.1](https://github.com/aquine-kujaruk/feat2test/compare/v3.0.0...v3.0.1) (2026-10-20)
 
 
