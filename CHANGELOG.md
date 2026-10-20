@@ -1,3 +1,18 @@
+# [4.0.0](https://github.com/aquine-kujaruk/feat2test/compare/v3.0.2...v4.0.0) (2026-10-20)
+
+
+* feat!: require a method name comment on every step ([0b82a56](https://github.com/aquine-kujaruk/feat2test/commit/0b82a567e8b9701c80fd2dd03d3e3b86c94bc6c3))
+
+
+### BREAKING CHANGES
+
+* steps without a trailing `<!-- name -->` comment fail with
+MISSING_STEP_NAME, and word-derived method names are removed. Name every step;
+reuse the previously derived method name (e.g. `<!-- theShopIsOpen -->`) to keep
+an existing implementation.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
 ## [3.0.2](https://github.com/aquine-kujaruk/feat2test/compare/v3.0.1...v3.0.2) (2026-10-20)
 
 
