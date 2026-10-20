@@ -82,7 +82,8 @@ try {
   const copied = path.join(workspace, 'copied-skill')
   await cp(bundle, copied, { recursive: true })
   await checkSkill(copied)
-  const source = 'Feature: Payment\n  Scenario: Accepted\n    Given payment is ready\n'
+  const source =
+    'Feature: Payment\n  Scenario: Accepted\n    Given payment is ready <!-- paymentIsReady -->\n'
   const report = JSON.parse(
     run('npx', [
       '--no-install',
@@ -101,10 +102,7 @@ try {
   )
   assert.equal(report.evidence, 'generability')
   assert.equal(report.scenarioCount, 1)
-  await writeFile(
-    path.join(workspace, 'payment.feature'),
-    'Feature: Payment\n  Scenario: Accepted\n    Given payment is ready\n',
-  )
+  await writeFile(path.join(workspace, 'payment.feature'), source)
   run('npx', [
     '--no-install',
     'feat2test',

@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
@@ -49,9 +49,9 @@ const MINIMAL = `# Feature: Shop
 
 ## Scenario: Browse
 
-* Given the shop is open
-* When the customer browses
-* Then products are listed
+* Given the shop is open <!-- shopIsOpen -->
+* When the customer browses <!-- browseProducts -->
+* Then products are listed <!-- productsAreListed -->
 `
 
 describe('output naming', () => {
@@ -80,9 +80,9 @@ describe('Feature: Shop', () => {
     const steps = createSteps()
 
     // Given the shop is open
-    await steps.theShopIsOpen()
+    await steps.shopIsOpen()
     // When the customer browses
-    await steps.theCustomerBrowses()
+    await steps.browseProducts()
     // Then products are listed
     await steps.productsAreListed()
   })
@@ -97,8 +97,8 @@ describe('Feature: Shop', () => {
 
 ### Scenario: Add a stocked product
 
-* When the customer adds a stocked product
-* Then the cart holds it
+* When the customer adds a stocked product <!-- addStockedProduct -->
+* Then the cart holds it <!-- cartHoldsProduct -->
 `)
 
     expect(generated).toContain(`describe('Rule: Stock limits the cart', () => {`)
@@ -110,15 +110,15 @@ describe('Feature: Shop', () => {
 
 ## Background:
 
-* Given the shop is open
+* Given the shop is open <!-- shopIsOpen -->
 
 ## Scenario: Browse
 
-* When the customer browses
-* Then products are listed
+* When the customer browses <!-- browseProducts -->
+* Then products are listed <!-- productsAreListed -->
 `)
 
-    expect(generated).toContain('await steps.theShopIsOpen()')
+    expect(generated).toContain('await steps.shopIsOpen()')
   })
 
   test('passes each Examples row as its own test', async () => {
@@ -126,8 +126,8 @@ describe('Feature: Shop', () => {
 
 ## Scenario Outline: Add <quantity> units
 
-* When the customer adds \`<quantity>\` units
-* Then the cart holds \`<quantity>\` units
+* When the customer adds \`<quantity>\` units <!-- addUnits -->
+* Then the cart holds \`<quantity>\` units <!-- cartHoldsUnits -->
 
 #### Examples:
 
@@ -138,7 +138,7 @@ describe('Feature: Shop', () => {
 
     expect(generated).toContain(`test('Add 1 units', async () => {`)
     expect(generated).toContain(`test('Add 9 units', async () => {`)
-    expect(generated).toContain(`await steps.theCustomerAddsUnits('9')`)
+    expect(generated).toContain(`await steps.addUnits('9')`)
   })
 
   test('disambiguates repeated scenario names', async () => {
@@ -146,8 +146,8 @@ describe('Feature: Shop', () => {
 
 ## Scenario Outline: Add units
 
-* When the customer adds \`<quantity>\` units
-* Then the cart is updated
+* When the customer adds \`<quantity>\` units <!-- addUnits -->
+* Then the cart is updated <!-- cartIsUpdated -->
 
 #### Examples:
 
@@ -165,14 +165,14 @@ describe('Feature: Shop', () => {
 
 ## Scenario: Order two products
 
-* Given the order contains:
+* Given the order contains: <!-- orderContains -->
   | product | quantity |
   | Pencil | 2 |
   | Notebook | 1 |
-* Then the order holds two lines
+* Then the order holds two lines <!-- orderHoldsTwoLines -->
 `)
 
-    expect(generated).toContain(`    await steps.theOrderContains([
+    expect(generated).toContain(`    await steps.orderContains([
       ['product', 'quantity'],
       ['Pencil', '2'],
       ['Notebook', '1'],
@@ -184,14 +184,14 @@ describe('Feature: Shop', () => {
 
 ## Scenario: Publish a notice
 
-* When the shop publishes:
+* When the shop publishes: <!-- publishNotice -->
   \`\`\`
   Closed today
   \`\`\`
-* Then the notice is visible
+* Then the notice is visible <!-- noticeIsVisible -->
 `)
 
-    expect(generated).toContain(`await steps.theShopPublishes('Closed today')`)
+    expect(generated).toContain(`await steps.publishNotice('Closed today')`)
   })
 
   test('escapes quotes and backslashes in generated literals', async () => {
@@ -199,7 +199,7 @@ describe('Feature: Shop', () => {
 
 ## Scenario Outline: Show <label>
 
-* Then the label shows \`<label>\`
+* Then the label shows \`<label>\` <!-- labelShows -->
 
 #### Examples:
 
@@ -207,7 +207,7 @@ describe('Feature: Shop', () => {
   | it's a \\\\ break |
 `)
 
-    expect(generated).toContain(`await steps.theLabelShows('it\\'s a \\\\ break')`)
+    expect(generated).toContain(`await steps.labelShows('it\\'s a \\\\ break')`)
   })
 
   test('is rewritten whenever the Feature changes', async () => {
@@ -241,13 +241,13 @@ describe('the Step Adapter', () => {
 export function createSteps() {
   return {
     // Context
-    theShopIsOpen(): void {
-      throw new Error('PENDING: theShopIsOpen')
+    shopIsOpen(): void {
+      throw new Error('PENDING: shopIsOpen')
     },
 
     // Action
-    theCustomerBrowses(): void {
-      throw new Error('PENDING: theCustomerBrowses')
+    browseProducts(): void {
+      throw new Error('PENDING: browseProducts')
     },
 
     // Outcome
@@ -264,8 +264,8 @@ export function createSteps() {
 
 ## Scenario Outline: Format <value>
 
-* When value \`<value>\` is formatted for language \`<language>\`
-* Then display shows \`<formatted>\`
+* When value \`<value>\` is formatted for language \`<language>\` <!-- formatValue -->
+* Then display shows \`<formatted>\` <!-- displayShows -->
 
 #### Examples:
 
@@ -273,7 +273,7 @@ export function createSteps() {
   | 1234.56 | Spanish | 1.234,56 |
 `)
 
-    expect(steps).toContain('valueIsFormattedForLanguage(value: string, language: string): void {')
+    expect(steps).toContain('formatValue(value: string, language: string): void {')
     expect(steps).toContain('displayShows(formatted: string): void {')
   })
 
@@ -282,8 +282,8 @@ export function createSteps() {
 
 ## Scenario Outline: Reject <unavailableProduct>
 
-* When the customer orders \`<unavailableProduct>\`
-* Then the order is rejected
+* When the customer orders \`<unavailableProduct>\` <!-- orderProduct -->
+* Then the order is rejected <!-- orderIsRejected -->
 
 #### Examples:
 
@@ -291,7 +291,25 @@ export function createSteps() {
   | Notebook |
 `)
 
-    expect(steps).toContain('theCustomerOrders(unavailableProduct: string): void {')
+    expect(steps).toContain('orderProduct(unavailableProduct: string): void {')
+  })
+
+  test('turns any placeholder name into a valid parameter', async () => {
+    const { steps } = await run(`# Feature: Shop
+
+## Scenario Outline: Ship <Quantity>
+
+* When \`<Quantity>\` units ship \`<class>\` as \`<2nd>\` choice to \`<número>\` <!-- shipUnits -->
+
+#### Examples:
+
+  | Quantity | class | 2nd | número |
+  | 1 | express | yes | 7 |
+`)
+
+    expect(steps).toContain(
+      'shipUnits(quantity: string, classStep: string, step2nd: string, numero: string): void {',
+    )
   })
 
   test('types a DataTable step as a string matrix', async () => {
@@ -299,13 +317,13 @@ export function createSteps() {
 
 ## Scenario: Order products
 
-* Given the order contains:
+* Given the order contains: <!-- orderContains -->
   | product |
   | Pencil |
-* Then the order holds one line
+* Then the order holds one line <!-- orderHoldsOneLine -->
 `)
 
-    expect(steps).toContain('theOrderContains(table: string[][]): void {')
+    expect(steps).toContain('orderContains(table: string[][]): void {')
   })
 
   test('preserves matching implementations and replaces obsolete steps', async () => {
@@ -320,16 +338,16 @@ export function createSteps() {
     )
     await writeFile(first.stepAdapterPath, edited, 'utf8')
 
-    await writeFile(input, MINIMAL.replace('the shop is open', 'the shop is closed'), 'utf8')
+    await writeFile(input, MINIMAL.replace('open <!-- shopIsOpen', 'closed <!-- shopIsClosed'))
     const second = await generate(input, workspace, { runner: 'vitest' })
 
     const updated = await read(second.stepAdapterPath)
     expect(updated).toContain(implementation)
-    expect(updated).not.toContain('theShopIsOpen')
-    expect(updated).toContain("throw new Error('PENDING: theShopIsClosed')")
+    expect(updated).not.toContain('shopIsOpen')
+    expect(updated).toContain("throw new Error('PENDING: shopIsClosed')")
     expect(second.stepAdapterWritten).toBe(true)
-    expect(await read(second.testPath)).toContain('await steps.theShopIsClosed()')
-    expect(await read(second.testPath)).not.toContain('theShopIsOpen')
+    expect(await read(second.testPath)).toContain('await steps.shopIsClosed()')
+    expect(await read(second.testPath)).not.toContain('shopIsOpen')
 
     const repeated = await generate(input, workspace, { runner: 'vitest' })
     expect(repeated.stepAdapterWritten).toBe(false)
@@ -337,6 +355,28 @@ export function createSteps() {
     await expect(
       generate(input, workspace, { runner: 'vitest', check: true }),
     ).resolves.toMatchObject({ stepAdapterWritten: false })
+  })
+
+  test('retains an implementation when a step is reworded under the same name', async () => {
+    const input = path.join(workspace, 'shop.feature.md')
+    await writeFile(input, MINIMAL)
+    const first = await generate(input, workspace, { runner: 'vitest' })
+    const implemented = (await read(first.stepAdapterPath)).replace(
+      "throw new Error('PENDING: productsAreListed')",
+      'if (!catalog.listed) throw new Error("catalog")',
+    )
+    await writeFile(first.stepAdapterPath, implemented)
+
+    await writeFile(input, MINIMAL.replace('products are listed', 'the catalog shows its products'))
+    const reworded = await generate(input, workspace, { runner: 'vitest' })
+
+    expect(reworded.stepAdapterWritten).toBe(false)
+    expect(await read(reworded.stepAdapterPath)).toBe(implemented)
+    const generated = await read(reworded.testPath)
+    expect(generated).toContain(
+      '    // Then the catalog shows its products\n    await steps.productsAreListed()',
+    )
+    expect(generated).not.toContain('<!--')
   })
 
   test('keeps a shared step until its final occurrence is removed', async () => {
@@ -354,18 +394,18 @@ export function createSteps() {
     const shared = await generate(input, workspace, { runner: 'vitest' })
     expect(shared.stepAdapterWritten).toBe(false)
     expect(await read(shared.stepAdapterPath)).toBe(implementation)
-    expect((await read(shared.stepAdapterPath)).match(/theShopIsOpen\(/g)).toHaveLength(1)
+    expect((await read(shared.stepAdapterPath)).match(/shopIsOpen\(/g)).toHaveLength(1)
 
-    await writeFile(input, MINIMAL.replace('* Given the shop is open\n', ''))
+    await writeFile(input, MINIMAL.replace('* Given the shop is open <!-- shopIsOpen -->\n', ''))
     const removed = await generate(input, workspace, { runner: 'vitest' })
-    expect(await read(removed.stepAdapterPath)).not.toContain('theShopIsOpen')
-    expect(await read(removed.testPath)).not.toContain('theShopIsOpen')
+    expect(await read(removed.stepAdapterPath)).not.toContain('shopIsOpen')
+    expect(await read(removed.testPath)).not.toContain('shopIsOpen')
     expect(await read(removed.stepAdapterPath)).toContain(
       'productsAreListed(): void {\n      return',
     )
   })
 
-  test('keeps both signatures when only one occurrence of a shared step is renamed', async () => {
+  test('keeps both methods when only one occurrence of a shared step is renamed', async () => {
     const input = path.join(workspace, 'shop.feature.md')
     const repeated = MINIMAL + MINIMAL.slice(MINIMAL.indexOf('## Scenario:'))
     await writeFile(input, repeated)
@@ -376,17 +416,18 @@ export function createSteps() {
     )
     await writeFile(first.stepAdapterPath, implementation)
 
-    await writeFile(input, repeated.replace('products are listed', 'products are listeD'))
+    const renamed = ['<!-- productsAreListed -->', '<!-- productsAreShown -->'] as const
+    await writeFile(input, repeated.replace(...renamed))
     await generate(input, workspace, { runner: 'vitest' })
     const adapter = await read(first.stepAdapterPath)
     const generated = await read(first.testPath)
     expect(adapter).toContain('productsAreListed(): void {\n      return')
-    expect(adapter).toContain("throw new Error('PENDING: productsAreListeD')")
+    expect(adapter).toContain("throw new Error('PENDING: productsAreShown')")
     expect(adapter.match(/\/\/ Outcome/g)).toHaveLength(1)
     expect(generated).toContain('await steps.productsAreListed()')
-    expect(generated).toContain('await steps.productsAreListeD()')
+    expect(generated).toContain('await steps.productsAreShown()')
 
-    await writeFile(input, repeated.replaceAll('products are listed', 'products are listeD'))
+    await writeFile(input, repeated.replaceAll(...renamed))
     await generate(input, workspace, { runner: 'vitest' })
     expect(await read(first.stepAdapterPath)).not.toContain('productsAreListed(')
     expect(await read(first.testPath)).not.toContain('productsAreListed(')
@@ -403,7 +444,7 @@ export function createSteps() {
       const first = await generate(input, workspace, { runner: 'vitest' })
       const testBefore = await read(first.testPath)
       await writeFile(first.stepAdapterPath, adapter)
-      await writeFile(input, MINIMAL.replace('the shop is open', 'the shop is closed'))
+      await writeFile(input, MINIMAL.replace('<!-- shopIsOpen -->', '<!-- shopIsClosed -->'))
 
       await expect(generate(input, workspace, { runner: 'vitest' })).rejects.toMatchObject({ code })
       expect(await read(first.testPath)).toBe(testBefore)
@@ -413,14 +454,42 @@ export function createSteps() {
 })
 
 describe('step identity', () => {
-  test('shares one method between steps with the same literal words', async () => {
+  test('shares one method between steps with the same name, whatever their words', async () => {
+    const { steps, test: generated } = await run(
+      `Feature: Add units
+  Scenario: Add two
+    Given an empty cart <!-- emptyCart -->
+    When 2 units are added <!-- addUnits -->
+    Then the cart holds 2 units <!-- cartContains -->
+  Scenario: Add five
+    Given the cart is empty <!-- emptyCart -->
+    When 5 units are added <!-- addUnits -->
+    Then the cart contains 5 units <!-- cartContains -->
+`,
+      { filename: 'add.feature' },
+    )
+
+    expect(steps.match(/^ {4}\w+(?=\()/gm)).toEqual([
+      '    emptyCart',
+      '    addUnits',
+      '    cartContains',
+    ])
+    expect(generated).toContain('    // Given an empty cart\n    await steps.emptyCart()')
+    expect(generated).toContain('    // Given the cart is empty\n    await steps.emptyCart()')
+    expect(generated).toContain(
+      '    // Then the cart holds 2 units\n    await steps.cartContains()',
+    )
+    expect(generated).not.toContain('<!--')
+  })
+
+  test('keeps different names apart even when their words are identical', async () => {
     const { steps } = await run(`# Feature: Shop
 
-## Scenario Outline: Add <quantity>
+## Scenario Outline: Check out <quantity>
 
-* When the customer adds \`<quantity>\` units
-* And the customer adds \`<quantity>\` units
-* Then the cart is updated
+* Given the cart holds \`<quantity>\` units <!-- cartHolds -->
+* When the customer checks out <!-- checkOut -->
+* Then the cart holds \`<quantity>\` units <!-- cartStillHolds -->
 
 #### Examples:
 
@@ -428,30 +497,34 @@ describe('step identity', () => {
   | 2 |
 `)
 
-    expect(steps.match(/theCustomerAddsUnits/g)).toHaveLength(2)
+    expect(steps).toContain('cartHolds(quantity: string): void {')
+    expect(steps).toContain('cartStillHolds(quantity: string): void {')
   })
 
-  test('rejects one wording used as both Context and Outcome', async () => {
+  test('rejects one name used as both Context and Outcome', async () => {
     const error = await failure(`# Feature: Shop
 
 ## Scenario: Confuse roles
 
-* Given the cart is empty
-* When the customer browses
-* Then the cart is empty
+* Given the cart is empty <!-- cartIsEmpty -->
+* When the customer browses <!-- browseProducts -->
+* Then the cart is still empty <!-- cartIsEmpty -->
 `)
 
     expect(error.code).toBe('CONFLICTING_STEP_ROLE')
+    expect(error.message).toContain(
+      'shop.feature.md:7 uses cartIsEmpty ("the cart is still empty")',
+    )
   })
 
-  test('rejects one wording used with different inputs', async () => {
+  test('rejects one name used with different inputs', async () => {
     const error = await failure(`# Feature: Shop
 
 ## Scenario Outline: Add <quantity>
 
-* When the customer adds units
-* And the customer adds \`<quantity>\` units
-* Then the cart is updated
+* When the customer adds units <!-- addUnits -->
+* And the customer adds \`<quantity>\` units <!-- addUnits -->
+* Then the cart is updated <!-- cartIsUpdated -->
 
 #### Examples:
 
@@ -460,18 +533,82 @@ describe('step identity', () => {
 `)
 
     expect(error.code).toBe('CONFLICTING_STEP_INPUTS')
+    expect(error.message).toContain('uses addUnits ("the customer adds `<quantity>` units")')
+  })
+})
+
+describe('step names', () => {
+  const shop = (step: string) => `# Feature: Shop
+
+## Scenario: Add two
+
+* Given an empty cart <!-- emptyCart -->
+* When ${step}
+* Then the cart holds 2 units <!-- cartHolds -->
+`
+
+  test.each([
+    ['an unnamed step', '2 units are added', 'MISSING_STEP_NAME', 'step "2 units are added"'],
+    ['a spaced name', '2 units are added <!-- add units -->', 'INVALID_STEP_NAME', '"add units"'],
+    ['an accented name', '2 units are added <!-- añadir -->', 'INVALID_STEP_NAME', '"añadir"'],
+    ['a capitalized name', '2 units are added <!-- AddUnits -->', 'INVALID_STEP_NAME', 'camelCase'],
+    ['a reserved word', '2 units are added <!-- delete -->', 'INVALID_STEP_NAME', 'reserved word'],
+    ['a digit-first name', '2 units are added <!-- 2units -->', 'INVALID_STEP_NAME', '"2units"'],
+    ['an empty comment', '2 units are added <!-- -->', 'INVALID_STEP_NAME', '""'],
+    [
+      'a double comment',
+      '2 units are added <!-- addUnits --> <!-- addMore -->',
+      'INVALID_STEP_NAME',
+      'found "addUnits", "addMore"',
+    ],
+    [
+      'a comment before the words',
+      '<!-- addUnits --> 2 units are added',
+      'INVALID_STEP_NAME',
+      'found "addUnits"',
+    ],
+    ['an unclosed comment', '2 units are added <!-- addUnits', 'INVALID_STEP_NAME', 'unclosed'],
+  ])('rejects %s before writing anything', async (_label, step, code, detail) => {
+    const error = await failure(shop(step))
+
+    expect(error.code).toBe(code)
+    expect(error.message).toContain('shop.feature.md:6 step ')
+    expect(error.message).toContain(detail)
+    expect(await readdir(workspace)).toEqual(['shop.feature.md'])
   })
 
-  test('keeps a reserved word from becoming an identifier', async () => {
-    const { steps } = await run(`# Feature: Shop
+  test.each([
+    ['shop.feature.md', shop('2 units are added <!-- addUnits -->')],
+    ['shop.feature', shop('2 units are added <!-- addUnits -->').replaceAll(/^[#*]+ /gm, '')],
+  ])('reads the marker in %s as a name, never as a placeholder', async (filename, source) => {
+    const { steps, test: generated } = await run(source, { filename })
 
-## Scenario: Return
+    expect(steps.match(/^ {4}\w+(?=\()/gm)).toEqual([
+      '    emptyCart',
+      '    addUnits',
+      '    cartHolds',
+    ])
+    expect(generated).toContain('    // When 2 units are added\n    await steps.addUnits()')
+  })
 
-* When return
-* Then the cart is updated
-`)
-
-    expect(steps).toContain('returnStep(): void {')
+  test.each([
+    [
+      'a missing name before an unbound placeholder',
+      '<missing> units are added',
+      'MISSING_STEP_NAME',
+    ],
+    [
+      'an invalid name before an unbound placeholder',
+      '<missing> units are added <!-- add-units -->',
+      'INVALID_STEP_NAME',
+    ],
+    [
+      'an unbound placeholder before a role conflict',
+      '<missing> units are added <!-- emptyCart -->',
+      'UNKNOWN_PLACEHOLDER',
+    ],
+  ])('reports %s', async (_label, step, code) => {
+    expect((await failure(shop(step))).code).toBe(code)
   })
 })
 
@@ -511,8 +648,8 @@ describe('input validation', () => {
 
 ## Scenario Outline: Add units
 
-* When the customer adds \`<quantity>\` units
-* Then the cart is updated
+* When the customer adds \`<quantity>\` units <!-- addUnits -->
+* Then the cart is updated <!-- cartIsUpdated -->
 
 #### Examples:
 
@@ -521,26 +658,35 @@ describe('input validation', () => {
 `)
 
     expect(error.code).toBe('UNKNOWN_PLACEHOLDER')
+    expect(error.message).toContain('shop.feature.md:5 step "the customer adds `<quantity>` units"')
   })
 })
 
 describe('classic Gherkin', () => {
-  test('parses a .feature file and its language header', async () => {
-    const { test: generated } = await run(
+  test('parses a .feature file and its language header, keeping English method names', async () => {
+    const { steps, test: generated } = await run(
       `# language: es
 Característica: Tienda
 
   Escenario: Navegar
 
-    Dado que la tienda está abierta
-    Cuando el cliente navega
-    Entonces se listan los productos
+    Dado que la tienda está abierta <!-- shopIsOpen -->
+    Cuando el cliente navega <!-- browseProducts -->
+    Entonces se listan los productos <!-- productsAreListed -->
 `,
       { filename: 'tienda.feature' },
     )
 
     expect(generated).toContain(`describe('Feature: Tienda', () => {`)
-    expect(generated).toContain('await steps.queLaTiendaEstaAbierta()')
+    expect(generated).toContain(
+      '    // Dado que la tienda está abierta\n    await steps.shopIsOpen()',
+    )
+    expect(generated).not.toContain('<!--')
+    expect(steps.match(/^ {4}\w+(?=\()/gm)).toEqual([
+      '    shopIsOpen',
+      '    browseProducts',
+      '    productsAreListed',
+    ])
   })
 })
 
@@ -550,10 +696,10 @@ describe('warnings', () => {
 
 ## Scenario: Order products
 
-* Given the order contains:
+* Given the order contains: <!-- orderContains -->
  | product |
  | Pencil |
-* Then the order holds one line
+* Then the order holds one line <!-- orderHoldsOneLine -->
 `)
 
     expect(warnings.join('\n')).toContain('two leading spaces')
@@ -570,11 +716,11 @@ describe('--check', () => {
       const original = await read(first.stepAdapterPath)
       let adapter: string
       if (drift === 'missing method') {
-        adapter = original.replace(/ {4}theShopIsOpen\(\): void \{[\s\S]*? {4}\},\n/, '')
+        adapter = original.replace(/ {4}shopIsOpen\(\): void \{[\s\S]*? {4}\},\n/, '')
       } else if (drift === 'obsolete method') {
         adapter = original.replace('  return {', '  return {\n    obsolete(): void {},')
       } else {
-        adapter = original.replace('theShopIsOpen()', 'theShopIsOpen(unused: string)')
+        adapter = original.replace('shopIsOpen()', 'shopIsOpen(unused: string)')
       }
       await writeFile(first.stepAdapterPath, adapter)
       const testBefore = await read(first.testPath)

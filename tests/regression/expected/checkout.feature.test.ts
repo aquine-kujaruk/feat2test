@@ -9,20 +9,20 @@ describe('Feature: Check out a basket', () => {
       const steps = createSteps()
 
       // Given the shop sells:
-      await steps.theShopSells([
+      await steps.shopSells([
         ['product', 'unitPrice'],
         ['Pencil', '1.50'],
         ['Notebook', '3.00'],
         ['Ink | black', '0.00'],
       ])
       // Given the basket holds 4 of "Pencil"
-      await steps.theBasketHoldsOf('4', 'Pencil')
+      await steps.basketHolds('4', 'Pencil')
       // When the customer checks out
-      await steps.theCustomerChecksOut()
+      await steps.checkOut()
       // Then the receipt reads 6.00 EUR and the card is charged 6.00 EUR
-      await steps.theReceiptReadsEURAndTheCardIsChargedEUR('6.00')
+      await steps.totalCharged('6.00')
       // And the basket is empty
-      await steps.theBasketIsEmpty()
+      await steps.basketIsEmpty()
     })
 
     // Line 16
@@ -30,20 +30,20 @@ describe('Feature: Check out a basket', () => {
       const steps = createSteps()
 
       // Given the shop sells:
-      await steps.theShopSells([
+      await steps.shopSells([
         ['product', 'unitPrice'],
         ['Pencil', '1.50'],
         ['Notebook', '3.00'],
         ['Ink | black', '0.00'],
       ])
       // Given the basket holds 0 of "Pencil"
-      await steps.theBasketHoldsOf('0', 'Pencil')
+      await steps.basketHolds('0', 'Pencil')
       // When the customer checks out
-      await steps.theCustomerChecksOut()
+      await steps.checkOut()
       // Then the receipt reads 0.00 EUR and the card is charged 0.00 EUR
-      await steps.theReceiptReadsEURAndTheCardIsChargedEUR('0.00')
+      await steps.totalCharged('0.00')
       // And the basket is empty
-      await steps.theBasketIsEmpty()
+      await steps.basketIsEmpty()
     })
 
     // Line 16
@@ -51,20 +51,20 @@ describe('Feature: Check out a basket', () => {
       const steps = createSteps()
 
       // Given the shop sells:
-      await steps.theShopSells([
+      await steps.shopSells([
         ['product', 'unitPrice'],
         ['Pencil', '1.50'],
         ['Notebook', '3.00'],
         ['Ink | black', '0.00'],
       ])
       // Given the basket holds 1 of "Ink | black"
-      await steps.theBasketHoldsOf('1', 'Ink | black')
+      await steps.basketHolds('1', 'Ink | black')
       // When the customer checks out
-      await steps.theCustomerChecksOut()
+      await steps.checkOut()
       // Then the receipt reads 0.00 EUR and the card is charged 0.00 EUR
-      await steps.theReceiptReadsEURAndTheCardIsChargedEUR('0.00')
+      await steps.totalCharged('0.00')
       // And the basket is empty
-      await steps.theBasketIsEmpty()
+      await steps.basketIsEmpty()
     })
   })
 
@@ -74,22 +74,22 @@ describe('Feature: Check out a basket', () => {
       const steps = createSteps()
 
       // Given the shop sells:
-      await steps.theShopSells([
+      await steps.shopSells([
         ['product', 'unitPrice'],
         ['Pencil', '1.50'],
         ['Notebook', '3.00'],
         ['Ink | black', '0.00'],
       ])
       // Given The basket, holds 2 of Notebook
-      await steps.theBasketHoldsOf('2', 'Notebook')
+      await steps.basketHolds('2', 'Notebook')
       // But "Notebook" is out of stock
-      await steps.isOutOfStock('Notebook')
+      await steps.productOutOfStock('Notebook')
       // When the customer checks out
-      await steps.theCustomerChecksOut()
+      await steps.checkOut()
       // Then checkout is rejected with:
-      await steps.checkoutIsRejectedWith('Notebook is out of stock.\nNothing was charged.')
+      await steps.checkoutRejected('Notebook is out of stock.\nNothing was charged.')
       // And the basket still holds 2 of "Notebook"
-      await steps.theBasketStillHoldsOf('2', 'Notebook')
+      await steps.basketStillHolds('2', 'Notebook')
     })
 
     // Line 33
@@ -97,22 +97,22 @@ describe('Feature: Check out a basket', () => {
       const steps = createSteps()
 
       // Given the shop sells:
-      await steps.theShopSells([
+      await steps.shopSells([
         ['product', 'unitPrice'],
         ['Pencil', '1.50'],
         ['Notebook', '3.00'],
         ['Ink | black', '0.00'],
       ])
       // Given The basket, holds 1 of O'Brien's Ink
-      await steps.theBasketHoldsOf('1', 'O\'Brien\'s Ink')
+      await steps.basketHolds('1', 'O\'Brien\'s Ink')
       // But "O'Brien's Ink" is out of stock
-      await steps.isOutOfStock('O\'Brien\'s Ink')
+      await steps.productOutOfStock('O\'Brien\'s Ink')
       // When the customer checks out
-      await steps.theCustomerChecksOut()
+      await steps.checkOut()
       // Then checkout is rejected with:
-      await steps.checkoutIsRejectedWith('O\'Brien\'s Ink is out of stock.\nNothing was charged.')
+      await steps.checkoutRejected('O\'Brien\'s Ink is out of stock.\nNothing was charged.')
       // And the basket still holds 1 of "O'Brien's Ink"
-      await steps.theBasketStillHoldsOf('1', 'O\'Brien\'s Ink')
+      await steps.basketStillHolds('1', 'O\'Brien\'s Ink')
     })
   })
 
@@ -122,20 +122,20 @@ describe('Feature: Check out a basket', () => {
       const steps = createSteps()
 
       // Given the shop sells:
-      await steps.theShopSells([
+      await steps.shopSells([
         ['product', 'unitPrice'],
         ['Pencil', '1.50'],
         ['Notebook', '3.00'],
         ['Ink | black', '0.00'],
       ])
       // * the basket holds 3 pencils
-      await steps.theBasketHolds3Pencils()
+      await steps.basketHoldsThreePencils()
       // When the customer asks for the total
-      await steps.theCustomerAsksForTheTotal()
+      await steps.requestTotal()
       // Then the total shown is 4.50 EUR
-      await steps.theTotalShownIs450EUR()
+      await steps.totalShown()
       // * the basket still holds 3 pencils
-      await steps.theBasketStillHolds3Pencils()
+      await steps.basketStillHoldsThreePencils()
     })
   })
 
@@ -145,20 +145,20 @@ describe('Feature: Check out a basket', () => {
       const steps = createSteps()
 
       // Given the shop sells:
-      await steps.theShopSells([
+      await steps.shopSells([
         ['product', 'unitPrice'],
         ['Pencil', '1.50'],
         ['Notebook', '3.00'],
         ['Ink | black', '0.00'],
       ])
       // Given the customer's café card is none
-      await steps.theCustomerSCafeCardIs('none')
+      await steps.customerCard('none')
       // And delivery class is standard
-      await steps.deliveryClassIs('standard')
+      await steps.deliveryClass('standard')
       // When the customer checks out
-      await steps.theCustomerChecksOut()
+      await steps.checkOut()
       // Then the delivery fee is 0.00 EUR
-      await steps.theDeliveryFeeIsEUR('0.00')
+      await steps.deliveryFee('0.00')
     })
 
     // Line 61
@@ -166,20 +166,20 @@ describe('Feature: Check out a basket', () => {
       const steps = createSteps()
 
       // Given the shop sells:
-      await steps.theShopSells([
+      await steps.shopSells([
         ['product', 'unitPrice'],
         ['Pencil', '1.50'],
         ['Notebook', '3.00'],
         ['Ink | black', '0.00'],
       ])
       // Given the customer's café card is gold
-      await steps.theCustomerSCafeCardIs('gold')
+      await steps.customerCard('gold')
       // And delivery class is express
-      await steps.deliveryClassIs('express')
+      await steps.deliveryClass('express')
       // When the customer checks out
-      await steps.theCustomerChecksOut()
+      await steps.checkOut()
       // Then the delivery fee is 4.90 EUR
-      await steps.theDeliveryFeeIsEUR('4.90')
+      await steps.deliveryFee('4.90')
     })
 
     // Line 72
@@ -187,20 +187,20 @@ describe('Feature: Check out a basket', () => {
       const steps = createSteps()
 
       // Given the shop sells:
-      await steps.theShopSells([
+      await steps.shopSells([
         ['product', 'unitPrice'],
         ['Pencil', '1.50'],
         ['Notebook', '3.00'],
         ['Ink | black', '0.00'],
       ])
       // Given the basket holds 1 of "Pencil"
-      await steps.theBasketHoldsOf('1', 'Pencil')
+      await steps.basketHolds('1', 'Pencil')
       // And delivery class is express
-      await steps.deliveryClassIs('express')
+      await steps.deliveryClass('express')
       // When the customer checks out
-      await steps.theCustomerChecksOut()
+      await steps.checkOut()
       // Then the delivery fee is 4.90 EUR
-      await steps.theDeliveryFeeIsEUR('4.90')
+      await steps.deliveryFee('4.90')
     })
 
     // Line 72
@@ -208,20 +208,20 @@ describe('Feature: Check out a basket', () => {
       const steps = createSteps()
 
       // Given the shop sells:
-      await steps.theShopSells([
+      await steps.shopSells([
         ['product', 'unitPrice'],
         ['Pencil', '1.50'],
         ['Notebook', '3.00'],
         ['Ink | black', '0.00'],
       ])
       // Given the basket holds 5 of "Notebook"
-      await steps.theBasketHoldsOf('5', 'Notebook')
+      await steps.basketHolds('5', 'Notebook')
       // And delivery class is express
-      await steps.deliveryClassIs('express')
+      await steps.deliveryClass('express')
       // When the customer checks out
-      await steps.theCustomerChecksOut()
+      await steps.checkOut()
       // Then the delivery fee is 4.90 EUR
-      await steps.theDeliveryFeeIsEUR('4.90')
+      await steps.deliveryFee('4.90')
     })
   })
 })

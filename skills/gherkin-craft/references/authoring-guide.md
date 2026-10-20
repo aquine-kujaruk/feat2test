@@ -10,8 +10,9 @@ concepts, values, and rules are not requirements for the user's domain. Apply
 Separate facts that can vary independently. A collection's number of distinct
 items, each item's quantity, and a chosen handling category are different facts.
 A subject identity and its quantity can be arguments of one cohesive relationship:
-`the tray contains <quantity> samples of <material>`. Keep the subject explicit;
-do not add a selection action to establish an implicit current subject.
+`the tray contains <quantity> samples of <material> <!-- trayContains -->`. Keep
+the subject explicit; do not add a selection action to establish an implicit
+current subject.
 
 Inspect words as well as digits: “third” and “three” can hide example arguments.
 Inspect names too: a duration argument named `days` can obscure both quantity
@@ -20,7 +21,8 @@ roles even if all currently use the same unit and value. A named category such
 as “double room” stays a category; do not reinterpret its name as a room count.
 
 Separate reusable relationships from their values without dissolving them into
-`the entity has <property> equal to <value>` or `the actor performs <action>`.
+`the entity has <property> equal to <value> <!-- entityHas -->` or
+`the actor performs <action> <!-- actorPerforms -->`.
 A profile identity can select a strategy; changing that identity does not make
 it a new lifecycle state. Infer the concept without inventing other profiles'
 behavior or catalog administration.
@@ -37,10 +39,10 @@ answer to question 4. Rejection identifies its cause and preserves answers.
 
 ### Scenario Outline: Accept a complete submission with a valid phone number
 
-* Given the form contains the phone number "`<phoneNumber>`"
-* And question `<questionNumber>` has the answer "`<answer>`"
-* When the user submits the form
-* Then the submission is accepted
+* Given the form contains the phone number "`<phoneNumber>`" <!-- formHasPhoneNumber -->
+* And question `<questionNumber>` has the answer "`<answer>`" <!-- questionHasAnswer -->
+* When the user submits the form <!-- submitForm -->
+* Then the submission is accepted <!-- submissionAccepted -->
 
 #### Examples:
 
@@ -49,12 +51,12 @@ answer to question 4. Rejection identifies its cause and preserves answers.
 
 ### Scenario Outline: Reject a phone number with the wrong length
 
-* Given the form contains the phone number "`<phoneNumber>`"
-* And question `<questionNumber>` has the answer "`<answer>`"
-* When the user submits the form
-* Then the submission is rejected
-* And the rejection is due to the phone number not having `<requiredDigits>` digits
-* And the form preserves its answers
+* Given the form contains the phone number "`<phoneNumber>`" <!-- formHasPhoneNumber -->
+* And question `<questionNumber>` has the answer "`<answer>`" <!-- questionHasAnswer -->
+* When the user submits the form <!-- submitForm -->
+* Then the submission is rejected <!-- submissionRejected -->
+* And the rejection is due to the phone number not having `<requiredDigits>` digits <!-- rejectedForPhoneDigits -->
+* And the form preserves its answers <!-- formPreservesAnswers -->
 
 #### Examples:
 
@@ -64,12 +66,12 @@ answer to question 4. Rejection identifies its cause and preserves answers.
 
 ### Scenario Outline: Reject a missing required answer
 
-* Given the form contains the phone number "`<phoneNumber>`"
-* But question `<questionNumber>` has no answer
-* When the user submits the form
-* Then the submission is rejected
-* And the rejection is due to a missing answer to question `<questionNumber>`
-* And the form preserves its answers
+* Given the form contains the phone number "`<phoneNumber>`" <!-- formHasPhoneNumber -->
+* But question `<questionNumber>` has no answer <!-- questionHasNoAnswer -->
+* When the user submits the form <!-- submitForm -->
+* Then the submission is rejected <!-- submissionRejected -->
+* And the rejection is due to a missing answer to question `<questionNumber>` <!-- rejectedForMissingAnswer -->
+* And the form preserves its answers <!-- formPreservesAnswers -->
 
 #### Examples:
 
@@ -101,13 +103,13 @@ order. The collection describes one example; its rows are not separate scenarios
 
 ### Scenario Outline: Remove the `<position>` bead
 
-* Given the strand contains, in order:
+* Given the strand contains, in order: <!-- strandContains -->
   | bead |
   | <firstBead> |
   | <middleBead> |
   | <lastBead> |
-* When the `<position>` bead is removed from the strand
-* Then the remaining strand holds, in order:
+* When the `<position>` bead is removed from the strand <!-- removeBead -->
+* Then the remaining strand holds, in order: <!-- remainingStrandHolds -->
   | bead |
   | <remainingFirst> |
   | <remainingLast> |
@@ -119,9 +121,9 @@ order. The collection describes one example; its rows are not separate scenarios
   | first | Amber | Glass | Shell | Glass | Shell |
 ```
 
-The prior and resulting collections use different words: the same words as a
-Given and a Then would be one adapter method with two roles, which the
-generator rejects. `position` can bind `last` without fixing the collection's
+The prior and resulting collections use different names: one name on a Given
+and a Then would be one adapter method with two roles, which the generator
+rejects. `position` can bind `last` without fixing the collection's
 length. Distinct local bindings identify simultaneous values of the `bead`
 field. Renaming all of them `<bead>` would force different records to share one
 value. Preserve known sets
@@ -130,7 +132,8 @@ make the varying expected collection explicit, not a universal table schema.
 For a fixed collection with no meaningful scalar variation, a plain Scenario
 with a concrete DataTable can be clearer than many artificial columns.
 
-A negative selector remains explicit: `the <position> item has no answer`, with
+A negative selector remains explicit:
+`the <position> item has no answer <!-- itemHasNoAnswer -->`, with
 `position = last`. Do not substitute an expected fixed ordinal or a blank cell.
 When accepted inputs can have different lengths, vary lengths to exercise that
 relative meaning where the source supports it.
@@ -151,7 +154,7 @@ is money; a zero price is a free sample; a repeated product adds up.
 
 ### Scenario Outline: Confirm order <order> worth <total>
 
-* Given these orders exist:
+* Given these orders exist: <!-- ordersExist -->
   | order | product  | unitPrice | quantity |
   | 1     | Pencil   | 1.50      | 4        |
   | 1     | Notebook | 3.00      | 2        |
@@ -159,10 +162,10 @@ is money; a zero price is a free sample; a repeated product adds up.
   | 2     | Notebook | 0.00      | 1        |
   | 3     | Pencil   | 1.50      | 4        |
   | 3     | Pencil   | 1.50      | 4        |
-* And every requested product is available
-* When the customer confirms order `<order>`
-* Then the order is confirmed
-* And the order total is `<total>`
+* And every requested product is available <!-- allProductsAvailable -->
+* When the customer confirms order `<order>` <!-- confirmOrder -->
+* Then the order is confirmed <!-- orderConfirmed -->
+* And the order total is `<total>` <!-- orderTotal -->
 
 #### Examples: Usual order
 
@@ -198,10 +201,10 @@ Feature: Estimate coating volume
   Rule: Required volume equals area multiplied by consumption per area
 
     Scenario Outline: Estimate <requiredVolume> <volumeUnit> for a surface
-      Given the surface area is <area> <areaUnit>
-      And coating consumption is <consumption> <volumeUnit> per <areaUnit>
-      When required coating volume is estimated
-      Then required coating volume is <requiredVolume> <volumeUnit>
+      Given the surface area is <area> <areaUnit> <!-- surfaceArea -->
+      And coating consumption is <consumption> <volumeUnit> per <areaUnit> <!-- coatingConsumption -->
+      When required coating volume is estimated <!-- estimateRequiredVolume -->
+      Then required coating volume is <requiredVolume> <volumeUnit> <!-- requiredVolume -->
 
       Examples:
         | area | areaUnit | consumption | volumeUnit | requiredVolume |
@@ -223,11 +226,11 @@ Feature: Check coating availability
   Rule: Available coating is sufficient when it meets the required volume
 
     Scenario Outline: Enough coating is available
-      Given required coating volume is <requiredVolume> <volumeUnit>
-      And available coating volume is <availableVolume> <volumeUnit>
-      When coating sufficiency is assessed
-      Then available coating is sufficient
-      And available coating volume remains <availableVolume> <volumeUnit>
+      Given required coating volume is <requiredVolume> <volumeUnit> <!-- requiredVolume -->
+      And available coating volume is <availableVolume> <volumeUnit> <!-- availableVolume -->
+      When coating sufficiency is assessed <!-- assessSufficiency -->
+      Then available coating is sufficient <!-- coatingSufficient -->
+      And available coating volume remains <availableVolume> <volumeUnit> <!-- availableVolumeRemains -->
 
       Examples:
         | requiredVolume | availableVolume | volumeUnit |
@@ -235,11 +238,11 @@ Feature: Check coating availability
         | 6              | 7               | L          |
 
     Scenario Outline: Available coating is insufficient
-      Given required coating volume is <requiredVolume> <volumeUnit>
-      And available coating volume is <availableVolume> <volumeUnit>
-      When coating sufficiency is assessed
-      Then available coating is insufficient
-      And available coating volume remains <availableVolume> <volumeUnit>
+      Given required coating volume is <requiredVolume> <volumeUnit> <!-- requiredVolume -->
+      And available coating volume is <availableVolume> <volumeUnit> <!-- availableVolume -->
+      When coating sufficiency is assessed <!-- assessSufficiency -->
+      Then available coating is insufficient <!-- coatingInsufficient -->
+      And available coating volume remains <availableVolume> <volumeUnit> <!-- availableVolumeRemains -->
 
       Examples:
         | requiredVolume | availableVolume | volumeUnit |
@@ -278,9 +281,9 @@ Feature: Count words in a comment
   Rule: Words are nonempty groups of characters separated by spaces
 
     Scenario Outline: Report <wordCount> words in a comment
-      Given the comment contains "<text>"
-      When the comment word count is requested
-      Then the word count is <wordCount>
+      Given the comment contains "<text>" <!-- commentContains -->
+      When the comment word count is requested <!-- requestWordCount -->
+      Then the word count is <wordCount> <!-- wordCount -->
 
       Examples:
         | text       | wordCount |

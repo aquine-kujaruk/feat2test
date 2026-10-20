@@ -7,7 +7,8 @@ import { afterAll, beforeAll, describe, expect, test } from 'vitest'
 
 const repositoryRoot = fileURLToPath(new URL('..', import.meta.url))
 const cli = path.join(repositoryRoot, 'dist/cli.mjs')
-const minimal = 'Feature: Payment\n  Scenario: Accepted\n    Given payment is ready\n'
+const minimal =
+  'Feature: Payment\n  Scenario: Accepted\n    Given payment is ready <!-- paymentIsReady -->\n'
 let workspace = ''
 
 beforeAll(async () => {
@@ -172,7 +173,7 @@ export function createSteps() {
     const cwd = await fixture('warnings')
     await writeFile(
       path.join(cwd, 'table.feature.md'),
-      '# Feature: Underindented\n\n## Scenario: Order products\n\n* Given the order contains:\n | product |\n | Pencil |\n* Then the order holds one line\n',
+      '# Feature: Underindented\n\n## Scenario: Order products\n\n* Given the order contains: <!-- orderContains -->\n | product |\n | Pencil |\n* Then the order holds one line <!-- orderHoldsOneLine -->\n',
     )
     const result = await invoke(['generate', 'table.feature.md', 'out', '--runner', 'vitest'], cwd)
     expect(result.code).toBe(0)
@@ -229,7 +230,8 @@ describe('memory workflow', () => {
   )
 
   test.each(['text', 'stdin'])('accepts explicit mdg from %s', async (route) => {
-    const mdg = '# Feature: Payment\n## Scenario: Accepted\n* Given payment is ready\n'
+    const mdg =
+      '# Feature: Payment\n## Scenario: Accepted\n* Given payment is ready <!-- paymentIsReady -->\n'
     const args = route === 'text' ? ['--text', mdg] : ['--stdin']
     const result = await invoke(
       [
@@ -276,10 +278,15 @@ describe('memory workflow', () => {
 
   test.each([
     ['Feature: Empty\n', 'INVALID_GHERKIN'],
-    ['Feature: X\n Scenario: X\n  Given <missing> units\n', 'UNKNOWN_PLACEHOLDER'],
-    ['Feature: X\n Scenario: X\n  Given empty cart\n  Then empty cart\n', 'CONFLICTING_STEP_ROLE'],
+    ['Feature: X\n Scenario: X\n  Given empty cart\n', 'MISSING_STEP_NAME'],
+    ['Feature: X\n Scenario: X\n  Given empty cart <!-- Empty Cart -->\n', 'INVALID_STEP_NAME'],
+    ['Feature: X\n Scenario: X\n  Given <missing> units <!-- units -->\n', 'UNKNOWN_PLACEHOLDER'],
     [
-      'Feature: X\n Scenario Outline: X\n  When add units\n  And add <quantity> units\n  Examples:\n   | quantity |\n   | 2 |\n',
+      'Feature: X\n Scenario: X\n  Given empty cart <!-- emptyCart -->\n  Then empty cart <!-- emptyCart -->\n',
+      'CONFLICTING_STEP_ROLE',
+    ],
+    [
+      'Feature: X\n Scenario Outline: X\n  When add units <!-- addUnits -->\n  And add <quantity> units <!-- addUnits -->\n  Examples:\n   | quantity |\n   | 2 |\n',
       'CONFLICTING_STEP_INPUTS',
     ],
   ])('shares source/planning diagnostics with generation: %s', async (text, code) => {
@@ -296,6 +303,30 @@ describe('memory workflow', () => {
     expect(generated.stderr).toContain(code)
     expect(await readdir(cwd)).toEqual(['payment.feature'])
   })
+
+  test.each(['text', 'stdin'])(
+    'rejects an unnamed step from %s with its location before any write',
+    async (route) => {
+      const cwd = await fixture(`unnamed-${route}`)
+      const unnamed = minimal.replace(' <!-- paymentIsReady -->', '')
+      const args = route === 'text' ? ['--text', unnamed] : ['--stdin']
+      const validated = await invoke(['validate', ...args, ...sourceArgs, '--json'], cwd, unnamed)
+      const generated = await invoke(['generate', 'out', ...args, ...sourceArgs], cwd, unnamed)
+      expect(validated.code).toBe(1)
+      expect(JSON.parse(validated.stdout)).toMatchObject({
+        valid: false,
+        diagnostics: [
+          {
+            code: 'MISSING_STEP_NAME',
+            message: expect.stringContaining('cart/payment.feature:3 step "payment is ready"'),
+          },
+        ],
+      })
+      expect(generated.code).toBe(1)
+      expect(generated.stderr).toContain('MISSING_STEP_NAME')
+      expect(await readdir(cwd)).toEqual(['payment.feature'])
+    },
+  )
 
   test('validates under enforced read-only permissions without executing stale adapters', async () => {
     const cwd = await fixture('readonly')

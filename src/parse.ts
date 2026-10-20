@@ -18,6 +18,7 @@ import { type FeatureSource, readSource } from './source.js'
 
 export interface SourceStep {
   readonly keyword: string
+  readonly line: number
   readonly text: string
 }
 
@@ -56,7 +57,7 @@ export function parseSource(input: FeatureSource): ParsedFeature {
   const rows = new Map<string, ReadonlyMap<string, string>>()
 
   const indexStep = (step: Step): void => {
-    steps.set(step.id, { keyword: step.keyword.trim(), text: step.text })
+    steps.set(step.id, { keyword: step.keyword.trim(), line: step.location.line, text: step.text })
   }
 
   const indexScenario = (scenario: Scenario, rule?: string): void => {

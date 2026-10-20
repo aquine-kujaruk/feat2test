@@ -41,7 +41,7 @@ describe.each(['checkout.feature', 'orders.feature.md'])('%s', (name) => {
   })
 })
 
-describe('revising checkout.feature one word at a time', () => {
+describe('revising checkout.feature one edit at a time', () => {
   let feature = ''
   const generateText = (text: string) =>
     generateSource(textSource(text, 'feature', 'checkout.feature'), workspace, {
@@ -63,15 +63,28 @@ describe('revising checkout.feature one word at a time', () => {
     feature = await readFile(path.join(fixtures, 'checkout.feature'), 'utf8')
   })
 
-  test('rewording a step replaces only its method', async () => {
-    await implemented()
+  test('rewording a named step keeps its implementation', async () => {
+    const before = await implemented()
     const result = await generateText(
       feature.replace('Then the total shown is', 'Then the total displayed is'),
     )
+    expect(await readFile(result.stepAdapterPath, 'utf8')).toBe(before)
+    const generated = await readFile(result.testPath, 'utf8')
+    expect(generated).toContain(
+      '// Then the total displayed is 4.50 EUR\n      await steps.totalShown()',
+    )
+    expect(generated).not.toContain('<!--')
+  })
+
+  test('renaming a step replaces only its method', async () => {
+    await implemented()
+    const result = await generateText(
+      feature.replace('<!-- totalShown -->', '<!-- totalDisplayed -->'),
+    )
     const adapter = await readFile(result.stepAdapterPath, 'utf8')
-    await expect(adapter).toMatchFileSnapshot('regression/expected/checkout.reworded.steps.ts')
-    expect(adapter).toContain("throw new Error('PENDING: theTotalDisplayedIs450EUR')")
-    expect(adapter).not.toContain('theTotalShownIs450EUR')
+    await expect(adapter).toMatchFileSnapshot('regression/expected/checkout.renamed.steps.ts')
+    expect(adapter).toContain("throw new Error('PENDING: totalDisplayed')")
+    expect(adapter).not.toContain('totalShown')
     expect(adapter.match(/PENDING/g)).toHaveLength(1)
   })
 
@@ -87,13 +100,15 @@ describe('revising checkout.feature one word at a time', () => {
   })
 
   test.each([
-    ['And the basket still holds', 'And the basket holds', 'CONFLICTING_STEP_ROLE'],
+    ['<!-- basketStillHolds -->', '<!-- basketHolds -->', 'CONFLICTING_STEP_ROLE'],
     [
       'Then the delivery fee is <fee> EUR',
       'Then the delivery fee is <card> EUR',
       'CONFLICTING_STEP_INPUTS',
     ],
     ['The basket, holds <quantity>', 'The basket, holds <count>', 'UNKNOWN_PLACEHOLDER'],
+    [' <!-- checkoutRejected -->', '', 'MISSING_STEP_NAME'],
+    ['<!-- totalShown -->', '<!-- total shown -->', 'INVALID_STEP_NAME'],
   ])('replacing "%s" with "%s" fails with %s', async (from, to, code) => {
     await expect(generateText(feature.replace(from, to))).rejects.toMatchObject({ code })
   })

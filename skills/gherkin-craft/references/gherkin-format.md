@@ -5,12 +5,21 @@ formatting choices must not change the domain claim.
 
 ## Language
 
-English is the default. Another language requires an explicit request, including
-an explicit request to retain an existing specification's language. Apply the
-choice to titles, descriptions, sentences, and argument names. Preserve proper
-names, identifiers, contractual literal data, and terms required verbatim.
-Use established translations consistently; resolve material ambiguity from
-context or ask. Teaching examples in this skill remain English.
+Specifications are English by default. Write them in another language only when
+the user, or the project's agent instructions (`CLAUDE.md`, `AGENTS.md`),
+explicitly request it for the specifications, including a request to retain an
+existing specification's language. Conversing in another language is not such a
+request. Apply the choice to titles, descriptions, sentences, and argument
+names. Preserve proper names, identifiers, contractual literal data, and terms
+required verbatim. Use established translations consistently; resolve material
+ambiguity from context or ask. Teaching examples in this skill remain English.
+
+Step method names are a separate choice and stay English camelCase even in a
+specification written in another language: `Dado un carrito vacío <!-- emptyCart -->`.
+Use another language for them only when the user explicitly requests it for the
+method names too; then write them as camelCase identifiers without accents or
+spaces (`<!-- carritoVacio -->`). The generator checks only that identifier
+format, not the language.
 
 For non-English output, use native `.feature` unless the user explicitly
 requires Markdown. Begin native output with `# language: <code>` using a
@@ -31,6 +40,8 @@ silently switch a requested format or invent a Markdown language attribute.
 - Given supplies prior facts; When names the whole action or query; Then states
   its answer and relevant changed or preserved facts. And/But continue the
   preceding role. But provides contrast, not automatic negation.
+- Every step line ends with its method name comment, `<!-- name -->`, in both
+  formats; a DataTable or Doc String follows on the next lines.
 - Each Examples row is independent. Group rows by intent and kind of outcome;
   acceptance and rejection use different scenarios within the same use case.
   One Outline may carry several titled Examples blocks: the first illustrates
@@ -67,7 +78,8 @@ Use Gherkin headings and bullet steps, for example `# Feature:`, `## Rule:`,
 `### Scenario Outline:`, `#### Examples:`, and `* Given ...`. Use native syntax
 only in native files; a fenced native document is not Markdown Gherkin structure.
 Only recognized headings, steps, tables, and backtick tags have Gherkin meaning;
-other prose remains documentation.
+other prose remains documentation. Markdown preview hides each step's
+`<!-- name -->` comment; it remains in the source, where the generator reads it.
 
 Write each tag in its **own** backtick span, for example `` `@billing` `@slow` ``.
 A single span containing several tags parses as one compound tag, and native

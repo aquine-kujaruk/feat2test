@@ -5,22 +5,32 @@ description: "Write, review, or revise native .feature and Markdown .feature.md 
 
 # Gherkin Craft
 
-Input: requirements for programmed software. Output: Gherkin whose steps map to
-stable Step Adapter signatures and whose examples drive the tests feat2test
+Input: requirements for programmed software. Output: Gherkin whose named steps
+map to Step Adapter methods and whose examples drive the tests feat2test
 generates. Read [the generator contract](references/generator-contract.md) and
 [format and language](references/gherkin-format.md) before writing or
 reviewing. Use [the authoring guide](references/authoring-guide.md) for worked
 examples when choosing a formulation.
 
-## Steps are signatures
+## Every step is named
 
-A step's literal words, without placeholders, are its adapter method. Keep one
-wording and one keyword role per fact across the whole Feature; rewording a step
-replaces its implementation. Put every value that varies between examples in a
-placeholder, never in the words. Bind every placeholder in every row, including
-those in titles and DataTables, which the generator does not catch. The
-generated test only calls steps, so each Then step carries the value it checks
-(`the order total is <total>`), not a verdict (`the total is correct`).
+End every step with one HTML comment naming its Step Adapter method:
+`When <quantity> units are added <!-- addUnits -->`. The name is the step's
+identity and the words are documentation; feat2test rejects a step without one
+(`MISSING_STEP_NAME`) or with a malformed one (`INVALID_STEP_NAME`). Names are
+camelCase, English by default, representative and semantically loaded: they
+state the action or fact (`<!-- confirmOrder -->`), never a position or filler
+(`<!-- step1 -->`, `<!-- doIt -->`). Give one fact one name across the Feature,
+even where its wording differs, and keep each name to one keyword role and one
+input shape. Markdown preview hides the names; they stay visible in the source
+and in `.feature` files, and no other marker syntax replaces them.
+
+Put every value that varies between examples in a placeholder, never in the
+words. Bind every placeholder in every row, including those in titles and
+DataTables, which the generator does not catch. The generated test only calls
+steps, so each Then step carries the value it checks
+(`the order total is <total> <!-- orderTotal -->`), not a verdict
+(`the total is correct <!-- totalIsCorrect -->`).
 
 ## One Feature per use case
 
@@ -32,7 +42,8 @@ separate Features even when they share data; shared quantities keep one meaning.
 No human actor is required when the domain has none.
 
 Specify what the software answers, changes or preserves, not how. Replace a step
-that describes implementation (`the repository save method is called`) with its
+that describes implementation
+(`the repository save method is called <!-- repositorySaveCalled -->`) with its
 observable result. Internal call order, algorithms, runners, languages and
 output layout are not acceptance criteria and never become steps or Examples
 columns.
@@ -96,7 +107,10 @@ Report the example count and diagnostics; it writes nothing. When it is not
 installed, check the format reference and say generator validation was not run.
 Validation proves generability, not semantic review.
 
-Write in English unless the user explicitly asks for another language.
+Write specifications in English unless the user or the project's `CLAUDE.md` or
+`AGENTS.md` explicitly asks for another language for them. Method names stay
+English unless the user explicitly asks for another language for the methods
+too; see [format and language](references/gherkin-format.md).
 
 ## Review checklist
 
@@ -106,7 +120,8 @@ evidence for each finding, and separate wording defects from undecided domain
 rules.
 
 - [ ] Each Feature is one use case; distinct purposes are separate Features.
-- [ ] Each fact has one wording and one role; no conflicting inputs.
+- [ ] Every step ends with a representative `<!-- name -->`, English unless chosen otherwise.
+- [ ] Each fact has one name; each name has one role and one input shape.
 - [ ] Every placeholder is bound in every row, including titles and DataTables.
 - [ ] Every Then step carries the expected value it checks.
 - [ ] No prose-valued arguments; roles, units and fixed criteria are explicit.

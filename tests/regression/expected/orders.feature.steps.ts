@@ -3,33 +3,33 @@
 export function createSteps() {
   return {
     // Context
-    theseOrdersExist(table: string[][]): void {
-      throw new Error('PENDING: theseOrdersExist')
+    ordersExist(table: string[][]): void {
+      throw new Error('PENDING: ordersExist')
     },
-    everyRequestedProductIsAvailable(): void {
-      throw new Error('PENDING: everyRequestedProductIsAvailable')
+    allProductsAvailable(): void {
+      throw new Error('PENDING: allProductsAvailable')
     },
-    productIsUnavailable(product: string): void {
-      throw new Error('PENDING: productIsUnavailable')
+    productUnavailable(product: string): void {
+      throw new Error('PENDING: productUnavailable')
     },
 
     // Action
-    theCustomerConfirmsOrder(order: string): void {
-      throw new Error('PENDING: theCustomerConfirmsOrder')
+    confirmOrder(order: string): void {
+      throw new Error('PENDING: confirmOrder')
     },
 
     // Outcome
-    theOrderIsConfirmed(): void {
-      throw new Error('PENDING: theOrderIsConfirmed')
+    orderConfirmed(): void {
+      throw new Error('PENDING: orderConfirmed')
     },
-    theOrderTotalIs(total: string): void {
-      throw new Error('PENDING: theOrderTotalIs')
+    orderTotal(total: string): void {
+      throw new Error('PENDING: orderTotal')
     },
-    confirmationOfOrderIsRejected(order: string): void {
-      throw new Error('PENDING: confirmationOfOrderIsRejected')
+    confirmationRejected(order: string): void {
+      throw new Error('PENDING: confirmationRejected')
     },
-    theRejectionNamesTheUnavailableProducts(table: string[][]): void {
-      throw new Error('PENDING: theRejectionNamesTheUnavailableProducts')
+    rejectionNamesProducts(table: string[][]): void {
+      throw new Error('PENDING: rejectionNamesProducts')
     },
     orderStillHoldsLines(order: string, lines: string): void {
       throw new Error('PENDING: orderStillHoldsLines')

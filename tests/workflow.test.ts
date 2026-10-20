@@ -9,9 +9,9 @@ import { readSource, textSource } from '../src/source.js'
 
 const feature = `Feature: Add units
   Scenario Outline: Add units
-    Given an empty cart
-    When <quantity> units are added
-    Then the cart contains <quantity> units
+    Given an empty cart <!-- emptyCart -->
+    When <quantity> units are added <!-- addUnits -->
+    Then the cart contains <quantity> units <!-- cartContains -->
     Examples:
       | quantity |
       | 2 |
@@ -19,9 +19,9 @@ const feature = `Feature: Add units
 `
 const mdg = `# Feature: Add units
 ## Scenario Outline: Add units
-* Given an empty cart
-* When <quantity> units are added
-* Then the cart contains <quantity> units
+* Given an empty cart <!-- emptyCart -->
+* When <quantity> units are added <!-- addUnits -->
+* Then the cart contains <quantity> units <!-- cartContains -->
 ### Examples:
   | quantity |
   | 2 |
@@ -79,7 +79,7 @@ test('retains parameterized implementations, separates nested identities and che
   ).rejects.toMatchObject({ code: 'CHECK_FAILED' })
   await generateSource(revised, workspace, { runner: 'vitest' })
   expect(await readFile(first.stepAdapterPath, 'utf8')).toBe(implementation)
-  expect(await readFile(first.testPath, 'utf8')).toContain("unitsAreAdded('9')")
+  expect(await readFile(first.testPath, 'utf8')).toContain("addUnits('9')")
   await generateSource({ ...source, identity: 'returns/add.feature' }, workspace, {
     runner: 'vitest',
   })
@@ -146,6 +146,20 @@ test.each(['@code', '@regression'])('generates the same output with %s', async (
   const untagged = await generateInto('untagged', `\n${feature}`)
   expect(tagged[0]).toContain("from 'vitest'")
   expect(tagged).toEqual(untagged)
+})
+
+test.each([
+  ['an unnamed step', feature.replace(' <!-- addUnits -->', ''), 'MISSING_STEP_NAME'],
+  ['an invalid name', feature.replace('addUnits', 'add units'), 'INVALID_STEP_NAME'],
+])('validation and generation reject %s before writes', async (_label, text, code) => {
+  const source = textSource(text, 'feature', 'cart/add.feature')
+  expect(() => prepareFeature(source, 'vitest')).toThrowError(
+    expect.objectContaining({ code, message: expect.stringContaining('cart/add.feature:4 step ') }),
+  )
+  await expect(generateSource(source, workspace, { runner: 'vitest' })).rejects.toMatchObject({
+    code,
+  })
+  expect(await readdir(workspace)).toEqual([])
 })
 
 test('validation exercises renderer failures and rejects missing format', () => {

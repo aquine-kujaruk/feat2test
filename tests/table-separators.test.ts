@@ -29,13 +29,13 @@ function source(markdown: boolean, cells: readonly string[]): string {
     '',
     `${markdown ? '## ' : ''}Scenario Outline: Add <quantity> <product>`,
     '',
-    `${markdown ? '* ' : '  '}Given the order contains:`,
+    `${markdown ? '* ' : '  '}Given the order contains: <!-- orderContains -->`,
     '  | product | quantity |',
     ...separator,
     '  | <product> | <quantity> |',
     '  | Notebook | 1 |',
-    `${markdown ? '* ' : '  '}When the customer adds <quantity> units`,
-    `${markdown ? '* ' : '  '}Then the cart holds <quantity> units`,
+    `${markdown ? '* ' : '  '}When the customer adds <quantity> units <!-- addUnits -->`,
+    `${markdown ? '* ' : '  '}Then the cart holds <quantity> units <!-- cartHolds -->`,
     '',
     `${markdown ? '### ' : ''}Examples:`,
     '',
@@ -94,14 +94,14 @@ describe.each([true, false])('table separators (Markdown: %s)', (markdown) => {
           steps?.[0]?.argument?.dataTable?.rows.map((row) => row.cells.map((cell) => cell.value)),
         ).toEqual(rows)
         expect(steps?.map((step) => step.text)).toEqual([
-          'the order contains:',
-          `the customer adds ${quantity} units`,
-          `the cart holds ${quantity} units`,
+          'the order contains: <!-- orderContains -->',
+          `the customer adds ${quantity} units <!-- addUnits -->`,
+          `the cart holds ${quantity} units <!-- cartHolds -->`,
         ])
-        expect(generated).toContain(`await steps.theCustomerAddsUnits('${quantity}')`)
-        expect(generated).toContain(`await steps.theCartHoldsUnits('${quantity}')`)
+        expect(generated).toContain(`await steps.addUnits('${quantity}')`)
+        expect(generated).toContain(`await steps.cartHolds('${quantity}')`)
         expect(generated).toContain(
-          `await steps.theOrderContains([\n${rows.map((row) => `      ['${row.join("', '")}'],`).join('\n')}\n    ])`,
+          `await steps.orderContains([\n${rows.map((row) => `      ['${row.join("', '")}'],`).join('\n')}\n    ])`,
         )
       }
 

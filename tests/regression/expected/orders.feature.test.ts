@@ -9,7 +9,7 @@ describe('Feature: Confirm an order', () => {
       const steps = createSteps()
 
       // Given these orders exist:
-      await steps.theseOrdersExist([
+      await steps.ordersExist([
         ['order', 'product', 'unitPrice', 'quantity'],
         ['1', 'Pencil', '1.50', '4'],
         ['1', 'Notebook', '3.00', '2'],
@@ -21,13 +21,13 @@ describe('Feature: Confirm an order', () => {
         ['4', 'Eraser', '0.50', '1'],
       ])
       // Given every requested product is available
-      await steps.everyRequestedProductIsAvailable()
+      await steps.allProductsAvailable()
       // When the customer confirms order `1`
-      await steps.theCustomerConfirmsOrder('1')
+      await steps.confirmOrder('1')
       // Then the order is confirmed
-      await steps.theOrderIsConfirmed()
+      await steps.orderConfirmed()
       // And the order total is `12.00`
-      await steps.theOrderTotalIs('12.00')
+      await steps.orderTotal('12.00')
     })
 
     // Line 23
@@ -35,7 +35,7 @@ describe('Feature: Confirm an order', () => {
       const steps = createSteps()
 
       // Given these orders exist:
-      await steps.theseOrdersExist([
+      await steps.ordersExist([
         ['order', 'product', 'unitPrice', 'quantity'],
         ['1', 'Pencil', '1.50', '4'],
         ['1', 'Notebook', '3.00', '2'],
@@ -47,13 +47,13 @@ describe('Feature: Confirm an order', () => {
         ['4', 'Eraser', '0.50', '1'],
       ])
       // Given every requested product is available
-      await steps.everyRequestedProductIsAvailable()
+      await steps.allProductsAvailable()
       // When the customer confirms order `2`
-      await steps.theCustomerConfirmsOrder('2')
+      await steps.confirmOrder('2')
       // Then the order is confirmed
-      await steps.theOrderIsConfirmed()
+      await steps.orderConfirmed()
       // And the order total is `0.30`
-      await steps.theOrderTotalIs('0.30')
+      await steps.orderTotal('0.30')
     })
 
     // Line 23
@@ -61,7 +61,7 @@ describe('Feature: Confirm an order', () => {
       const steps = createSteps()
 
       // Given these orders exist:
-      await steps.theseOrdersExist([
+      await steps.ordersExist([
         ['order', 'product', 'unitPrice', 'quantity'],
         ['1', 'Pencil', '1.50', '4'],
         ['1', 'Notebook', '3.00', '2'],
@@ -73,13 +73,13 @@ describe('Feature: Confirm an order', () => {
         ['4', 'Eraser', '0.50', '1'],
       ])
       // Given every requested product is available
-      await steps.everyRequestedProductIsAvailable()
+      await steps.allProductsAvailable()
       // When the customer confirms order `3`
-      await steps.theCustomerConfirmsOrder('3')
+      await steps.confirmOrder('3')
       // Then the order is confirmed
-      await steps.theOrderIsConfirmed()
+      await steps.orderConfirmed()
       // And the order total is `12.00`
-      await steps.theOrderTotalIs('12.00')
+      await steps.orderTotal('12.00')
     })
   })
 
@@ -89,7 +89,7 @@ describe('Feature: Confirm an order', () => {
       const steps = createSteps()
 
       // Given these orders exist:
-      await steps.theseOrdersExist([
+      await steps.ordersExist([
         ['order', 'product', 'unitPrice', 'quantity'],
         ['1', 'Pencil', '1.50', '4'],
         ['1', 'Notebook', '3.00', '2'],
@@ -101,13 +101,13 @@ describe('Feature: Confirm an order', () => {
         ['4', 'Eraser', '0.50', '1'],
       ])
       // Given product `Eraser` is unavailable
-      await steps.productIsUnavailable('Eraser')
+      await steps.productUnavailable('Eraser')
       // When the customer confirms order `4`
-      await steps.theCustomerConfirmsOrder('4')
+      await steps.confirmOrder('4')
       // Then confirmation of order `4` is rejected
-      await steps.confirmationOfOrderIsRejected('4')
+      await steps.confirmationRejected('4')
       // And the rejection names the unavailable products:
-      await steps.theRejectionNamesTheUnavailableProducts([
+      await steps.rejectionNamesProducts([
         ['product'],
         ['Eraser'],
       ])

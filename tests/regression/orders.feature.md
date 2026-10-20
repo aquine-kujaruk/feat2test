@@ -6,7 +6,7 @@ two decimals; a zero price is a free sample; a repeated product adds up.
 
 ## Background:
 
-* Given these orders exist:
+* Given these orders exist: <!-- ordersExist -->
   | order | product  | unitPrice | quantity |
   | ----- | :------- | --------: | :------: |
   | 1     | Pencil   | 1.50      | 4        |
@@ -22,10 +22,10 @@ two decimals; a zero price is a free sample; a repeated product adds up.
 
 ### Scenario Outline: Confirm order <order> worth <total>
 
-* Given every requested product is available
-* When the customer confirms order `<order>`
-* Then the order is confirmed
-* And the order total is `<total>`
+* Given every requested product is available <!-- allProductsAvailable -->
+* When the customer confirms order `<order>` <!-- confirmOrder -->
+* Then the order is confirmed <!-- orderConfirmed -->
+* And the order total is `<total>` <!-- orderTotal -->
 
 #### Examples: Usual order
 
@@ -43,13 +43,13 @@ two decimals; a zero price is a free sample; a repeated product adds up.
 
 ### Scenario Outline: Reject order <order> because <product> is unavailable
 
-* Given product `<product>` is unavailable
-* When the customer confirms order `<order>`
-* Then confirmation of order `<order>` is rejected
-* And the rejection names the unavailable products:
+* Given product `<product>` is unavailable <!-- productUnavailable -->
+* When the customer confirms order `<order>` <!-- confirmOrder -->
+* Then confirmation of order `<order>` is rejected <!-- confirmationRejected -->
+* And the rejection names the unavailable products: <!-- rejectionNamesProducts -->
   | product   |
   | <product> |
-* But order `<order>` still holds `<lines>` lines
+* But order `<order>` still holds `<lines>` lines <!-- orderStillHoldsLines -->
 
 #### Examples:
 

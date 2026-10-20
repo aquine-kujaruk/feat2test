@@ -8,7 +8,7 @@ export interface StepParam {
   readonly type: 'string' | 'string[][]'
 }
 
-/** One method of the Step Adapter, identified by its literal step words. */
+/** One method of the Step Adapter, identified by the name that ends its steps. */
 export interface StepDefinition {
   readonly method: string
   readonly params: readonly StepParam[]

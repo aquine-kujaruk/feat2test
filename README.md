@@ -27,6 +27,32 @@ Options:
 
 Exit codes: `0` success, `1` Feature/generation/check error, `2` invalid usage or runner.
 
+## Step names
+
+Every step ends with an HTML comment naming its Step Adapter method:
+
+```gherkin
+Feature: Add units
+  Scenario Outline: Add <quantity> units
+    Given an empty cart <!-- emptyCart -->
+    When <quantity> units are added <!-- addUnits -->
+    Then the cart contains <quantity> units <!-- cartContains -->
+
+    Examples:
+      | quantity |
+      | 2        |
+```
+
+The name is the method's identity; the words are documentation, printed without the comment above
+each call in the Feature Test. Steps with the same name share one method whatever their words or
+spoken language, and steps with different names are different methods. The comment closes the step
+line in `.feature` and `.feature.md` alike; Markdown preview hides it.
+
+A name is an ASCII camelCase identifier, `^[a-z][A-Za-z0-9]*$`, and not a JavaScript reserved word.
+A step without a name fails with `MISSING_STEP_NAME`. A malformed or reserved name, a second comment,
+or a comment that does not end the step fails with `INVALID_STEP_NAME`. `generate` and `validate`
+report both with the source, line and step before writing anything.
+
 ## Text input and validation
 
 Supply text using `--stdin` or `--text`, with an explicit format (`feature` or `mdg`) and
@@ -36,7 +62,7 @@ and is never read or written as an input file. Absolute paths and traversal are 
 ```bash
 feat2test validate --text 'Feature: Payment
   Scenario: Accepted
-    Given payment is ready' --format feature --source payments/payment.feature --runner vitest --json
+    Given payment is ready <!-- paymentIsReady -->' --format feature --source payments/payment.feature --runner vitest --json
 ```
 
 Pipe an in-memory source from another process into either command:
@@ -98,21 +124,29 @@ export function createSteps() {
 }
 ```
 
-Each step is converted literally to `camelCase`. Placeholders become `string` parameters;
-DataTable uses `string[][]`, and DocString uses `string`. `Given`, `When`, and `Then` group methods as
-Context, Action, and Outcome.
+Each step name is one method. Placeholders become `string` parameters named after the placeholder,
+with its first letter lower-cased and characters invalid in an identifier removed; DataTable uses
+`string[][]`, and DocString uses `string`. `Given`, `When`, and `Then` group methods as Context,
+Action, and Outcome. One name with two roles fails with `CONFLICTING_STEP_ROLE`, and with two input
+shapes with `CONFLICTING_STEP_INPUTS`.
 
 On every generation, the Feature determines which step methods exist:
 
-- Same signature: preserve the existing implementation. Repeated steps share one method.
+- Same signature: preserve the existing implementation. Steps with one name share one method.
 - Missing from the Feature: remove the method.
 - New signature: create a method that throws `PENDING` until implemented.
 
-A signature is the method name and its ordered parameter names and types. Changing either the
-method name or its parameters replaces that method; changing only example values preserves it.
+A signature is the step name and its ordered parameter names and types. Changing either the name or
+its parameters replaces that method; rewording the step or changing only example values preserves it.
 Async methods and custom return types are preserved when the signature matches.
 Renaming one occurrence of a shared step creates a new method; the old method stays until its last
 occurrence is removed from the Feature.
+
+Implementations are retained by name. Features written for feat2test 3 or earlier, which derived
+methods from the step words, have no names and fail with `MISSING_STEP_NAME`. To keep an existing
+implementation, name its steps with the method the adapter already declares, for example
+`<!-- theShopIsOpen -->`; any other name starts a new pending method. Earlier versions read the
+comment as an unbound placeholder, so named Features need the comments removed to generate there.
 
 Methods remain in a flat object. Synchronization orders them by role and first occurrence in the
 Feature, with one generated heading per nonempty group. Existing duplicate headings are repaired;

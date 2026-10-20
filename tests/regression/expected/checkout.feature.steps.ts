@@ -3,54 +3,54 @@
 export function createSteps() {
   return {
     // Context
-    theShopSells(table: string[][]): void {
-      throw new Error('PENDING: theShopSells')
+    shopSells(table: string[][]): void {
+      throw new Error('PENDING: shopSells')
     },
-    theBasketHoldsOf(quantity: string, product: string): void {
-      throw new Error('PENDING: theBasketHoldsOf')
+    basketHolds(quantity: string, product: string): void {
+      throw new Error('PENDING: basketHolds')
     },
-    isOutOfStock(product: string): void {
-      throw new Error('PENDING: isOutOfStock')
+    productOutOfStock(product: string): void {
+      throw new Error('PENDING: productOutOfStock')
     },
-    theBasketHolds3Pencils(): void {
-      throw new Error('PENDING: theBasketHolds3Pencils')
+    basketHoldsThreePencils(): void {
+      throw new Error('PENDING: basketHoldsThreePencils')
     },
-    theCustomerSCafeCardIs(card: string): void {
-      throw new Error('PENDING: theCustomerSCafeCardIs')
+    customerCard(card: string): void {
+      throw new Error('PENDING: customerCard')
     },
-    deliveryClassIs(classStep: string): void {
-      throw new Error('PENDING: deliveryClassIs')
+    deliveryClass(classStep: string): void {
+      throw new Error('PENDING: deliveryClass')
     },
 
     // Action
-    theCustomerChecksOut(): void {
-      throw new Error('PENDING: theCustomerChecksOut')
+    checkOut(): void {
+      throw new Error('PENDING: checkOut')
     },
-    theCustomerAsksForTheTotal(): void {
-      throw new Error('PENDING: theCustomerAsksForTheTotal')
+    requestTotal(): void {
+      throw new Error('PENDING: requestTotal')
     },
 
     // Outcome
-    theReceiptReadsEURAndTheCardIsChargedEUR(total: string): void {
-      throw new Error('PENDING: theReceiptReadsEURAndTheCardIsChargedEUR')
+    totalCharged(total: string): void {
+      throw new Error('PENDING: totalCharged')
     },
-    theBasketIsEmpty(): void {
-      throw new Error('PENDING: theBasketIsEmpty')
+    basketIsEmpty(): void {
+      throw new Error('PENDING: basketIsEmpty')
     },
-    checkoutIsRejectedWith(text: string): void {
-      throw new Error('PENDING: checkoutIsRejectedWith')
+    checkoutRejected(text: string): void {
+      throw new Error('PENDING: checkoutRejected')
     },
-    theBasketStillHoldsOf(quantity: string, product: string): void {
-      throw new Error('PENDING: theBasketStillHoldsOf')
+    basketStillHolds(quantity: string, product: string): void {
+      throw new Error('PENDING: basketStillHolds')
     },
-    theTotalShownIs450EUR(): void {
-      throw new Error('PENDING: theTotalShownIs450EUR')
+    totalShown(): void {
+      throw new Error('PENDING: totalShown')
     },
-    theBasketStillHolds3Pencils(): void {
-      throw new Error('PENDING: theBasketStillHolds3Pencils')
+    basketStillHoldsThreePencils(): void {
+      throw new Error('PENDING: basketStillHoldsThreePencils')
     },
-    theDeliveryFeeIsEUR(fee: string): void {
-      throw new Error('PENDING: theDeliveryFeeIsEUR')
+    deliveryFee(fee: string): void {
+      throw new Error('PENDING: deliveryFee')
     },
   }
 }
