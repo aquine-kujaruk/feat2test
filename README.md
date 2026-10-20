@@ -27,6 +27,41 @@ Options:
 
 Exit codes: `0` success, `1` Feature/generation/check error, `2` invalid usage or runner.
 
+## Text input and validation
+
+Supply text using `--stdin` or `--text`, with an explicit format (`feature` or `mdg`) and
+logical source identity. The identity is relative to the output root, uses `/` separators,
+and is never read or written as an input file. Absolute paths and traversal are rejected.
+
+```bash
+feat2test validate --text 'Feature: Payment
+  Scenario: Accepted
+    Given payment is ready' --format feature --source payments/payment.feature --runner vitest --json
+```
+
+Pipe an in-memory source from another process into either command:
+
+```text
+producer | feat2test validate --stdin --format feature --source payments/payment.feature --runner node:test --json
+producer | feat2test generate test/features --stdin --format feature --source payments/payment.feature --runner node:test
+```
+
+The latter creates `test/features/payments/payment.feature.test.ts` and its `.steps.ts` adapter.
+A direct physical file keeps its basename; directory inputs keep paths relative to their discovery
+root. A nested text identity corresponds to a directory job, not to passing a nested file alone.
+File, text and stdin are mutually exclusive; format and identity are required only for text.
+
+`validate` parses, plans, and renders tests and initial adapters entirely in memory. It requires no
+output directory, inspects no existing outputs and writes no files, including temporary sources or
+caches. `--json` reports `valid`, `evidence: "generability"`, source, format, runner, scenario and step
+counts, warnings and diagnostics. Failed validation returns `valid: false` with error diagnostics.
+
+Validation does not certify freshness, generated-code type checking, implemented adapters or passing
+behavior. Pending steps and stale existing tests do not prevent it from succeeding. `generate --check`
+remains a separate freshness comparison and fails when outputs are missing or stale. Neither command
+executes steps, a model, a test runner or a checker. Feature, Rule and Scenario tags are ignored: they do
+not change the generated test, the Step Adapter or the runner. Callers explicitly select supported tools.
+
 ## Runners
 
 | Runner | Requirement | Adapter import |
@@ -108,10 +143,12 @@ pnpm install
 pnpm verify
 ```
 
-Complete examples: [`examples/calculator`](./examples/calculator) and
-[`examples/order-confirmation`](./examples/order-confirmation).
-
-Gherkin Craft guide: [`.agents/skills/gherkin-craft`](./.agents/skills/gherkin-craft).
+Gherkin Craft ships in the npm package at [`skills/gherkin-craft/`](./skills/gherkin-craft/SKILL.md):
+guidance for writing Gherkin that generates good tests, with references for the generator's step
+contract, native and Markdown formats and worked software examples, plus agent metadata. Copy that
+complete directory when installing it for an agent. Development discovery in
+`.agents/skills/gherkin-craft` links to this authoritative source; a source checkout is not needed by
+consumers.
 
 ## License
 

@@ -1,17 +1,14 @@
-import { defineConfig } from 'vitest/config'
+import { configDefaults, defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
-    // Only maintained examples belong to CI; local scaffolds may still be pending.
-    include: [
-      'tests/**/*.test.ts',
-      'examples/calculator/*.feature.test.ts',
-      'examples/order-confirmation/*.feature.test.ts',
-    ],
+    include: ['tests/**/*.test.ts'],
+    // Expected generated output is compared, not run: its adapters are pending by design.
+    exclude: [...configDefaults.exclude, 'tests/regression/expected/**'],
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
-      exclude: ['src/cli.ts', 'examples/**'],
+      exclude: ['src/cli.ts'],
       reporter: ['text', 'json-summary'],
       thresholds: {
         branches: 80,
