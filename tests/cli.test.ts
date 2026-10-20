@@ -23,8 +23,8 @@ afterAll(async () => {
   if (workspace) await rm(workspace, { recursive: true, force: true })
 })
 
-async function invoke(args: string[], cwd = workspace) {
-  return run([process.execPath, cli, ...args], cwd)
+async function invoke(args: string[], cwd = workspace, input?: string) {
+  return run([process.execPath, cli, ...args], cwd, input)
 }
 
 async function fixture(name: string) {
@@ -180,9 +180,165 @@ export function createSteps() {
   })
 })
 
+describe('memory workflow', () => {
+  const sourceArgs = [
+    '--format',
+    'feature',
+    '--source',
+    'cart/payment.feature',
+    '--runner',
+    'node:test',
+  ]
+
+  test.each(['text', 'stdin'])(
+    'generates and validates %s without a physical source',
+    async (route) => {
+      const cwd = await fixture(`memory-${route}`)
+      const args = route === 'text' ? ['--text', minimal] : ['--stdin']
+      const validated = await invoke(['validate', ...args, ...sourceArgs, '--json'], cwd, minimal)
+      expect(validated.code, validated.stderr).toBe(0)
+      expect(JSON.parse(validated.stdout)).toMatchObject({
+        valid: true,
+        source: 'cart/payment.feature',
+        format: 'feature',
+        runner: 'node:test',
+        scenarioCount: 1,
+        stepCount: 1,
+        evidence: 'generability',
+        diagnostics: [],
+      })
+      expect(await readdir(cwd)).toEqual(['payment.feature'])
+      const generated = await invoke(['generate', 'out', ...args, ...sourceArgs], cwd, minimal)
+      expect(generated.code, generated.stderr).toBe(0)
+      expect(await readdir(path.join(cwd, 'out/cart'))).toEqual([
+        'payment.feature.steps.ts',
+        'payment.feature.test.ts',
+      ])
+      const adapter = path.join(cwd, 'out/cart/payment.feature.steps.ts')
+      await writeFile(
+        adapter,
+        'export function createSteps() { return { paymentIsReady(): void {} } }\n',
+      )
+      expect(
+        (await run([process.execPath, '--test', 'out/cart/payment.feature.test.ts'], cwd)).code,
+      ).toBe(0)
+      expect(
+        (await invoke(['generate', 'out', ...args, ...sourceArgs, '--check'], cwd, minimal)).code,
+      ).toBe(0)
+    },
+  )
+
+  test.each(['text', 'stdin'])('accepts explicit mdg from %s', async (route) => {
+    const mdg = '# Feature: Payment\n## Scenario: Accepted\n* Given payment is ready\n'
+    const args = route === 'text' ? ['--text', mdg] : ['--stdin']
+    const result = await invoke(
+      [
+        'validate',
+        ...args,
+        '--format',
+        'mdg',
+        '--source',
+        'payment.feature.md',
+        '-r',
+        'vitest',
+        '--json',
+      ],
+      workspace,
+      mdg,
+    )
+    expect(result.code, result.stderr).toBe(0)
+    expect(JSON.parse(result.stdout)).toMatchObject({ format: 'mdg', scenarioCount: 1 })
+  })
+
+  test.each([
+    ['--stdin', '--text', minimal, ...sourceArgs],
+    ['--text', minimal, '--source', 'x.feature', '-r', 'vitest'],
+    ['--stdin', '--format', 'feature', '-r', 'vitest'],
+    ['--stdin', ...sourceArgs, 'unexpected.feature'],
+    ['payment.feature', '--format', 'feature', '-r', 'vitest'],
+    ['--text', minimal, ...sourceArgs, '--check'],
+    ['--text', minimal, '--format', 'feature', '--source', 'x.feature', '-r', 'unknown'],
+  ])('rejects incompatible validation options without waiting for stdin: %j', async (...args) => {
+    const result = await invoke(['validate', ...args, '--json'])
+    expect(result.code).toBe(2)
+    expect(JSON.parse(result.stdout).valid).toBe(false)
+  })
+
+  test('rejects mixed file and text generation before mutation', async () => {
+    const cwd = await fixture('conflicting-text')
+    const result = await invoke(
+      ['generate', 'payment.feature', 'out', '--text', minimal, ...sourceArgs],
+      cwd,
+    )
+    expect(result.code).toBe(2)
+    expect(await readdir(cwd)).toEqual(['payment.feature'])
+  })
+
+  test.each([
+    ['Feature: Empty\n', 'INVALID_GHERKIN'],
+    ['Feature: X\n Scenario: X\n  Given <missing> units\n', 'UNKNOWN_PLACEHOLDER'],
+    ['Feature: X\n Scenario: X\n  Given empty cart\n  Then empty cart\n', 'CONFLICTING_STEP_ROLE'],
+    [
+      'Feature: X\n Scenario Outline: X\n  When add units\n  And add <quantity> units\n  Examples:\n   | quantity |\n   | 2 |\n',
+      'CONFLICTING_STEP_INPUTS',
+    ],
+  ])('shares source/planning diagnostics with generation: %s', async (text, code) => {
+    const cwd = await fixture(`failure-${code}`)
+    const args = ['--text', text, ...sourceArgs]
+    const checked = await invoke(['validate', ...args, '--json'], cwd)
+    const generated = await invoke(['generate', 'out', ...args], cwd)
+    expect(checked.code).toBe(1)
+    expect(generated.code).toBe(1)
+    expect(JSON.parse(checked.stdout).diagnostics[0]).toMatchObject({
+      code,
+      message: expect.stringContaining('cart/payment.feature'),
+    })
+    expect(generated.stderr).toContain(code)
+    expect(await readdir(cwd)).toEqual(['payment.feature'])
+  })
+
+  test('validates under enforced read-only permissions without executing stale adapters', async () => {
+    const cwd = await fixture('readonly')
+    await mkdir(path.join(cwd, 'out'))
+    await writeFile(
+      path.join(cwd, 'out/payment.feature.steps.ts'),
+      'throw new Error("must never execute")',
+    )
+    await writeFile(path.join(cwd, 'out/payment.feature.test.ts'), 'stale output')
+    const before = await readFile(path.join(cwd, 'out/payment.feature.test.ts'), 'utf8')
+    const permissionArgs = [process.execPath, '--permission', '--allow-fs-read=*', cli]
+    for (const args of [
+      ['--stdin', ...sourceArgs],
+      ['--text', minimal, ...sourceArgs],
+      ['payment.feature', '-r', 'node:test'],
+    ]) {
+      const result = await run([...permissionArgs, 'validate', ...args, '--json'], cwd, minimal)
+      expect(result.code, result.stderr).toBe(0)
+      expect(JSON.parse(result.stdout).evidence).toBe('generability')
+    }
+    const invalid = await run(
+      [...permissionArgs, 'validate', '--text', 'Feature: Empty', ...sourceArgs, '--json'],
+      cwd,
+    )
+    expect(invalid.code).toBe(1)
+    expect(JSON.parse(invalid.stdout).diagnostics[0].code).toBe('INVALID_GHERKIN')
+    expect(await readFile(path.join(cwd, 'out/payment.feature.test.ts'), 'utf8')).toBe(before)
+    expect(await readdir(cwd)).toEqual(['out', 'payment.feature'])
+    const check = await invoke(
+      ['generate', 'missing', '--stdin', ...sourceArgs, '--check'],
+      cwd,
+      minimal,
+    )
+    expect(check.code).toBe(1)
+    expect(check.stderr).toContain('missing:')
+    expect(await readdir(cwd)).toEqual(['out', 'payment.feature'])
+  })
+})
+
 function run(
   [command, ...argumentsList]: readonly string[],
   cwd: string,
+  input?: string,
 ): Promise<{
   readonly code: number | null
   readonly stderr: string
@@ -200,6 +356,7 @@ function run(
     child.stderr.on('data', (chunk: string) => {
       stderr += chunk
     })
+    child.stdin.end(input)
     child.on('error', reject)
     child.on('close', (code) => resolve({ code, stderr, stdout }))
   })

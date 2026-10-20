@@ -1,7 +1,7 @@
 import { readdir, stat } from 'node:fs/promises'
 import path from 'node:path'
 import { CodegenError } from './errors.js'
-import { outputPrefix } from './generate.js'
+import { outputPrefix } from './source.js'
 
 export interface GenerationJob {
   readonly input: string
