@@ -21,15 +21,17 @@ function run(command, args, cwd = workspace) {
   return result.stdout
 }
 
+const SKILL_FILES = [
+  'SKILL.md',
+  'agents/openai.yaml',
+  'references/authoring-guide.md',
+  'references/generator-contract.md',
+  'references/gherkin-format.md',
+]
+
 async function checkSkill(bundle) {
   const files = await readdir(bundle, { recursive: true })
-  for (const required of [
-    'SKILL.md',
-    'references/creator.md',
-    'references/editor.md',
-    'evals/manifest.json',
-    'agents/openai.yaml',
-  ]) {
+  for (const required of SKILL_FILES) {
     assert.ok(files.includes(required), `Missing skill resource: ${required}`)
   }
   for (const file of files.filter((name) => name.endsWith('.md'))) {
@@ -43,14 +45,6 @@ async function checkSkill(bundle) {
       )
       await access(target)
     }
-  }
-  const manifest = JSON.parse(await readFile(path.join(bundle, 'evals/manifest.json'), 'utf8'))
-  for (const item of manifest.cases) {
-    await access(path.join(bundle, 'evals', item.input_path))
-    const criteriaPath = path.join(bundle, 'evals', item.evaluator_criteria_path)
-    const criteria = JSON.parse(await readFile(criteriaPath, 'utf8'))
-    if (criteria.rubric_path)
-      await access(path.resolve(path.dirname(criteriaPath), criteria.rubric_path))
   }
 }
 
@@ -70,6 +64,11 @@ try {
     assert.ok(files.includes(required), `Missing ${required} in tarball`)
   }
   assert.ok(files.every((name) => !/^(src|tests|examples|node_modules|\.agents)\//.test(name)))
+  assert.deepEqual(
+    files.filter((name) => name.startsWith('skills/')).sort(),
+    SKILL_FILES.map((name) => `skills/gherkin-craft/${name}`),
+    'Skill bundle must contain exactly its entry point, references and agent metadata',
+  )
   const tarball = path.join(workspace, packed.filename)
   await writeFile(path.join(workspace, 'package.json'), '{"private":true,"type":"module"}\n')
   run('npm', ['install', '--ignore-scripts', '--omit=dev', '--no-audit', '--no-fund', tarball])

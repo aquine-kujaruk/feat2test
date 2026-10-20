@@ -1,102 +1,9 @@
 # Authoring guide
 
-These constructed examples teach decisions and formulations. Their concepts,
-values, and rules are not requirements for the user's domain. Apply
-[domain discovery](domain-discovery.md) first and
-[format and language](gherkin-format.md) to the chosen representation. Select
-the Feature modality with [verification modalities](verification-modalities.md)
-from the behavior that verification must exercise. Unless execution evidence
-states otherwise, examples of programmed behavior carry `@code`.
-
-## Let the objective select the system and relevant source knowledge
-
-Consider a constructed incident handbook: preserve reported symptoms; suggest a
-next diagnostic without claiming it ran; summarize the supplied incident record
-without adding facts. A separate chapter describes organizing staff training.
-
-| Contextual objective | Relevant use case and observable outcome | Required execution evidence | Modality |
-| --- | --- | --- | --- |
-| Agent guided through investigation planning | Propose a next diagnostic grounded in the reported symptoms; retain what is still unknown and do not claim execution. | Agent interpretation of the guidance and incident context. | `@ai` |
-| Model instructed to summarize an incident | Summarize the supplied record faithfully; unknown causes remain unknown. | Model interpretation of instructions and supplied record. | `@ai` |
-| Programmed incident lookup | Return the stored symptoms without changing them. | Programmed lookup rules. | `@code` |
-
-The same source supplies different contracts. Neither objective authorizes a
-training-management Feature. If neither objective is established, the calling
-agent exposes that choice; the guide does not select one or conduct an interview.
-Once a purpose is known, a missing diagnostic policy can remain open without
-blocking supported behavior. A system can be a custom configuration, schema, or
-project policy; its packaging does not need a recognized category.
-
-## Classify the behavior that verification must exercise
-
-Suppose an application's public operation classifies tickets using a real model.
-When verification must demonstrate that model's interpretation of ticket text,
-the Feature is `@ai`, even though a software interface invokes it. Examples
-describe input facts and required classification behavior; they do not require a
-model call count, provider, or deterministic result merely from the tag.
-
-If verification instead supplies a fixed model response and checks the
-application's programmed parsing, routing, or persistence of that response, the
-Feature is `@code`. It must not claim to have demonstrated real-model
-classification. The interface, model dependency, package name, or a checker
-does not settle the distinction.
-
-## One review contract across AI execution contexts
-
-This constructed review contract requires evidence for an incompatible public
-interface change and leaves files intact. The requested verification exercises
-an interpreting agent both directly and through a host operation that applies
-the same guidance. The same domain examples apply to both contexts and the
-Feature has one modality:
-
-````markdown
-`@ai` `@regression`
-# Feature: Review a public interface change
-
-## Rule: A finding identifies a supported compatibility defect and preserves files
-
-### Scenario Outline: Report removal of a required public function
-
-* Given the public contract requires exporting the function "`<functionName>`"
-* And the proposed change to "`<changedFile>`" is:
-  ```diff
-  - export function <functionName>() { return "ok"; }
-  + function <functionName>() { return "ok"; }
-  ```
-* When the change is reviewed against its public contract
-* Then a finding identifies "`<changedFile>`" and the missing public export "`<functionName>`"
-* And the finding explains that clients can no longer import "`<functionName>`"
-* And the review leaves the project files unchanged
-
-#### Examples:
-
-  | functionName | changedFile |
-  | formatEntry | public.ts |
-````
-
-The changed code is the review's input, not its implementation. Reading a diff,
-consulting a script, and fetching rules are possible internal steps; they do not
-become separate Features or a required call order. Do not duplicate this contract
-or add an Examples column choosing an execution context. The same agent behavior
-remains `@ai` whether direct guidance, a plugin host, a prompt file, a custom
-configuration, or a policy file supplies its instructions. If the host operation
-instead exercises only programmed rules, it is `@code`.
-A review that finds no supported defect belongs to this same use case with its
-own example; a separate request to apply a fix has another purpose and contract.
-
-## Keep checking and generation choices separate
-
-An agent creating workflow files remains `@ai` when filenames and contents are
-checked exactly. A programmed report generator remains `@code` when an AI
-judge assesses the result. Exact versus semantic assertions, deterministic versus
-stochastic execution, and who authored implementation code do not select a
-modality.
-
-The tag also does not choose Python, TypeScript, Vitest, another framework, a
-runner, or a test/support-file layout. When behavior execution is known, select
-the tag and leave those later choices open. If the verification route itself is
-not selected, retain supported behavior and name that pending decision without
-tagging it twice.
+These constructed software examples teach decisions and formulations. Their
+concepts, values, and rules are not requirements for the user's domain. Apply
+[the generator contract](generator-contract.md) to every step and
+[format and language](gherkin-format.md) to the chosen representation.
 
 ## Relationships, arguments, and roles
 
@@ -124,7 +31,6 @@ In this constructed form, submission requires a ten-digit phone number and an
 answer to question 4. Rejection identifies its cause and preserves answers.
 
 ```markdown
-`@code`
 # Feature: Submit a form
 
 ## Rule: Submission requires a ten-digit phone number and an answer to question 4
@@ -189,7 +95,6 @@ This constructed operation removes the selected bead and preserves the others'
 order. The collection describes one example; its rows are not separate scenarios.
 
 ```markdown
-`@code`
 # Feature: Remove a bead from a strand
 
 ## Rule: Removing a selected bead preserves the other beads and their order
@@ -202,7 +107,7 @@ order. The collection describes one example; its rows are not separate scenarios
   | <middleBead> |
   | <lastBead> |
 * When the `<position>` bead is removed from the strand
-* Then the strand contains, in order:
+* Then the remaining strand holds, in order:
   | bead |
   | <remainingFirst> |
   | <remainingLast> |
@@ -214,9 +119,12 @@ order. The collection describes one example; its rows are not separate scenarios
   | first | Amber | Glass | Shell | Glass | Shell |
 ```
 
-`position` can bind `last` without fixing the collection's length. Distinct local
-bindings identify simultaneous values of the `bead` field. Renaming all of them
-`<bead>` would force different records to share one value. Preserve known sets
+The prior and resulting collections use different words: the same words as a
+Given and a Then would be one adapter method with two roles, which the
+generator rejects. `position` can bind `last` without fixing the collection's
+length. Distinct local bindings identify simultaneous values of the `bead`
+field. Renaming all of them `<bead>` would force different records to share one
+value. Preserve known sets
 as collections when that expresses the example best; these local scalar bindings
 make the varying expected collection explicit, not a universal table schema.
 For a fixed collection with no meaningful scalar variation, a plain Scenario
@@ -227,6 +135,57 @@ A negative selector remains explicit: `the <position> item has no answer`, with
 When accepted inputs can have different lengths, vary lengths to exercise that
 relative meaning where the source supports it.
 
+## Records with identity, selected by Examples
+
+When variation is by whole record rather than by one scalar, flattening each
+record into placeholder columns (`<lines[0].product>`, `<lines[0].price>`,
+`<lines[1].product>`…) fixes the record's length and makes the table unreadable
+past two items. In this constructed order model, each order holds lines of a
+product, a unit price, and a quantity; the total shows two decimals because it
+is money; a zero price is a free sample; a repeated product adds up.
+
+```markdown
+# Feature: Confirm an order
+
+## Rule: An order is confirmed when every requested product is available
+
+### Scenario Outline: Confirm order <order> worth <total>
+
+* Given these orders exist:
+  | order | product  | unitPrice | quantity |
+  | 1     | Pencil   | 1.50      | 4        |
+  | 1     | Notebook | 3.00      | 2        |
+  | 2     | Pencil   | 0.10      | 3        |
+  | 2     | Notebook | 0.00      | 1        |
+  | 3     | Pencil   | 1.50      | 4        |
+  | 3     | Pencil   | 1.50      | 4        |
+* And every requested product is available
+* When the customer confirms order `<order>`
+* Then the order is confirmed
+* And the order total is `<total>`
+
+#### Examples: Usual order
+
+  | order | total |
+  | 1     | 12.00 |
+
+#### Examples: Boundaries confirmed with the expert
+
+  | order | total |
+  | 2     | 0.30  |
+  | 3     | 12.00 |
+```
+
+The DataTable keeps each order a cohesive collection with an identity; the
+Examples table selects one by identity and states its outcome, so adding an
+order of five lines widens nothing. Each row still supplies its own facts: the
+table is part of the Given and belongs to every expanded scenario. The second
+block exists for the reader: the expert checks the usual order first and then
+the boundaries they answered. Order 2 binds "zero price adds nothing" and "two
+decimals"; order 3 binds "a repeated product adds up". A row such as
+`1.15 × 100 = 115.00` does not join them: no expert decided it, binary floating
+point did, and it belongs to programmatic tests outside the specification.
+
 ## Different purposes, shared quantities
 
 In this constructed coating model, material volume is area multiplied by
@@ -234,7 +193,6 @@ consumption per area; the factors use matching units. There is no conversion or
 rounding policy. The whole use case estimates required material:
 
 ```gherkin
-@code
 Feature: Estimate coating volume
 
   Rule: Required volume equals area multiplied by consumption per area
@@ -260,7 +218,6 @@ already established requirement and available volume. Its comparison preserves
 availability; determining the requirement is outside this particular boundary.
 
 ```gherkin
-@code
 Feature: Check coating availability
 
   Rule: Available coating is sufficient when it meets the required volume
@@ -316,7 +273,6 @@ This constructed word-counting rule defines words as nonempty groups separated
 by spaces. It does not require any particular splitting algorithm.
 
 ```gherkin
-@code
 Feature: Count words in a comment
 
   Rule: Words are nonempty groups of characters separated by spaces
@@ -342,7 +298,6 @@ appropriate prior state. Keep that boundary explicit.
 Sketch state/event pairs from the source to find unanswered questions. Consider
 mixed independent dimensions, repeated requests, refusals, observations, and
 missing inputs. A query checks an answer; relevant preserved state may also be
-part of its contract. A recommendation is observed as advice, not as proof of
-compliance. Complete supported cases while identifying a missing conversion,
+part of its contract. Complete supported cases while identifying a missing conversion,
 rounding, or transition rule separately. Do not invent a policy to fill the
 sketch or claim exhaustiveness from the number of combinations.

@@ -132,13 +132,20 @@ test('rejects symlink destinations and preserves output ownership', async () => 
   expect(await readFile(path.join(output, 'add.feature.test.ts'), 'utf8')).toBe('user content')
 })
 
-test.each(['@ai', '@code'])('does not select a runner from %s', async (tag) => {
-  const result = await generateSource(
-    textSource(`${tag}\n${feature}`, 'feature', 'add.feature'),
-    workspace,
-    { runner: 'vitest' },
-  )
-  expect(await readFile(result.testPath, 'utf8')).toContain("from 'vitest'")
+test.each(['@code', '@regression'])('generates the same output with %s', async (tag) => {
+  const generateInto = async (directory: string, text: string) => {
+    const result = await generateSource(
+      textSource(text, 'feature', 'add.feature'),
+      path.join(workspace, directory),
+      { runner: 'vitest' },
+    )
+    return [await readFile(result.testPath, 'utf8'), await readFile(result.stepAdapterPath, 'utf8')]
+  }
+  const tagged = await generateInto('tagged', `${tag}\n${feature}`)
+  // A blank first line keeps the scenario line comments aligned with the tagged source.
+  const untagged = await generateInto('untagged', `\n${feature}`)
+  expect(tagged[0]).toContain("from 'vitest'")
+  expect(tagged).toEqual(untagged)
 })
 
 test('validation exercises renderer failures and rejects missing format', () => {

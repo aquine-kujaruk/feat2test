@@ -18,5 +18,9 @@ planner and Step Adapter scaffold must remain runner-independent. A new runner n
 documentation and a test that executes its generated output.
 
 `pnpm verify` installs the packed CLI in a temporary consumer project and tests npm/npx. It requires
-registry access. `pnpm test:package` runs that check independently. The two maintained examples
-(`calculator` and `order-confirmation`) run in CI; local pending scaffolds do not.
+registry access. `pnpm test:package` runs that check independently.
+
+feat2test stops at red: it generates tests and pending Step Adapters, never domain code. Its
+regression Features live in `tests/regression/` at the limits of the step contract; their generated
+output is compared with the committed `expected/` files. After an intended output change, regenerate
+them with `pnpm exec vitest run tests/regression.test.ts -u` and review the diff.

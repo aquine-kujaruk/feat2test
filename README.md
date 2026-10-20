@@ -59,8 +59,8 @@ counts, warnings and diagnostics. Failed validation returns `valid: false` with 
 Validation does not certify freshness, generated-code type checking, implemented adapters or passing
 behavior. Pending steps and stale existing tests do not prevent it from succeeding. `generate --check`
 remains a separate freshness comparison and fails when outputs are missing or stale. Neither command
-executes steps, a model, a test runner or a checker. Tags such as `@code` and `@ai` do not choose a runner,
-language, provider or evaluator; callers explicitly select supported tools.
+executes steps, a model, a test runner or a checker. Feature, Rule and Scenario tags are ignored: they do
+not change the generated test, the Step Adapter or the runner. Callers explicitly select supported tools.
 
 ## Runners
 
@@ -143,13 +143,12 @@ pnpm install
 pnpm verify
 ```
 
-Complete examples: [`examples/calculator`](./examples/calculator) and
-[`examples/order-confirmation`](./examples/order-confirmation).
-
-Gherkin Craft ships in the npm package at [`skills/gherkin-craft/`](./skills/gherkin-craft/SKILL.md),
-including its references, agent metadata and evaluation resources. Copy that complete directory
-when installing it for an agent. Development discovery in `.agents/skills/gherkin-craft` links to
-this authoritative source; a source checkout is not needed by consumers.
+Gherkin Craft ships in the npm package at [`skills/gherkin-craft/`](./skills/gherkin-craft/SKILL.md):
+guidance for writing Gherkin that generates good tests, with references for the generator's step
+contract, native and Markdown formats and worked software examples, plus agent metadata. Copy that
+complete directory when installing it for an agent. Development discovery in
+`.agents/skills/gherkin-craft` links to this authoritative source; a source checkout is not needed by
+consumers.
 
 ## License
 

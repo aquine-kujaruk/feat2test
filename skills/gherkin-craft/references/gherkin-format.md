@@ -33,6 +33,9 @@ silently switch a requested format or invent a Markdown language attribute.
   preceding role. But provides contrast, not automatic negation.
 - Each Examples row is independent. Group rows by intent and kind of outcome;
   acceptance and rejection use different scenarios within the same use case.
+  One Outline may carry several titled Examples blocks: the first illustrates
+  the rule with a reader-friendly case; later blocks hold the boundaries the
+  expert confirmed. The split is presentation only; every row is one scenario.
 - A Scenario Outline exposes meaningful scalar arguments even for one row.
   Every placeholder has a concrete Examples binding, including occurrences in
   titles, DataTables, and consequences. Plain Scenarios suit argument-free cases.
@@ -55,18 +58,8 @@ Outline placeholders. A DataTable follows its step. Do not add Markdown heading
 markers, bullet steps, or Markdown formatting separator rows. In native tables,
 those separators become data, including additional Examples cases.
 
-Place the one selected bare modality tag on the line before `Feature`, with
-any unrelated metadata, for example:
-
-```gherkin
-@ai @regression
-Feature: Review a proposed change
-```
-
-For a non-English native file, keep `# language: <code>` first, then tags before
-the translated Feature keyword. Exactly one of `@code` or `@ai` is allowed
-on a completed Feature; Rules and scenarios inherit it. Modality meanings and
-selection belong to [verification modalities](verification-modalities.md).
+Tags are metadata the generator ignores; in a non-English file they follow the
+`# language: <code>` line.
 
 ## Markdown `.feature.md`
 
@@ -76,18 +69,9 @@ only in native files; a fenced native document is not Markdown Gherkin structure
 Only recognized headings, steps, tables, and backtick tags have Gherkin meaning;
 other prose remains documentation.
 
-Place each Feature tag in its **own** backtick span before the Feature heading:
-
-```markdown
-`@ai` `@regression`
-# Feature: Review a proposed change
-```
-
-A single span containing several tags parses as one compound tag, losing their
-individual metadata. Native bare tag syntax in Markdown is ordinary prose. Keep
-applicable unrelated tags alongside the one modality tag, but do not combine
-`@code` and `@ai`: parser acceptance does not make that semantic
-classification valid.
+Write each tag in its **own** backtick span, for example `` `@billing` `@slow` ``.
+A single span containing several tags parses as one compound tag, and native
+bare tag syntax in Markdown is ordinary prose.
 
 Use two leading spaces on every table row so Examples and DataTables are
 recognized. Insufficient indentation may silently hide a table.
@@ -106,11 +90,10 @@ Markdown separators; do not confuse them with Gherkin tables.
 
 ## Verify interpretation
 
-Where parsing is available, inspect scenario and expanded-example counts,
-Feature tags and their inheritance by expanded scenarios, bindings, selected
-dialect, and resulting step/table values. Check all intended rows survived and
-formatting did not become data. Successful parsing is not a semantic review,
-does not validate modality selection, and does not demonstrate domain execution.
+Where `feat2test validate` or another parser is available, inspect expanded
+example counts, bindings, selected dialect, and resulting step/table values.
+Check all intended rows survived and formatting did not become data. Successful
+parsing is not a semantic review and does not demonstrate domain execution.
 
 ## References
 

@@ -1,113 +1,119 @@
 ---
 name: gherkin-craft
-description: "Guide agents in specifying observable system behavior through domain rules and complete use cases. Use to write, review, or reformulate native .feature and Markdown .feature.md Gherkin from requirements, procedures, books, articles, transcripts, instructions, configurations, or schemas. Ordinary summaries, prose editing, and implementation alone do not need this workflow."
+description: "Write, review, or revise native .feature and Markdown .feature.md Gherkin that specifies software behavior and generates good tests with feat2test. Use when turning software requirements into Gherkin, reviewing existing Features, or fixing Features that feat2test rejects. Ordinary summaries, prose editing, and implementation alone do not need this skill."
 ---
 
 # Gherkin Craft
 
-This skill supplies modeling guidance. The calling agent interprets context,
-identifies relevant domains, proposes decompositions, authors specifications,
-and manages user interaction. It applies this sequence:
+Input: requirements for programmed software. Output: Gherkin whose steps map to
+stable Step Adapter signatures and whose examples drive the tests feat2test
+generates. Read [the generator contract](references/generator-contract.md) and
+[format and language](references/gherkin-format.md) before writing or
+reviewing. Use [the authoring guide](references/authoring-guide.md) for worked
+examples when choosing a formulation.
 
-**Contextual intent → intended system and observable behavior → relevant domain
-→ complete use cases → one verification modality per Feature.**
+## Steps are signatures
 
-One **Feature represents one use case**, viewed from the Detroit perspective:
-prior facts, a whole action or query at the system boundary, and observable
-answers or changed or preserved state. The intended system can be planned;
-specification does not require its implementation or tests to exist. It can be
-software, instructions interpreted by a model or agent, a custom configuration
-or schema, or another established system. Those are examples, not a catalog.
+A step's literal words, without placeholders, are its adapter method. Keep one
+wording and one keyword role per fact across the whole Feature; rewording a step
+replaces its implementation. Put every value that varies between examples in a
+placeholder, never in the words. Bind every placeholder in every row, including
+those in titles and DataTables, which the generator does not catch. The
+generated test only calls steps, so each Then step carries the value it checks
+(`the order total is <total>`), not a verdict (`the total is correct`).
 
-## Shared contract
+## One Feature per use case
 
-- Reuse the objective already available in conversation or project context.
-  Sources supply knowledge for that objective; their chapters, medium, filename,
-  or packaging do not select the system to build. If incompatible objectives
-  remain, expose that decision for the calling agent to resolve. Do not silently
-  select a system or present source-only Features as a complete contract. There
-  is no separate skill-owned interview or compulsory input form.
-- Build a contextual taxonomy and ubiquitous language from the request and
-  relevant available sources. Reuse agreed meanings; infer missing abstractions
-  when justified. Inspect concepts, instances, units, independent dimensions,
-  states, events, policies, strategies, and relationships between use cases.
-- One example can reveal a reusable concept. It does not establish behavior for
-  every possible member. Separate source assertions, justified inferences,
-  proposed extensions, and unresolved decisions. Preserve explicit boundaries.
-- Keep this working model internal unless the user asks to inspect it. Deliver
-  the requested specifications or review findings; do not add a glossary,
-  architecture document, catalog application, tests, or implementation by
-  default.
-- Specify domain consequences. Implementation mechanisms belong only when they
-  are themselves the subject being specified. Source claims retain their
-  assumptions; writing a scenario does not prove them empirically.
-- Keep vocabulary and argument roles consistent across Features. A query can
-  return an answer without mutation. A recommendation does not establish that
-  its recipient acted or acquired a capability.
+Each Feature is one complete use case at the software's boundary: relevant prior
+facts, one whole action or query, and the observable answer or changed or
+preserved state. Rules and outcome variants of that use case, acceptance and
+rejection included, stay together in distinct scenarios. Distinct purposes get
+separate Features even when they share data; shared quantities keep one meaning.
+No human actor is required when the domain has none.
 
-## Route the work
+Specify what the software answers, changes or preserves, not how. Replace a step
+that describes implementation (`the repository save method is called`) with its
+observable result. Internal call order, algorithms, runners, languages and
+output layout are not acceptance criteria and never become steps or Examples
+columns.
 
-For authoring, revision, and review, read
-[domain discovery](references/domain-discovery.md) and
-[format and language](references/gherkin-format.md), then use
-[verification modalities](references/verification-modalities.md) to select one
-Feature-level modality from required execution evidence.
+## Meaningful arguments
 
-- **Create or revise:** follow [the creator brief](references/creator.md).
-  Read [the authoring guide](references/authoring-guide.md) for worked examples
-  when choosing formulations or correcting a decomposition problem.
-- **Review only:** follow [the editor brief](references/editor.md). Inspect the
-  whole supplied specification; return findings. Do not edit files or create a
-  review document unless requested.
-- **Maintain or evaluate this skill:** additionally read
-  [the evaluation protocol](references/evaluation.md). Evaluation cases and
-  expected findings are not normal authoring context.
+- Expose identities, quantities, units, categories, relative positions,
+  negative facts and expected results as named arguments in a
+  `Scenario Outline`, even with one justified row.
+- Keep independently variable roles apart even when their values coincide: a
+  horizon, a reporting interval and a recurrence interval of seven days are
+  three arguments with explicit units, not one `days`.
+- Keep a cohesive record or collection as one DataTable, not many scalar
+  columns. To vary whole records, give each an identity in the table and select
+  it from Examples.
+- Keep fixed rule criteria fixed. A diagnostic may bind the fixed value without
+  making the criterion configurable. Never replace actions, conditions or
+  diagnostics with prose-valued arguments such as `<reason>`.
+- Preserve subjects, negation, quantifiers, units, timing, relative selectors
+  and causes. Use explicit absence, not blank cells or `null`. Supply raw input
+  when its derivation is what the use case examines.
 
-## Precision that every path preserves
+## Discriminating examples
 
-Give meaningful example values explicit named arguments in a `Scenario Outline`,
-even with one justified row. Check conditions, action inputs, consequences,
-negatives, and diagnostics for hidden values, including units and identities in
-words or argument names. Bind every placeholder to concrete `Examples` data.
-Keep independently variable roles distinct even when their values coincide.
+Ask whether each example would still pass if a factor or rule were ignored; a
+factor of one hides a missing multiplication. Cover meaningful partitions,
+boundaries and failures, and keep unknown, absent, zero and invalid distinct.
+Recognize coverage already present and keep it on revision.
 
-Keep fixed criteria in their rules. An expected diagnostic can bind that fixed
-value without making the criterion configurable. Preserve cohesive records and
-collections as data; do not turn whole actions, conditions, or diagnostic
-sentences into generic prose-valued arguments. Named domain categories can be
-arguments when their meaning is established.
+A boundary belongs here when the domain expert would recognize it as their rule:
+a zero price, a repeated item, an amount shown with two decimals. A value that
+matters only because of machine representation (binary floating point, time
+zones, text normalization, overflow) is left out and named as a candidate for
+downstream programmatic tests, which are not written in Gherkin.
 
-Preserve subjects, units, scope, timing, quantifiers, negation, relative
-selectors, and causal meaning. Use explicit absence rather than blank cells or
-`null` / `undefined` stand-ins. A literal that is itself the source's subject
-remains literal data. Supply source inputs when their derivation is being
-examined.
+Inspect relevant state/event pairs, repeated requests, missing information and
+mixed independent dimensions. A rejection states what was preserved; a query
+checks its answer without inventing a mutation. Each scenario supplies its own
+context and never depends on another having run. Parsing or a small
+cross-product does not prove exhaustive coverage.
 
-Every scenario stands alone, with simultaneously possible prior facts, one
-whole action or query, and a discriminating answer or consequence. Explore
-relevant boundaries and missing state/event combinations; retain already
-justified coverage during revision. Do not manufacture policy to fill a table.
+## Unresolved rules stay out of tables
 
-Write specifications in **English by default**, another language only on explicit
-request. Conversation or source language does not select the output language.
-Apply the format reference before claiming native or Markdown validity.
+Separate what the requirements assert, what is justifiably inferred and what is
+undecided. When a row's expected outcome depends on an undecided rule, such as a
+rounding or validity policy, omit that row, state the open decision and deliver
+the supported rows. One supplied instance exposes a relationship's arguments; it
+does not establish behavior for members the source does not support.
 
-## Creator and editor
+## Tags
 
-Every specification receives creation and editorial passes. When delegation is
-available, use different agents with a fresh editor context. The caller may act
-as creator and delegate the editorial pass. Supply the original request, raw
-sources, existing specifications, complete candidate, concise working vocabulary
-and evidence distinctions, coverage claims, modality decision, and open
-decisions. A summary of the candidate is insufficient.
+Tags are metadata the generator does not interpret. None is required, including
+`@code`; they only serve the project's own runner filters or conventions.
+Preserve tags already present when revising.
 
-The editor follows its brief and verifies the claims against the complete text.
-The creator resolves supported findings across all affected occurrences; the
-editor rechecks the whole result, including unchanged coverage. Allow at most
-two correction/recheck cycles. Report remaining findings instead of extending
-the loop or claiming readiness.
+## Validate with the generator
 
-Delegated roles do not delegate further or restart this workflow. If delegation
-is unavailable, perform separate passes and disclose that the review was not
-independent. Report only review actions actually performed. Keep working notes
-internal unless they are requested deliverables.
+When feat2test is installed, run `feat2test validate` on the delivered Feature
+through its file, `--text` or `--stdin`, with the project's runner and `--json`.
+Report the example count and diagnostics; it writes nothing. When it is not
+installed, check the format reference and say generator validation was not run.
+Validation proves generability, not semantic review.
+
+Write in English unless the user explicitly asks for another language.
+
+## Review checklist
+
+Apply to the complete specification against the requirements and the user's
+constraints, whether or not another agent is available. Cite the scenario and
+evidence for each finding, and separate wording defects from undecided domain
+rules.
+
+- [ ] Each Feature is one use case; distinct purposes are separate Features.
+- [ ] Each fact has one wording and one role; no conflicting inputs.
+- [ ] Every placeholder is bound in every row, including titles and DataTables.
+- [ ] Every Then step carries the expected value it checks.
+- [ ] No prose-valued arguments; roles, units and fixed criteria are explicit.
+- [ ] Examples discriminate factors, boundaries and failures; prior coverage kept.
+- [ ] No invented rules; open decisions are stated, not tabled.
+- [ ] Steps describe observable behavior, not implementation or tooling.
+- [ ] Syntax matches the format reference; `feat2test validate` passes when available.
+
+A review-only request returns findings and edits nothing. A revision fixes every
+affected occurrence of a shared step or argument and keeps justified behavior.

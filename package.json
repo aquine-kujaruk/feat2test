@@ -69,8 +69,6 @@
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "verify": "pnpm check && pnpm typecheck && pnpm test:coverage && pnpm build && pnpm exec publint && pnpm exec attw --pack . --profile esm-only && node scripts/smoke-package.mjs",
-    "example": "pnpm codegen generate examples/calculator/calculator.feature.md examples/calculator --runner vitest",
-    "example:order": "pnpm codegen generate examples/order-confirmation/order-confirmation.feature.md examples/order-confirmation --runner vitest",
     "prepack": "npm run build",
     "test:package": "npm run build && node scripts/smoke-package.mjs"
   },
