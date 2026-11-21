@@ -73,9 +73,9 @@
     "test:package": "npm run build && node scripts/smoke-package.mjs"
   },
   "dependencies": {
-    "@babel/parser": "8.0.4",
-    "@cucumber/gherkin": "42.0.1",
-    "@cucumber/messages": "34.2.1"
+    "@babel/parser": "8.1.2",
+    "@cucumber/gherkin": "43.0.0",
+    "@cucumber/messages": "35.0.0"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
